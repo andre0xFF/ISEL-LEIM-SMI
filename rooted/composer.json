@@ -1,0 +1,16 @@
+{
+    "name": "smi/rooted",
+    "type": "project",
+    "autoload": {
+        "psr-4": {
+            "Smi\\Rooted\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "André Fonseca",
+            "email": "a39758@alunos.isel.pt"
+        }
+    ],
+    "require": {}
+}
