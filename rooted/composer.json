@@ -16,5 +16,8 @@
             "email": "a32078@alunos.isel.pt"
         }
     ],
-    "require": {}
+    "require": {},
+    "scripts": {
+        "start": "php -S localhost:8080 -t public"
+    }
 }

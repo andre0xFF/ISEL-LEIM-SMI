@@ -1,6 +1,30 @@
 # Rooted
+Rooted is a gardening web application that helps users to plan and manage their gardens.
 
 ## Contributing
+This project uses composer for dependency management. To get started, run the following commands:
+
+```shell
+composer install
+```
+
+To run the tests, use the following command:
+
+```shell
+composer test
+```
+
+To run the application, use the following command:
+
+```shell
+composer start
+```
+
+To generate the autoload files, use the following command:
+
+```shell
+composer dump-autoload -o
+```
 
 ### Directory Structure
 
