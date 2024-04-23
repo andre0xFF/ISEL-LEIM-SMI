@@ -1,6 +1,6 @@
 <?php
 
-require '../vendor/autoload.php';
+require "../vendor/autoload.php";
 
 use Smi\Rooted\Core\Router;
 
@@ -12,14 +12,15 @@ session_start();
 
 $router = new Router();
 
-$uri = parse_url($_SERVER['REQUEST_URI'])['path'];
-$method = $_POST['_method'] ?? $_SERVER['REQUEST_METHOD'];
+$uri = isset($_SERVER["REQUEST_URI"]) ? parse_url($_SERVER["REQUEST_URI"])["path"] : "/";
+
+$method = isset($_POST["_method"]) ? stripslashes($_POST["_method"]) : $_SERVER["REQUEST_METHOD"];
 
 try {
     $router->route($uri, $method);
 } catch (ValidationException $exception) {
-    Session::flash('errors', $exception->errors);
-    Session::flash('old', $exception->old);
+    Session::flash("errors", $exception->errors);
+    Session::flash("old", $exception->old);
 
     redirect($router->previousUrl());
 }
