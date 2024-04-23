@@ -25,8 +25,8 @@ function getMethod()
 
 function getUri()
 {
-    return filter_input(INPUT_SERVER, 'REQUEST_URI') ?? "/";
-    // return isset($_SERVER["REQUEST_URI"]) ? parse_url($_SERVER["REQUEST_URI"])["path"] : "/";
+    // return filter_input(INPUT_SERVER, 'REQUEST_URI') ?? "/";
+    return isset($_SERVER["REQUEST_URI"]) ? parse_url($_SERVER["REQUEST_URI"])["path"] : "/";
 }
 
 function uriIs(string $value): bool
