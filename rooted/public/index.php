@@ -2,19 +2,23 @@
 
 require "../vendor/autoload.php";
 
+use Smi\Rooted\Controllers\Index;
 use Smi\Rooted\Core\Router;
 use function Smi\Rooted\Core\getMethod;
 use function Smi\Rooted\Core\getUri;
 
-session_start();
+function addRoutes(Router $router): void
+{
+    $router->get("/", new Index());
+}
 
-//$a = 1;
-//print var_dump($a);
-//return;
+session_start();
 
 $router = new Router();
 $uri = getUri();
 $method = getMethod();
+
+addRoutes($router);
 
 try {
     $router->route($uri, $method);
