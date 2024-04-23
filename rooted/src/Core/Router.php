@@ -2,11 +2,17 @@
 
 namespace Smi\Rooted\Core;
 
+/**
+ * Class Router. Responsible for routing requests to the appropriate controller.
+ */
 class Router
 {
-    protected $routes = [];
+    protected array $routes = [];
 
-    public function addRoute($method, $uri, $controller, Middleware $middleware = null)
+    /**
+     * Add a new route.
+     */
+    public function addRoute($method, $uri, $controller, Middleware $middleware = null): void
     {
         $this->routes[] = [
             "uri" => $uri,
@@ -16,57 +22,79 @@ class Router
         ];
     }
 
-    public function get($uri, $controller, Middleware $middleware = null)
+    /**
+     * Register a new GET route.
+     */
+    public function get($uri, $controller, Middleware $middleware = null): void
     {
         $this->addRoute("GET", $uri, $controller, $middleware);
     }
 
-    public function post($uri, $controller, Middleware $middleware = null)
+    /**
+     * Register a new POST route.
+     */
+    public function post($uri, $controller, Middleware $middleware = null): void
     {
         $this->addRoute("POST", $uri, $controller, $middleware);
     }
 
-    public function delete($uri, $controller, Middleware $middleware = null)
+    /**
+     * Register a new DELETE route.
+     */
+    public function delete($uri, $controller, Middleware $middleware = null): void
     {
         $this->addRoute("DELETE", $uri, $controller, $middleware);
     }
 
-    public function patch($uri, $controller, Middleware $middleware = null)
+    /**
+     * Register a new PATCH route.
+     */
+    public function patch($uri, $controller, Middleware $middleware = null): void
     {
         $this->addRoute("PATCH", $uri, $controller, $middleware);
     }
 
-    public function put($uri, $controller, Middleware $middleware = null)
+    /**
+     * Register a new PUT route.
+     */
+    public function put($uri, $controller, Middleware $middleware = null): void
     {
         $this->addRoute("PUT", $uri, $controller, $middleware);
     }
 
-    protected function abort($code = 404)
+    /**
+     * Abort the request with a given status code.
+     */
+    protected function abort($code = 404): void
     {
         http_response_code($code);
 
-        require base_path("views/{$code}.php");
+        render("../src/Views/errors/404.php");
 
-        die();
+        // die();
     }
 
-    public function route($uri, $method)
+    /**
+     * Route the request to the appropriate controller.
+     */
+    public function route($uri, $method): void
     {
         foreach ($this->routes as $route) {
             if ($route["uri"] === $uri && $route["method"] === strtoupper($method)) {
-                if ($route["middleware"] !== null) {
-                    $route["middleware"]->handle();
-                }
-
-                return require base_path("Http/controllers/" . $route["controller"]);
+                $route["middleware"]?->handle();
+                $route["controller"]->handle();
             }
         }
 
         $this->abort();
     }
 
-    public function previousUrl()
+    /**
+     * Get the previous URL.
+     */
+    public function previousUrl(): mixed
     {
-        return $_SERVER["HTTP_REFERER"];
+        return filter_input(INPUT_SERVER, "HTTP_REFERER", FILTER_SANITIZE_STRING);
+        // return $_SERVER["HTTP_REFERER"];
     }
 }

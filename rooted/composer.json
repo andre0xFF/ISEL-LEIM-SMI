@@ -4,7 +4,11 @@
     "autoload": {
         "psr-4": {
             "Smi\\Rooted\\": "src/"
-        }
+        },
+        "files": [
+            "configs/routes.php",
+            "src/Core/functions.php"
+        ]
     },
     "authors": [
         {

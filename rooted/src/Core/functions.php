@@ -1,6 +1,16 @@
 <?php
 
-function base_path($path): string
+namespace Smi\Rooted\Core;
+
+function redirect($path)
 {
-    return BASE_PATH . $path;
+    header("location: {$path}");
+    exit();
+}
+
+function render($templatePath, $variables = []): void
+{
+    extract($variables);
+
+    require $templatePath;
 }
