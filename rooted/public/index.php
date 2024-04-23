@@ -2,14 +2,14 @@
 
 require "../vendor/autoload.php";
 
-use Smi\Rooted\Controllers\Index;
+use Smi\Rooted\Controllers\IndexController;
 use Smi\Rooted\Core\Router;
 use function Smi\Rooted\Core\getMethod;
 use function Smi\Rooted\Core\getUri;
 
 function addRoutes(Router $router): void
 {
-    $router->get("/", new Index());
+    $router->get("/", new IndexController());
 }
 
 session_start();

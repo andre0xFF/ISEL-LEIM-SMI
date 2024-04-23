@@ -5,7 +5,7 @@ namespace Smi\Rooted\Controllers;
 use Smi\Rooted\Core\Controller;
 use function Smi\Rooted\Core\render;
 
-class Index implements Controller
+class IndexController implements Controller
 {
     public function handle(): void
     {

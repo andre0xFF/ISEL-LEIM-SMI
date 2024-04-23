@@ -1,10 +1,9 @@
 <?php
 
-use function Smi\Rooted\Core\render;
+require "../src/Views/partials/head.php";
+require "../src/Views/partials/nav.php";
+require "../src/Views/partials/banner.php";
 
-render("../src/Views/partials/head.php");
-render("../src/Views/partials/nav.php");
-render("../src/Views/partials/banner.php");
 ?>
 
 <main>
@@ -14,5 +13,7 @@ render("../src/Views/partials/banner.php");
 </main>
 
 <?php
-render("../src/Views/partials/footer.php");
+
+require "../src/Views/partials/footer.php";
+
 ?>
