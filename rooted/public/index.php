@@ -3,6 +3,8 @@
 require "../vendor/autoload.php";
 
 use Smi\Rooted\Core\Router;
+use function Smi\Rooted\Core\getMethod;
+use function Smi\Rooted\Core\getUri;
 
 session_start();
 
@@ -11,10 +13,8 @@ session_start();
 //return;
 
 $router = new Router();
-
-$uri = isset($_SERVER["REQUEST_URI"]) ? parse_url($_SERVER["REQUEST_URI"])["path"] : "/";
-
-$method = isset($_POST["_method"]) ? stripslashes($_POST["_method"]) : $_SERVER["REQUEST_METHOD"];
+$uri = getUri();
+$method = getMethod();
 
 try {
     $router->route($uri, $method);
