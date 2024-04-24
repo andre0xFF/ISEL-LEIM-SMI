@@ -5,6 +5,7 @@ require_once "../vendor/autoload.php";
 use Smi\Rooted\Core\Router;
 use function Smi\Rooted\Core\getMethod;
 use function Smi\Rooted\Core\getUri;
+use function Smi\Rooted\Core\redirect;
 
 session_start();
 

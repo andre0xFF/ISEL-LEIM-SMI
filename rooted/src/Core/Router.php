@@ -78,7 +78,7 @@ class Router
     /**
      * Route the request to the appropriate controller.
      */
-    public function route($uri, $method): void
+    public function route(string $uri, string $method): void
     {
         foreach ($this->routes as $route) {
             if ($route["uri"] === $uri && $route["http_method"] === strtoupper($method)) {

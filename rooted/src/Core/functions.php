@@ -20,7 +20,7 @@ function render($templatePath, $variables = []): void
 function getMethod()
 {
     // return filter_input_array(INPUT_POST, ['_method']) ?? filter_input(INPUT_SERVER, 'REQUEST_METHOD');
-    return $_POST["_method"] ?? $_SERVER["REQUEST_METHOD"];
+    return $_POST["_method"] ?? $_SERVER["REQUEST_METHOD"] ?? "GET";
 }
 
 function getUri()
