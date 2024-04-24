@@ -12,12 +12,13 @@ class Router
     /**
      * Add a new route.
      */
-    public function addRoute($method, $uri, $controller, Middleware $middleware = null): void
+    public function addRoute(string $http_method, string $uri, $controller_class, string $controller_method = null, Middleware $middleware = null): void
     {
         $this->routes[] = [
-            "uri" => $uri,
-            "controller" => $controller,
-            "method" => $method,
+            "uri" => strtoupper($uri),
+            "http_method" => $http_method,
+            "controller_class" => $controller_class,
+            "controller_method" => $controller_method,
             "middleware" => $middleware
         ];
     }
@@ -25,41 +26,41 @@ class Router
     /**
      * Register a new GET route.
      */
-    public function get($uri, $controller, Middleware $middleware = null): void
+    public function get(string $uri, $controller_class, string $controller_method = null, Middleware $middleware = null): void
     {
-        $this->addRoute("GET", $uri, $controller, $middleware);
+        $this->addRoute("GET", $uri, $controller_class, $controller_method, $middleware);
     }
 
     /**
      * Register a new POST route.
      */
-    public function post($uri, $controller, Middleware $middleware = null): void
+    public function post(string $uri, callable $controller_class, string $controller_method = null, Middleware $middleware = null): void
     {
-        $this->addRoute("POST", $uri, $controller, $middleware);
+        $this->addRoute("POST", $uri, $controller_class, $controller_method, $middleware);
     }
 
     /**
      * Register a new DELETE route.
      */
-    public function delete($uri, $controller, Middleware $middleware = null): void
+    public function delete(string $uri, callable $controller_class, string $controller_method = null, Middleware $middleware = null): void
     {
-        $this->addRoute("DELETE", $uri, $controller, $middleware);
+        $this->addRoute("DELETE", $uri, $controller_class, $controller_method, $middleware);
     }
 
     /**
      * Register a new PATCH route.
      */
-    public function patch($uri, $controller, Middleware $middleware = null): void
+    public function patch(string $uri, callable $controller_class, string $controller_method = null, Middleware $middleware = null): void
     {
-        $this->addRoute("PATCH", $uri, $controller, $middleware);
+        $this->addRoute("PATCH", $uri, $controller_class, $controller_method, $middleware);
     }
 
     /**
      * Register a new PUT route.
      */
-    public function put($uri, $controller, Middleware $middleware = null): void
+    public function put(string $uri, callable $controller_class, string $controller_method = null, Middleware $middleware = null): void
     {
-        $this->addRoute("PUT", $uri, $controller, $middleware);
+        $this->addRoute("PUT", $uri, $controller_class, $controller_method, $middleware);
     }
 
     /**
@@ -80,9 +81,19 @@ class Router
     public function route($uri, $method): void
     {
         foreach ($this->routes as $route) {
-            if ($route["uri"] === $uri && $route["method"] === strtoupper($method)) {
+            if ($route["uri"] === $uri && $route["http_method"] === strtoupper($method)) {
                 $route["middleware"]?->handle();
-                $route["controller"]->handle();
+
+                $controller = new $route["controller_class"]();
+
+                // If the route has a specific controller method, call it. Otherwise, call the handle method on the controller.
+                if (isset($route["controller_method"])) {
+                    $method = $route["controller_method"];
+
+                    $controller->$method();
+                } else {
+                    $controller->handle($uri, $method);
+                }
             }
         }
 
