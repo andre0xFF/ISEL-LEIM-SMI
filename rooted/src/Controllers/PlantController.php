@@ -11,4 +11,29 @@ class PlantController implements Controller
     {
         // TODO: Implement handle() method.
     }
+
+    public function getPlant()
+    {
+
+    }
+
+    public function getPlants()
+    {
+
+    }
+
+    public function createPlant()
+    {
+
+    }
+
+    public function updatePlant()
+    {
+
+    }
+
+    public function deletePlant()
+    {
+
+    }
 }

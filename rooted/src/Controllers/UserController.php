@@ -11,4 +11,29 @@ class UserController implements Controller
     {
         // TODO: Implement handle() method.
     }
+
+    public function getUser(): void
+    {
+
+    }
+
+    public function getUsers(): void
+    {
+
+    }
+
+    public function createUser(): void
+    {
+
+    }
+
+    public function updateUser(): void
+    {
+
+    }
+
+    public function deleteUser(): void
+    {
+
+    }
 }
