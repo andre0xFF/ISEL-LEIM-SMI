@@ -34,7 +34,7 @@ class Router
     /**
      * Register a new POST route.
      */
-    public function post(string $uri, callable $controller_class, string $controller_method = null, Middleware $middleware = null): void
+    public function post(string $uri, $controller_class, string $controller_method = null, Middleware $middleware = null): void
     {
         $this->addRoute("POST", $uri, $controller_class, $controller_method, $middleware);
     }
@@ -42,7 +42,7 @@ class Router
     /**
      * Register a new DELETE route.
      */
-    public function delete(string $uri, callable $controller_class, string $controller_method = null, Middleware $middleware = null): void
+    public function delete(string $uri, $controller_class, string $controller_method = null, Middleware $middleware = null): void
     {
         $this->addRoute("DELETE", $uri, $controller_class, $controller_method, $middleware);
     }
@@ -50,7 +50,7 @@ class Router
     /**
      * Register a new PATCH route.
      */
-    public function patch(string $uri, callable $controller_class, string $controller_method = null, Middleware $middleware = null): void
+    public function patch(string $uri, $controller_class, string $controller_method = null, Middleware $middleware = null): void
     {
         $this->addRoute("PATCH", $uri, $controller_class, $controller_method, $middleware);
     }
@@ -58,7 +58,7 @@ class Router
     /**
      * Register a new PUT route.
      */
-    public function put(string $uri, callable $controller_class, string $controller_method = null, Middleware $middleware = null): void
+    public function put(string $uri, $controller_class, string $controller_method = null, Middleware $middleware = null): void
     {
         $this->addRoute("PUT", $uri, $controller_class, $controller_method, $middleware);
     }
