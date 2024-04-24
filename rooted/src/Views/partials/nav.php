@@ -1,6 +1,6 @@
 <?php
 
-use function Smi\Rooted\Core\uriIs;
+use function Smi\Rooted\Core\isUriMatch;
 
 ?>
 <nav class="bg-gray-800">
@@ -15,15 +15,15 @@ use function Smi\Rooted\Core\uriIs;
                     <div class="ml-10 flex items-baseline space-x-4">
                         <!-- Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" -->
                         <a href="/"
-                           class="<?= uriIs('/') ? 'bg-gray-900 text-white' : 'text-gray-300' ?> hover:bg-gray-700 px-3 py-2 rounded-md text-sm font-medium">Home</a>
+                           class="<?= isUriMatch('/') ? 'bg-gray-900 text-white' : 'text-gray-300' ?> hover:bg-gray-700 px-3 py-2 rounded-md text-sm font-medium">Home</a>
                         <a href="/about"
-                           class="<?= uriIs('/about') ? 'bg-gray-900 text-white' : 'text-gray-300' ?> hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">About</a>
+                           class="<?= isUriMatch('/about') ? 'bg-gray-900 text-white' : 'text-gray-300' ?> hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">About</a>
                         <?php if ($_SESSION['user'] ?? false) : ?>
                             <a href="/notes"
-                               class="<?= uriIs('/notes') ? 'bg-gray-900 text-white' : 'text-gray-300' ?> hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Notes</a>
+                               class="<?= isUriMatch('/notes') ? 'bg-gray-900 text-white' : 'text-gray-300' ?> hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Notes</a>
                         <?php endif ?>
                         <a href="/contact"
-                           class="<?= uriIs('/contact') ? 'bg-gray-900 text-white' : 'text-gray-300' ?> hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Contact</a>
+                           class="<?= isUriMatch('/contact') ? 'bg-gray-900 text-white' : 'text-gray-300' ?> hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Contact</a>
                     </div>
                 </div>
             </div>
@@ -64,9 +64,9 @@ use function Smi\Rooted\Core\uriIs;
                     <?php else : ?>
                         <div class="ml-3">
                             <a href="/register"
-                               class="<?= uriIs('/register') ? 'bg-gray-900 text-white' : 'text-gray-300' ?> hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Register</a>
+                               class="<?= isUriMatch('/register') ? 'bg-gray-900 text-white' : 'text-gray-300' ?> hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Register</a>
                             <a href="/login"
-                               class="<?= uriIs('/login') ? 'bg-gray-900 text-white' : 'text-gray-300' ?> hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Log
+                               class="<?= isUriMatch('/login') ? 'bg-gray-900 text-white' : 'text-gray-300' ?> hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Log
                                 In</a>
                         </div>
                     <?php endif ?>

@@ -2,7 +2,7 @@
 
 namespace Smi\Rooted\Core;
 
-function redirect($path)
+function redirect($path): void
 {
     header("location: {$path}");
     // exit();
@@ -29,7 +29,7 @@ function getUri()
     return isset($_SERVER["REQUEST_URI"]) ? parse_url($_SERVER["REQUEST_URI"])["path"] : "/";
 }
 
-function uriIs(string $value): bool
+function isUriMatch(string $value): bool
 {
     return getUri() === $value;
 }
