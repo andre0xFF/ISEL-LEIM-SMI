@@ -100,6 +100,21 @@ Uma comunidade social onde os entusiastas e praticantes de jardinagem podem inte
 
 O website será desenvolvido a partir de um CMS a ser desenvolvido em PHP recorrendo à framework open-source Laravel. Baseado na arquitectura model-view-controller (MVC), que separa dados da aplicação, interface de utilizador e lógica do domínio em três componentes distintas, é uma das mais populares frameworks da actualidade devido às suas excelentes características que facilitam o desenvolvimento web tais como: linguagem expressiva e elegante, interface da linha de comandos capaz de gerir migrações das bases de dados, query builder que permite efectuar queries sem ser necessário escrever SQL queries directamente, um sofisticado object-relational mapping (ORM) mapping que permite impor restrições entre os objectos da base de dados e o seu relacionamento, controladores RESTful que oferecem a opção de separar a lógica entre pedidos GET e POST, reverse routing permitindo definir as rotas e links e alterar os links posteriormente com maior facilidade.
 
+# Análise Comparativa
+
+| Funcionalidade | Django CMS | October CMS | WordPress | Proposta (Laravel) |
+| :--- | :--- | :--- | :--- | :--- |
+| **Tecnologia** | Python | PHP (Laravel) | PHP | PHP (Laravel) |
+| **Gestão de Perfis de Utilizador** | Sim (Nativo) | Sim (Nativo) | Sim (Plugins) | A desenvolver |
+| **Partilha de Conteúdo Multimédia** | Sim | Sim | Sim | A desenvolver |
+| **Categorias (Principais/Secundárias)**| Sim (Nativo) | Sim (Nativo) | Sim (Plugins) | A desenvolver |
+| **Pesquisa por Meta-informação** | Sim | Sim | Sim | A desenvolver |
+| **Notificações por Email** | Sim (Extensões) | Sim (Plugins) | Sim (Plugins) | A desenvolver |
+| **Upload em Lote (ZIP)** | Requer desenvolvimento | Requer desenvolvimento | Sim (Plugins) | A desenvolver |
+| **Criação de RSS Feeds** | Sim (Nativo) | Sim (Plugins) | Sim (Nativo) | A desenvolver |
+| **Integração com Redes Sociais** | Sim (Extensões) | Sim (Plugins) | Sim (Plugins) | A desenvolver |
+| **API para Web Services (Ex: Mapa)** | Sim | Sim | Sim | A desenvolver |
+
 # Conclusões
 
 Após esta análise é possível observar algumas características que no geral todos os CMS têm em comum, nomeadamente interface gráfica amigável e fácil de utilizar, capacidade de criação de conteúdo e edição do mesmo, gestão do fluxo de trabalho, gestão de permissões por parte dos utilizadores, mecanismos de procura e filtragem de conteúdos de multimédia e opções de customização, permitindo assim aos utilizadores flexibilidade e eficiência na gestão dos seus conteúdos multimédia que por sua vez leva a uma melhor qualidade e consistência dos mesmos.
