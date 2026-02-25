@@ -28,7 +28,9 @@ Professor Carlos Gonçalves
 
 [**4\. Proposta de Desenvolvimento de um Content Management System 6**](#_6j0wsis91wg)
 
-[**5\. Conclusões 7**](#_pys4f8qlc6se)
+[**5\. Análise Comparativa 7**](#_ac3l1s3c0mp)
+
+[**6\. Conclusões 7**](#_pys4f8qlc6se)
 
 
 # Introdução
