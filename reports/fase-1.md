@@ -41,7 +41,7 @@ Em termos mais concretos é implementado através de um CMS um sítio que permit
 
 O sistema possui 4 perfis de utilizadores: com diferentes níveis de acesso e permissão, para o armazenamento de dados (conteúdos multimédia) é utilizado o sistema de gestão de ficheiros e um sistema de base de dados para o armazenamento da informação sobre os conteúdos e definições do sistema.
 
-O relatório apresenta uma análise das funcionalidades de diferentes de Content Management Systems (CMS) e web services, com especial foco na linguagem de programação PHP. No que diz respeito aos CMS, serão apresentadas as soluções do Django, October e WordPress, destacando as suas características e funcionalidades. Será também proposta a criação de um CMS para um projeto específico relacionado com jardinagem, utilizando a framework Laravel. Serão abordados os princípios dos CMS, web services, assim como as características e vantagens de cada uma das soluções apresentadas.
+O relatório apresenta uma análise das funcionalidades de diferentes Content Management Systems (CMS) e web services, com especial foco na linguagem de programação PHP. No que diz respeito aos CMS, serão apresentadas as soluções do Django, October e WordPress, destacando as suas características e funcionalidades. Será também proposta a criação de um CMS para um projeto específico relacionado com jardinagem, implementado de raiz em PHP para garantir o controlo total sobre a arquitetura e componentes do sistema. Serão abordados os princípios dos CMS, web services, assim como as características e vantagens de cada uma das soluções apresentadas.
 
 
 # Princípios
@@ -98,22 +98,22 @@ Rooted é um sítio da Internet onde os utilizadores encontram tudo o que é nec
 
 Uma comunidade social onde os entusiastas e praticantes de jardinagem podem interagir, pedir ajuda e partilhar experiências.
 
-O website será desenvolvido a partir de um CMS a ser desenvolvido em PHP recorrendo à framework open-source Laravel. Baseado na arquitectura model-view-controller (MVC), que separa dados da aplicação, interface de utilizador e lógica do domínio em três componentes distintas, é uma das mais populares frameworks da actualidade devido às suas excelentes características que facilitam o desenvolvimento web tais como: linguagem expressiva e elegante, interface da linha de comandos capaz de gerir migrações das bases de dados, query builder que permite efectuar queries sem ser necessário escrever SQL queries directamente, um sofisticado object-relational mapping (ORM) mapping que permite impor restrições entre os objectos da base de dados e o seu relacionamento, controladores RESTful que oferecem a opção de separar a lógica entre pedidos GET e POST, reverse routing permitindo definir as rotas e links e alterar os links posteriormente com maior facilidade.
+O website será desenvolvido a partir de um CMS implementado de raiz em PHP, sem recurso a frameworks de alto nível, de modo a consolidar os conhecimentos sobre a infraestrutura da linguagem. A aplicação focará na implementação manual de mecanismos fundamentais como a gestão de sessões e autenticação através de variáveis globais (`$_SESSION`), interação direta com a base de dados MySQL utilizando a extensão PDO para garantir segurança contra injeções de SQL, e a estruturação da lógica de negócio de forma a separar a apresentação (HTML) do processamento de dados. Esta abordagem permitirá um controlo total sobre o fluxo da aplicação e a implementação customizada dos requisitos específicos do projeto, como o processamento de ficheiros ZIP e XML e a integração com Web Services externos.
 
 # Análise Comparativa
 
-| Funcionalidade | Django CMS | October CMS | WordPress | Proposta (Laravel) |
+| Funcionalidade | Django CMS | October CMS | WordPress | Proposta (Custom PHP) |
 | :--- | :--- | :--- | :--- | :--- |
-| **Tecnologia** | Python | PHP (Laravel) | PHP | PHP (Laravel) |
-| **Gestão de Perfis de Utilizador** | Sim (Nativo) | Sim (Nativo) | Sim (Plugins) | A desenvolver |
-| **Partilha de Conteúdo Multimédia** | Sim | Sim | Sim | A desenvolver |
-| **Categorias (Principais/Secundárias)**| Sim (Nativo) | Sim (Nativo) | Sim (Plugins) | A desenvolver |
-| **Pesquisa por Meta-informação** | Sim | Sim | Sim | A desenvolver |
-| **Notificações por Email** | Sim (Extensões) | Sim (Plugins) | Sim (Plugins) | A desenvolver |
-| **Upload em Lote (ZIP)** | Requer desenvolvimento | Requer desenvolvimento | Sim (Plugins) | A desenvolver |
-| **Criação de RSS Feeds** | Sim (Nativo) | Sim (Plugins) | Sim (Nativo) | A desenvolver |
-| **Integração com Redes Sociais** | Sim (Extensões) | Sim (Plugins) | Sim (Plugins) | A desenvolver |
-| **API para Web Services (Ex: Mapa)** | Sim | Sim | Sim | A desenvolver |
+| **Tecnologia** | Python | PHP (Laravel) | PHP | PHP (Vanilla) |
+| **Gestão de Perfis de Utilizador** | Sim (Nativo) | Sim (Nativo) | Sim (Plugins) | Implementação via `$_SESSION` e PDO |
+| **Partilha de Conteúdo Multimédia** | Sim | Sim | Sim | Sistema de Ficheiros e Metadados BD |
+| **Categorias (Principais/Secundárias)**| Sim (Nativo) | Sim (Nativo) | Sim (Plugins) | Tabelas Relacionais em MySQL |
+| **Pesquisa por Meta-informação** | Sim | Sim | Sim | Consultas SQL customizadas |
+| **Notificações por Email** | Sim (Extensões) | Sim (Plugins) | Sim (Plugins) | Integração SMTP / PHP Mail |
+| **Upload em Lote (ZIP)** | Requer desenvolvimento | Requer desenvolvimento | Sim (Plugins) | Bibliotecas `ZipArchive` e `SimpleXML` |
+| **Criação de RSS Feeds** | Sim (Nativo) | Sim (Plugins) | Sim (Nativo) | Geração manual de XML/RSS |
+| **Integração com Redes Sociais** | Sim (Extensões) | Sim (Plugins) | Sim (Plugins) | Meta-tags e APIs de Partilha |
+| **API para Web Services (Ex: Mapa)** | Sim | Sim | Sim | Consumo de APIs via cURL/JSON |
 
 # Conclusões
 
