@@ -1,0 +1,7 @@
+AuthType Basic
+AuthName "Authentication HTTP - Basic"
+AuthUserFile "/examples-php/07-Auth/.htauth-basic.pw"
+
+Require valid-user
+
+Options Indexes

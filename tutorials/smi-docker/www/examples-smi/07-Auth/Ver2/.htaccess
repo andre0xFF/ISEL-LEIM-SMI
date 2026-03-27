@@ -1,0 +1,10 @@
+AuthType Digest
+AuthName "Authentication HTTP - Digest"
+AuthDigestProvider file
+AuthUserFile "/examples-php/07-Auth/.htauth-digest.pw"
+
+AuthDigestAlgorithm MD5
+
+Require valid-user
+
+Options Indexes

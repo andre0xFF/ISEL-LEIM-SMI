@@ -262,3 +262,12 @@ poetry.toml
 pyrightconfig.json
 
 # End of https://www.toptal.com/developers/gitignore/api/pycharm+all,python
+/tutorials/smi-docker/.claude/settings.local.json
+/tutorials/smi-docker/.idea/inspectionProfiles/Project_Default.xml
+/tutorials/smi-docker/.idea/libraries/Example.xml
+/tutorials/smi-docker/.idea/.gitignore
+/tutorials/smi-docker/.idea/dataSources.xml
+/tutorials/smi-docker/.idea/misc.xml
+/tutorials/smi-docker/.idea/modules.xml
+/tutorials/smi-docker/.idea/php.xml
+/tutorials/smi-docker/.idea/smi-docker.iml

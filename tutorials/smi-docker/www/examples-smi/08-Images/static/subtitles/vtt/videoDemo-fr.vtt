@@ -1,0 +1,23 @@
+WEBVTT
+
+0
+00:00:00.500 --> 00:00:01.500
+<v Test>[Test]</v>
+
+NOTE This is a comment and must be preceded by a blank line
+
+1
+00:00:02.000 --> 00:00:05.000
+Ce qui vous amène au <i><b>pays</b></i> des gardiens?
+
+2
+00:00:07.500 --> 00:00:12.500
+Je cherche quelqu'un.
+
+3
+00:00:13.500 --> 00:00:15.000
+Une quête dangereuse pour un chasseur solitaire...
+
+4
+00:00:15.250 --> 00:00:17.300
+Merci.

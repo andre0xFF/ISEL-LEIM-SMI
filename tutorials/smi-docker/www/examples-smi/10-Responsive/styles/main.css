@@ -1,0 +1,107 @@
+body {
+	font-family:		Verdana;
+	color:				#F1CB15
+}
+
+* {
+	box-sizing:			border-box;
+}
+
+h1 {
+	font-size:			7.5vh;
+}
+
+h2 {
+	font-size:			5.5vh;
+}
+
+.contents {
+	border:				0;
+	overflow-x:			hidden;
+	overflow-Y:			hidden;
+	width:				100%;
+	height:				100%;
+	
+	overflow:			hidden;
+}
+	
+.menuitem {
+	background-color:	rgba(179, 81, 12, 0.58);
+	padding:			8px;
+	margin-top:			7px;
+	border-radius:		8px;
+}
+		
+#top {
+	background-color:	#B3510C;
+	padding:			1px;
+	text-align:			center; 
+	border-radius:		8px;
+	
+	height:				15vh;
+}
+
+#menu {
+	float:				left;
+	width:				20%;
+	text-align:			center;
+}
+	
+#main {
+	float:				left;
+	padding:			0 20px;
+	width:				58%;
+	margin:				1%;
+	
+	height:				65vh;
+}
+		
+#right {
+	background-color:	rgba(179, 81, 12, 0.78);
+	float:				left;
+	width:				20%;
+	padding:			15px;
+	margin-top:			7px;
+	text-align:			center;
+	border-radius:		8px;
+}
+
+#bottom {
+	background-color:	rgb(245, 172, 8);
+	color:				#B3510C;
+	text-align:			center;
+	padding:			10px;
+	margin-top:			7px; 
+	border-radius:		8px;
+	
+	height:				10vh;
+}
+		
+#MMR {
+	/* show scrollbar if necessary */
+	overflow:			auto;
+}
+
+/* For medium devices: */
+@media  (max-width:800px) {
+	#main {
+		width: 			78%;
+		margin: 		1%;
+	}
+	#right {
+		width: 			100%;
+	}
+}
+		
+/* For small devices: */
+@media (max-width: 600px) {
+	#menu, #main {
+		width:			98%;
+		margin:			1%;
+	}
+			
+	.menuitem {
+		display: 		inline-block;
+		min-width: 		80px;
+	}
+}

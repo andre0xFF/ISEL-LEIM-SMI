@@ -1,0 +1,31 @@
+#containerDiv {
+}
+
+#headerDiv {
+    float: left;
+}
+    
+#menuDiv {
+    padding-left: 10px;
+    float: left;
+}
+
+#contentDiv {
+    float: left;
+}
+
+#footerDiv {
+    float: left;
+}
+
+iframe {
+    border: none;
+}
+
+p.contents {
+    margin-left: 2em;
+}
+
+p.comments {
+    margin-left: 4em;
+}

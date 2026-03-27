@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ServiceLocations>
+    <Description>Existing Services</Description>
+    <Locations>
+		<ServiceLocation>Locais</ServiceLocation>
+		<ServiceLocation>http://host.docker.internal:8080/temperatura?WSDL</ServiceLocation>
+		<ServiceLocation>http://host.docker.internal:8081/?WSDL</ServiceLocation>
+		<ServiceLocation>External</ServiceLocation>
+		<ServiceLocation>https://www.crcind.com/csp/samples/SOAP.Demo.CLS?WSDL=1</ServiceLocation>
+		<ServiceLocation>https://www.dataaccess.com/webservicesserver/TextCasing.wso?WSDL</ServiceLocation>
+		<ServiceLocation>https://www.dataaccess.com/webservicesserver/NumberConversion.wso?WSDL</ServiceLocation>
+		<ServiceLocation>http://www.gcomputer.net/webservices/dilbert.asmx?WSDL</ServiceLocation>        
+    </Locations>
+</ServiceLocations>

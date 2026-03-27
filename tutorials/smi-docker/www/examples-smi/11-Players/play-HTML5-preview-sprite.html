@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv='Content-Type' content='text/html; charset=utf-8'>
+		
+        <title>Play video using HTML5</title>
+
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        
+        <link rel="stylesheet" type="text/css" href="../Styles/GlobalStyle.css">
+        <link rel="stylesheet" type="text/css" href="./Styles/Videos.css">
+        
+        <script type="text/javascript" src="./Scripts/Videos.js" >
+        </script>
+    </head>
+
+    <body onload="onLoadGeneratedVTT()">
+	
+        <h1>Player with HTML5 with Thumb Preview using Sprite</h1>
+        
+        <div class="DBGVideoContainer MyVideoContainer">
+            <div class="DBGVideoPlayer MyVideoPlayer">
+                <video id="TheVideo" width="640" height="480" poster="./Videos/Posters/BigBuckBunny.png" controls >
+                    <source src="./Videos/BigBuckBunny.mp4" type="video/mp4" />
+                    <track 
+                        label="Português"
+                        kind="subtitles"
+                        srclang="pt"
+                        src="./VTT/Subtitles/BigBuckBunny-pt.vtt" default>
+                    Your browser does not support HTML5 Video Tag
+                </video>
+            </div>
+            
+            <div class="MyVideoThumbPreview" id="TheVideoThumbPreview">Thumb Preview</div>
+
+        </div>
+        
+        <p><a href='javascript:history.back()'>Back</a></p>
+
+    </body>
+
+</html>

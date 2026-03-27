@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<Class>
+  <Student>
+    <Name>Carlos</Name>
+    <Filiation>
+      <Father>Father's Carlos</Father>
+      <Mother>Mother's Carlos</Mother>
+    </Filiation>
+    <Filiation>
+      <Father>Second Father's Carlos</Father>
+      <Mother>Second Mother's Carlos</Mother>
+    </Filiation>
+    <ic date="1/1/2012" city="lisboa">123456</ic>
+    <email>123456@alunos.isel.pt</email>
+  </Student>
+  
+  <Student>
+    <Name>Jorge</Name>
+    <Filiation>
+      <Father>Father's Jorge</Father>
+      <Mother>Mother's Jorge</Mother>
+    </Filiation>    
+    <ic date="1/1/2011" city="lisboa">234567</ic>
+    <email>234567@alunos.isel.pt</email>
+  </Student>
+
+  <Student>
+    <Name>Other Student</Name>
+    <Filiation>
+      <Father>father</Father>
+      <Mother>mother</Mother>
+    </Filiation>
+    <ic date="1/1/1963" city="porto">56</ic>
+    <email>156@alunos.isel.pt</email>
+  </Student>
+
+</Class>

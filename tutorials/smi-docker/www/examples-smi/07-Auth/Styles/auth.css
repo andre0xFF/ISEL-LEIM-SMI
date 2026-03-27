@@ -1,0 +1,41 @@
+.divPlaceHolderMain {
+    height:         90%;
+    width:          90%;
+    
+    margin:         auto;
+    
+    text-align:     center;
+}
+
+.divPlaceHolder {
+    /*border:         1px solid black;*/
+    box-sizing:     border-box; 
+    padding:        0px;
+}
+
+.divPlaceHolderHeader {
+    height:         150px;
+}
+
+.divPlaceHolderMenu {
+    height:         450px;
+    width:          100%;
+    
+    width:          24%;
+    float:          left;
+}
+
+.divPlaceHolderContents {
+    height:         450px;
+    
+    width:          73%;
+    float:          right;
+}
+
+.menuItemL1 {
+    margin-left:    12px;
+}
+
+.menuItemL2 {
+    margin-left:    24px;
+}
