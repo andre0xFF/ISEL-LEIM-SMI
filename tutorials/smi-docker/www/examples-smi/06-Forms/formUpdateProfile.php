@@ -8,7 +8,7 @@
     
     <link REL="stylesheet" TYPE="text/css" href="../Styles/GlobalStyle.css">
 
-    <script type="text/javascript" src="vars.php">
+    <script type="text/javascript" src="varsProfile.php">
     </script>
     
     <script type="text/javascript" src="scripts/forms.js?v=20260328">

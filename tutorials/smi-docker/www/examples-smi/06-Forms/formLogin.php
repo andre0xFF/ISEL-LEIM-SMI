@@ -11,8 +11,8 @@
          
         <link rel="stylesheet" type="text/css" href="../Styles/GlobalStyle.css">
 
-        <script type="text/javascript" src="scripts/forms.js">
-        </script>
+        <script type="text/javascript" src="varsLogin.php"></script>
+        <script type="text/javascript" src="scripts/forms.js?v=20260328"></script>
     </head>
 
     <body>

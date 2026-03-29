@@ -1,5 +1,5 @@
 <?php
-  require_once( "vars.php" );
+  require_once("varsProfile.php");
 
 ?>
 

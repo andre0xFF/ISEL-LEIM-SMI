@@ -1,16 +1,16 @@
 // Check to see if e-mail isn't blank and is well formed
 // Read more at http://www.marketingtechblog.com/javascript-regex-emailaddress/#ixzz1p1ZDMNZe
-var filter;
-filter = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,3})$/;
+//var filter;
+//filter = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,3})$/;
 //filter = /^([a-z0-9_\.\-])+\@(([a-z0-9\-])+\.)+([a-z0-9]{2,4})$/i;
 
-var nameFilter = /^[a-zA-ZÀ-ÿ\s]{1,50}$/;
-
-//var aliasFilter = /^[a-zA-Z0-9_ ]{3,15}$/;
-//var passwordFilter = /^(?=.*[A-Za-z])(?=.*\d).{6,15}$/;
 
 var aliasFilter = new RegExp(window.formPatterns.alias);
 var passwordFilter = new RegExp(window.formPatterns.password);
+
+var nameFilter = new RegExp(window.formPatterns.name)
+
+var emailFilter = new RegExp(window.formPatterns.email)
 
 // Validate the login form
 function FormLoginValidator(theForm) {
@@ -23,7 +23,7 @@ function FormLoginValidator(theForm) {
     return false;
   }
   
-  if ( !filter.test( theForm.email.value.trim() ) ) {
+  if ( !emailFilter.test( theForm.email.value.trim() ) ) {
     alert('Please provide a valid e-mail address');
     theForm.email.focus();
     return false;
