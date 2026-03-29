@@ -13,7 +13,7 @@ header( 'Content-Type: text/html; charset=utf-8' );
 <?php
 require_once( "../Lib/lib.php" );
 require_once("../Lib/db.php");
-require_once( "vars.php" );
+require_once( "regex.php" );
 
 
 $method = $_SERVER[ 'REQUEST_METHOD' ];
@@ -57,9 +57,6 @@ if($queryResult){
 dbDisconnect();
 
 
-$aliasFilter = "/^[a-zA-Z0-9_ ]{3,15}$/";
-$passFilter = "/^(?=.*[A-Za-z])(?=.*\d).{6,15}$/";
-
 
 $alias = trim((string)(isset($_ARGS['alias']) ? $_ARGS['alias'] : ''));
 $password = trim((string)(isset($_ARGS['password']) ? $_ARGS['password'] : ''));
@@ -70,19 +67,44 @@ $zip = trim((string)(isset($_ARGS['zip']) ? $_ARGS['zip'] : ''));
 $comments = trim((string)(isset($_ARGS['comments']) ? $_ARGS['comments'] : ''));
 
 
-if(
-        !preg_match($aliasFilter, $alias) ||
-        !preg_match($passFilter, $password) ||
-        !in_array($age, array('R1', 'R2', 'R3', 'R4'), true) ||
-        $district === '' ||
-        $county === '' ||
-        $zip === '' ||
-        strlen($comments) > 200
+    $errors = array();
 
-){
-    echo "Invalid data";
-    exit();
-}
+
+    if(!preg_match(toPhpRegex(ALIAS_REGEX), $alias)){
+        $errors[] = "Alias must have 3 to 15 letters, numbers or underscore";
+    }
+
+    if(!preg_match(toPhpRegex(PASS_REGEX), $password)){
+        $errors[] ="Password must be between 6 and 15 chars, letters and number.";
+    }
+
+    if(!in_array($age, array('R1', 'R2', 'R3', 'R4'), true)){
+        $errors[] = "You must select an age range.";
+    }
+
+    if($district === ''){
+        $errors[] = "You must select a district";
+    }
+
+    if($county === ''){
+        $errors[] = "You must select a county.";
+    }
+
+    if($zip === ''){
+        $errors[] = "You must select a zip-code";
+    }
+
+    if(strlen($comments) > 200){
+        $errors[] = "Comment must be a max of 200 characters.";
+    }
+
+    if(!empty($errors)){
+        foreach ($errors as $error){
+            echo $error . "<br>\n";
+        }
+        exit();
+
+    }
 
 if ( isset($_ARGS['alias']) ) {
   echo "Alias: " . $_ARGS['alias'] . "<br>\n";
@@ -130,7 +152,7 @@ function handleFile($fileData, $dest) {
     $localName = $fileData['tmp_name'];
 
     // Original name of the file that was uploaded
-    $sourceName = $fileData['name'];
+    $sourceName = basename($fileData['name']);
 
     // Directory where the file will be placed
     // Change to read from data base settings
@@ -145,8 +167,10 @@ function handleFile($fileData, $dest) {
     echo "Destination directory: $dest<br>\n";
     echo "Full destination name: $destName<br>\n";
 
-    if ( copy( $localName, $destName) ) {
-      unlink( $localName );
+   /* if ( copy( $localName, $destName) ) {
+      unlink( $localName );*/
+
+      if(move_uploaded_file($localName, $destName)){
 
       $destName = addslashes( $destName );
       echo "Destination name with slashes: $destName<br>\n";

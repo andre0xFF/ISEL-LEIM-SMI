@@ -6,8 +6,11 @@ filter = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,3})$/;
 
 var nameFilter = /^[a-zA-ZÀ-ÿ\s]{1,50}$/;
 
-var aliasFilter = /^[a-zA-Z0-9_ ]{3,15}$/;
-var passwordFilter = /^(?=.*[A-Za-z])(?=.*\d).{6,15}$/;
+//var aliasFilter = /^[a-zA-Z0-9_ ]{3,15}$/;
+//var passwordFilter = /^(?=.*[A-Za-z])(?=.*\d).{6,15}$/;
+
+var aliasFilter = new RegExp(window.formPatterns.alias);
+var passwordFilter = new RegExp(window.formPatterns.password);
 
 // Validate the login form
 function FormLoginValidator(theForm) {

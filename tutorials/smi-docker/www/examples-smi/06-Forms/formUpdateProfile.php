@@ -8,14 +8,14 @@
     
     <link REL="stylesheet" TYPE="text/css" href="../Styles/GlobalStyle.css">
 
-    <script type="text/javascript" src="gera.php">
+    <script type="text/javascript" src="vars.php">
     </script>
     
-    <script type="text/javascript" src="scripts/forms.js?v=20260318">
+    <script type="text/javascript" src="scripts/forms.js?v=20260328">
     </script>
   </head>
 
-  <body onLoad="xpto()">
+  <body>
     <form 
       enctype="multipart/form-data"
       action="processFormUpdateProfile.php"
