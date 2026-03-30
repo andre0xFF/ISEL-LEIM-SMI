@@ -1,36 +1,35 @@
 <?php
-    require_once( "../Lib/db.php" );
+    require_once("../Lib/db.php");
 
-    $district = $_GET[ "district" ];
+    $district = $_GET["district"];
 
-    dbConnect( ConfigFile );
+    dbConnect(ConfigFile);
     $dataBaseName = $GLOBALS['configDataBase']->db;
-    mysqli_select_db( $GLOBALS['ligacao'], $dataBaseName );
-    $queryString = 
+    mysqli_select_db($GLOBALS['ligacao'], $dataBaseName);
+    $queryString =
         "SELECT `idCounty`, `nameCounty` FROM `$dataBaseName`.`forms-counties` " .
         "WHERE `idDistrict`=$district";
-    $queryResult = mysqli_query( $GLOBALS['ligacao'], $queryString );
+    $queryResult = mysqli_query($GLOBALS['ligacao'], $queryString);
 
-    if ( $queryResult ) {
-        $result[] = array( 'idCounty'=>0, 'nameCounty'=>"" );
+    if ($queryResult) {
+        $result[] = array('idCounty' => 0, 'nameCounty' => "");
 
         while ($registo = mysqli_fetch_array($queryResult)) {
-            $result[] = array( 
-                'idCounty'=>$registo['idCounty'], 
-                'nameCounty'=>$registo['nameCounty'] );
+            $result[] = array(
+                'idCounty' => $registo['idCounty'],
+                'nameCounty' => $registo['nameCounty']);
         }
-    }
-    else {
-        $errDesc = mysqli_error( $GLOBALS['ligacao'] );
-        $errNumber = mysqli_errno( $GLOBALS['ligacao']  );
+    } else {
+        $errDesc = mysqli_error($GLOBALS['ligacao']);
+        $errNumber = mysqli_errno($GLOBALS['ligacao']);
 
-        $result[] = array( 
-            'idCounty'=>-1, 
-            'nameCounty'=>"No Counties Available" );
-        $result[] = array( 
-            'idCounty'=>-$errNumber, 
-            'nameCounty'=>$errDesc );        
+        $result[] = array(
+            'idCounty' => -1,
+            'nameCounty' => "No Counties Available");
+        $result[] = array(
+            'idCounty' => -$errNumber,
+            'nameCounty' => $errDesc);
     }
     dbDisconnect();
-    echo json_encode( $result );
+    echo json_encode($result);
 ?>

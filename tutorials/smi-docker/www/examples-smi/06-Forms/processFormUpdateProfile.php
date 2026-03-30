@@ -113,7 +113,7 @@ header('Content-Type: text/html; charset=utf-8');
             echo $error . "<br>\n";
         }
 
-        echo "    <p> You will be redirected to the login page in $refreshtime seconds\n";
+        echo "    <p> You will be redirected back to the profile page in $refreshtime seconds\n";
         echo "  </body>\n";
         echo "</html>";
         exit();

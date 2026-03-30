@@ -7,9 +7,7 @@
 
 var aliasFilter = new RegExp(window.formPatterns.alias);
 var passwordFilter = new RegExp(window.formPatterns.password);
-
 var nameFilter = new RegExp(window.formPatterns.name)
-
 var emailFilter = new RegExp(window.formPatterns.email)
 
 // Validate the login form
