@@ -1,19 +1,21 @@
 <?php
 
-require_once "../vendor/autoload.php";
+use Core\Session;
+use Core\ValidationException;
 
-use Smi\Rooted\Core\Router;
-use function Smi\Rooted\Core\getMethod;
-use function Smi\Rooted\Core\getUri;
-use function Smi\Rooted\Core\redirect;
+const BASE_PATH = __DIR__ . "/../";
 
 session_start();
 
-$router = new Router();
-$uri = getUri();
-$method = getMethod();
+require BASE_PATH . "vendor/autoload.php";
+require BASE_PATH . "Core/functions.php";
+require BASE_PATH . "bootstrap.php";
 
-addRoutes($router);
+$router = new \Core\Router();
+require BASE_PATH . "routes.php";
+
+$uri = parse_url($_SERVER["REQUEST_URI"])["path"];
+$method = $_POST["_method"] ?? $_SERVER["REQUEST_METHOD"];
 
 try {
     $router->route($uri, $method);
@@ -21,5 +23,7 @@ try {
     Session::flash("errors", $exception->errors);
     Session::flash("old", $exception->old);
 
-    redirect($router->previousUrl());
+    return redirect($router->previousUrl());
 }
+
+Session::unflash();

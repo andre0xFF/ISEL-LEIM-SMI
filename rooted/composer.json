@@ -1,27 +1,26 @@
 {
-    "name": "smi/rooted",
-    "type": "project",
-    "autoload": {
-        "psr-4": {
-            "Smi\\Rooted\\": "src/"
-        },
-        "files": [
-            "configs/routes.php",
-            "src/Core/functions.php"
-        ]
-    },
-    "authors": [
-        {
-            "name": "André Fonseca",
-            "email": "a39758@alunos.isel.pt"
-        },
-        {
-            "name": "Daniel Santos",
-            "email": "a32078@alunos.isel.pt"
-        }
-    ],
-    "require": {},
-    "scripts": {
-        "start": "php -S localhost:8080 -t public"
+  "name": "smi/rooted",
+  "type": "project",
+  "autoload": {
+    "psr-4": {
+      "Core\\": "Core/",
+      "Http\\": "Http/"
     }
+  },
+  "authors": [
+    {
+      "name": "André Fonseca",
+      "email": "a39758@alunos.isel.pt"
+    },
+    {
+      "name": "Daniel Santos",
+      "email": "a32078@alunos.isel.pt"
+    }
+  ],
+  "require": {
+    "ext-pdo": "*"
+  },
+  "scripts": {
+    "start": "php -S localhost:8080 -t public"
+  }
 }

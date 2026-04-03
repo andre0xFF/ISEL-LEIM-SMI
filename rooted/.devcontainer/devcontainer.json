@@ -1,0 +1,42 @@
+{
+  "name": "Rooted",
+  "dockerComposeFile": "compose.yaml",
+  "service": "app",
+  "workspaceFolder": "/workspace",
+  "forwardPorts": [8080, 3306],
+  "portsAttributes": {
+    "8080": {
+      "label": "PHP Dev Server",
+      "onAutoForward": "notify",
+    },
+    "3306": {
+      "label": "MySQL",
+      "onAutoForward": "silent",
+    },
+  },
+  "postCreateCommand": "composer install",
+  "postStartCommand": "php -S 0.0.0.0:8080 -t public &",
+  "shutdownAction": "stopCompose",
+  "containerEnv": {
+    "DB_HOST": "db",
+    "DB_PORT": "3306",
+    "DB_NAME": "rooted",
+    "DB_USER": "root",
+    "DB_PASSWORD": "root",
+  },
+  "features": {
+    "ghcr.io/devcontainers/features/git:1": {},
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "bmewburn.vscode-intelephense-client",
+        "xdebug.php-debug",
+        "mikestead.dotenv",
+      ],
+      "settings": {
+        "php.validate.executablePath": "/usr/local/bin/php",
+      },
+    },
+  },
+}
