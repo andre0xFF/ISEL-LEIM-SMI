@@ -1,5 +1,13 @@
-# Created by https://www.toptal.com/developers/gitignore/api/phpstorm,jetbrains+all
-# Edit at https://www.toptal.com/developers/gitignore?templates=phpstorm,jetbrains+all
+# Created by https://www.toptal.com/developers/gitignore/api/phpstorm,jetbrains+all,composer
+# Edit at https://www.toptal.com/developers/gitignore?templates=phpstorm,jetbrains+all,composer
+
+### Composer ###
+composer.phar
+/vendor/
+
+# Commit your application's lock file https://getcomposer.org/doc/01-basic-usage.md#commit-your-composer-lock-file-to-version-control
+# You may choose to ignore a library lock file http://getcomposer.org/doc/02-libraries.md#lock-file
+# composer.lock
 
 ### JetBrains+all ###
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio, WebStorm and Rider
@@ -172,4 +180,4 @@ fabric.properties
 # https://plugins.jetbrains.com/plugin/8053-azure-toolkit-for-intellij
 .idea/**/azureSettings.xml
 
-# End of https://www.toptal.com/developers/gitignore/api/phpstorm,jetbrains+all
+# End of https://www.toptal.com/developers/gitignore/api/phpstorm,jetbrains+all,composer
