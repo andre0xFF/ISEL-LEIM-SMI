@@ -440,4 +440,33 @@ function getXdebugArgAsArray() {
   return null;
 }
 
+// inserts new user to database
+function createInactiveUser(string $username, string $password, string $email){
+
+    if ($username === '' || $password === '' || $email === '') {
+        return -1;
+    }
+
+    dbConnect(ConfigFile);
+    $dataBaseName = $GLOBALS['configDataBase']->db;
+    mysqli_select_db($GLOBALS['ligacao'], $dataBaseName);
+    $query =
+        "INSERT INTO `$dataBaseName`.`auth-basic` (`name`, `password`, `email`, `active`)
+"."VALUES ('$username', '$password', '$email', 0)";
+
+    $result = mysqli_query($GLOBALS['ligacao'], $query);
+
+    if($result === false){
+        dbDisconnect();
+        return -1;
+    }
+
+    $idUser = mysqli_insert_id($GLOBALS['ligacao']);
+    dbDisconnect();
+    return $idUser;
+}
+
+
 ?>
+
+

@@ -15,6 +15,7 @@
         echo "Invalid HTTP method (" . $method . ")";
         exit();
     }
+    
     $flags[] = FILTER_NULL_ON_FAILURE;
 
     $username = filter_input( $_INPUT_METHOD, 'username', FILTER_UNSAFE_RAW, $flags);

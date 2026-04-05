@@ -12,6 +12,7 @@
     <body>
         <h1>PHP - Sessions</h1>
 
-        <p align="center"><a href="formLogin.php">login</a></p>
+        <p style="text-align: center"><a href="formLogin.php">login</a></p>
+        <p style="text-align: center"><a href="formRegister.php">Sign-Up</a></p>
     </body>
 </html>
