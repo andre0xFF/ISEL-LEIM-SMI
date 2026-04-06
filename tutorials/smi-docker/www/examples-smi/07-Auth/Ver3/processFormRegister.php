@@ -2,6 +2,7 @@
     require_once( "../../Lib/lib.php" );
     require_once( "../../Lib/db.php" );
     require_once ("../../06-Forms/regex.php");
+    require_once ("../../Lib/lib-mail-v2.php");
 
     $flags[] = FILTER_NULL_ON_FAILURE;
 
@@ -19,17 +20,19 @@
 
     $flags[] = FILTER_NULL_ON_FAILURE;
 
-    $username = trim((string)filter_input($_INPUT_METHOD, "username", FILTER_UNSAFE_RAW, $flags) ?? '');
-    $password = trim(filter_input($_INPUT_METHOD, "password", FILTER_UNSAFE_RAW, $flags) ?? '');
-    $email = trim(filter_input($_INPUT_METHOD, "email", FILTER_SANITIZE_EMAIL, $flags) ?? '');
+    $username = filter_input($_INPUT_METHOD, "username", FILTER_UNSAFE_RAW, $flags);
+    $password = filter_input($_INPUT_METHOD, "password", FILTER_UNSAFE_RAW, $flags);
+    $email = filter_input($_INPUT_METHOD, "email", FILTER_SANITIZE_EMAIL, $flags);
 
-    $serverName = filter_input(INPUT_SERVER, "SERVER_NAME", FILTER_UNSAFE_RAW, $flags);
+    $username = trim($username !== null ? $username: '');
+    $password = trim($password !== null ? $password: '');
+    $email = trim($email !== null ? $email: '');
 
     $serverPort = 8080;
 
     $name = webAppName();
 
-    $baseUrl = "http://" . $serverName . ":" . $serverPort;
+
 
     $errors = array();
 
@@ -60,6 +63,44 @@
         redirectToLastPage("Registration Error", $message, 5);
         exit(0);
     }else{
-        createInactiveUser($username, $password, $email);
+        $idUser = createInactiveUser($username, $password, $email);
+
+        if($idUser <= 0){
+            redirectToLastPage("Registration Error", "Could not create user.",5);
+            exit(0);
+        }
+
+        $token = createActivationToken($idUser);
+        if($token === ''){
+            redirectToLastPage("Registration Error", "Could not create activation token");
+            exit(0);
+        }
+
+
+        $account = getEmailAccountById(2);
+        if($account === null){
+            redirectToLastPage("Registration Error", "No e-mail account configured.", 5);
+            exit(0);
+        }
+        $activationUrl = getCurrentBaseUrl() . "/activateAccount.php?token=".urlencode($token);
+        $subject = "Activate your account";
+        $message = "Hello $username, \n\n"."Please activate your account using this link:\n".
+            $activationUrl."\n\n"."If you did not request this registration, ignore this e-mail.";
+
+        $emailSent = sendAuthEmail($account['smtpServer'],
+            $account["useSSL"], $account['port'], $account['timeout'],
+            $account['loginName'], $account['password'],$account['email'], $account['displayName'],
+            "$username <$email>", null, null, $subject, $message, false, null);
+
+        if(!$emailSent){
+            deleteActivationTokenByUserId($idUser);
+            deleteInactiveUserById($idUser);
+            redirectToLastPage("Registration Error", "Could not send activation e-mail", 5);
+            exit(0);
+        }
+
     }
+
+        header("Location: registerPending.php?email=" . urlencode($email));
+        exit(0);
 

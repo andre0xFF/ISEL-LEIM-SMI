@@ -74,8 +74,8 @@ function redirectToLastPage($title, $message = NULL, $refreshTime = 5) {
     die();
 }
 
-$find;
-$replace;
+//$find;
+//$replace;
 
 function convertToEntities($str) {
     global $find;
@@ -441,7 +441,7 @@ function getXdebugArgAsArray() {
 }
 
 // inserts new user to database
-function createInactiveUser(string $username, string $password, string $email){
+function createInactiveUser($username, $password, $email){
 
     if ($username === '' || $password === '' || $email === '') {
         return -1;
@@ -466,7 +466,216 @@ function createInactiveUser(string $username, string $password, string $email){
     return $idUser;
 }
 
+function createActivationToken($idUser){
 
-?>
+    $token = bin2hex(openssl_random_pseudo_bytes(16));
 
+    dbConnect(ConfigFile);
+    $dataBaseName = $GLOBALS['configDataBase']->db;
+    mysqli_select_db($GLOBALS['ligacao'], $dataBaseName);
+
+    $query = "INSERT INTO `$dataBaseName`.`auth-challenge`(`idUser`, `challenge`, `registerDate`)".
+        "VALUES ('$idUser', '$token', NOW())";
+
+    $result = mysqli_query($GLOBALS['ligacao'], $query);
+
+    dbDisconnect();
+    if($result === false){
+        return '';
+    }
+
+    return $token;
+}
+
+function getEmailAccountById($id){
+
+    if($id <= 0){
+        return null;
+    }
+
+    dbConnect(ConfigFile);
+    $databaseName = $GLOBALS['configDataBase'] -> db;
+    mysqli_select_db($GLOBALS['ligacao'], $databaseName);
+
+    $query = "SELECT * FROM `$databaseName`.`email-accounts` WHERE `id`='$id'";
+    $result = mysqli_query($GLOBALS['ligacao'], $query);
+
+    if($result === false){
+        dbDisconnect();
+        return null;
+    }
+
+    $account = mysqli_fetch_assoc($result);
+    mysqli_free_result($result);
+    dbDisconnect();
+
+    if($account === null){
+        return null;
+    }
+    $account['port'] = (int)$account['port'];
+    $account['timeout'] = (int)$account['timeout'];
+    $account['useSSL'] = (bool)$account['useSSL'];
+    return $account;
+}
+
+function getCurrentBaseUrl(){
+    $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+    $host = $_SERVER['HTTP_HOST'];
+    $dir = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/\\');
+
+    if($dir === '.' || $dir === '/'){
+        $dir = '';
+    }
+
+    return $scheme . '://' . $host . $dir;
+}
+
+function getUserIdByActivationToken($token){
+
+    if($token === null || $token === ''){
+        return null;
+    }
+
+    dbConnect(ConfigFile);
+    $dataBaseName = $GLOBALS['configDataBase'] -> db;
+    mysqli_select_db($GLOBALS['ligacao'], $dataBaseName);
+    $query = "SELECT `idUser` FROM `$dataBaseName`.`auth-challenge` WHERE `challenge`='$token'";
+
+    $result = mysqli_query($GLOBALS['ligacao'], $query);
+
+    if($result === false || mysqli_num_rows($result) == 0){
+        if($result !== false){
+            mysqli_free_result($result);
+        }
+        dbDisconnect();
+        return null;
+    }
+
+    $dataEntry = mysqli_fetch_assoc($result);
+    mysqli_free_result($result);
+    dbDisconnect();
+
+    return intval($dataEntry['idUser']);
+}
+
+function activateUserById($idUser){
+
+    if ($idUser === null) {
+        return null;
+    }
+    dbConnect(ConfigFile);
+    $databaseName = $GLOBALS['configDataBase']->db;
+    mysqli_select_db($GLOBALS['ligacao'], $databaseName);
+
+    $query = "UPDATE `$databaseName`.`auth-basic` SET `active`='1' WHERE `idUser` = '$idUser'";
+    $result = mysqli_query($GLOBALS['ligacao'], $query);
+    dbDisconnect();
+
+    return $result !== false;
+}
+
+
+function deleteActivationTokenByUserId($idUser){
+
+    if($idUser === null || $idUser <= 0){
+        return null;
+    }
+
+    dbConnect(ConfigFile);
+    $databaseName = $GLOBALS['configDataBase'] -> db;
+    mysqli_select_db($GLOBALS['ligacao'], $databaseName);
+
+    $query = "DELETE FROM `$databaseName`.`auth-challenge` WHERE `idUser`= '$idUser'";
+
+    $result = mysqli_query($GLOBALS['ligacao'], $query);
+    dbDisconnect();
+
+    return $result !== false;
+}
+
+function deleteInactiveUserById($idUser){
+
+    if($idUser === null || $idUser <= 0){
+        return null;
+    }
+
+    dbConnect(ConfigFile);
+    $databaseName = $GLOBALS['configDataBase'] -> db;
+    mysqli_select_db($GLOBALS['ligacao'], $databaseName);
+
+    $query = "DELETE FROM `$databaseName`.`auth-basic` WHERE `idUser` = '$idUser' AND `active` = '0'";
+
+    $result = mysqli_query($GLOBALS['ligacao'], $query);
+    dbDisconnect();
+
+    return $result !== false;
+
+}
+
+function assignRoleToUser($idUser, $idRole){
+
+    if($idUser === null || $idUser <= 0){
+        return null;
+    }
+    if($idRole === null || $idRole <= 0){
+        return null;
+    }
+
+    dbConnect(ConfigFile);
+    $databaseName = $GLOBALS['configDataBase'] -> db;
+    mysqli_select_db($GLOBALS['ligacao'], $databaseName);
+
+    $query = "INSERT INTO `$databaseName`.`auth-permissions`(`idRole`, `idUser`) VALUES ('$idRole', '$idUser')";
+
+    $result = mysqli_query($GLOBALS['ligacao'], $query);
+    dbDisconnect();
+
+    return $result !== false;
+}
+
+function getIdRoleByName($roleName){
+
+    if($roleName === null || $roleName === ''){
+        return null;
+    }
+
+    dbConnect(ConfigFile);
+    $databaseName = $GLOBALS["configDataBase"] -> db;
+    mysqli_select_db($GLOBALS['ligacao'], $databaseName);
+
+    $query = "SELECT `idRole` FROM `$databaseName`.`auth-roles` WHERE `friendlyName` = '$roleName'";
+
+    $result = mysqli_query($GLOBALS['ligacao'], $query);
+
+   if($result === false || mysqli_num_rows($result) == 0){
+       if($result !== false){
+           mysqli_free_result($result);
+       }
+       dbDisconnect();
+       return null;
+   }
+   $row = mysqli_fetch_assoc($result);
+   mysqli_free_result($result);
+   dbDisconnect();
+
+   return  intval($row['idRole']);
+
+}
+
+function deactivateUserById($idUser){
+
+    if($idUser <= 0){
+        return null;
+    }
+
+    dbConnect(ConfigFile);
+    $databaseName = $GLOBALS['configDataBase'] -> db;
+    mysqli_select_db($GLOBALS['ligacao'], $databaseName);
+
+    $query = "UPDATE `$databaseName`.`auth-basic` SET `active`='0' WHERE `idUser` = '$idUser'";
+    $result = mysqli_query($GLOBALS['ligacao'], $query);
+    dbDisconnect();
+
+    return $result !== false;
+}
 
