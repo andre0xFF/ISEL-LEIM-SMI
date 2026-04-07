@@ -49,5 +49,6 @@
         //TODO ideally log for admin
     }
 
-    header("Location: formLogin.php");
+    redirectToPage("formLogin.php", "Activation Sucess", "Your account was activated successfully.
+     You will be redirected to the login page.");
     exit(0);

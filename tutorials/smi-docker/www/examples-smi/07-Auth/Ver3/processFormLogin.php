@@ -23,7 +23,7 @@
 
     $serverName = filter_input( INPUT_SERVER, 'SERVER_NAME', FILTER_UNSAFE_RAW, $flags);
 
-    $serverPort = 80;
+    $serverPort = 8080;
 
     $name = webAppName();
 

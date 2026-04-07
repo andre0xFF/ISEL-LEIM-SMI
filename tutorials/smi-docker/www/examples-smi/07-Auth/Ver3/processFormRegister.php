@@ -4,6 +4,9 @@
     require_once ("../../06-Forms/regex.php");
     require_once ("../../Lib/lib-mail-v2.php");
 
+    session_start();
+
+
     $flags[] = FILTER_NULL_ON_FAILURE;
 
     $method = filter_input( INPUT_SERVER, 'REQUEST_METHOD', FILTER_UNSAFE_RAW, $flags);
@@ -23,14 +26,14 @@
     $username = filter_input($_INPUT_METHOD, "username", FILTER_UNSAFE_RAW, $flags);
     $password = filter_input($_INPUT_METHOD, "password", FILTER_UNSAFE_RAW, $flags);
     $email = filter_input($_INPUT_METHOD, "email", FILTER_SANITIZE_EMAIL, $flags);
+    $captcha = filter_input($_INPUT_METHOD, "captcha", FILTER_UNSAFE_RAW, $flags);
+
+
 
     $username = trim($username !== null ? $username: '');
     $password = trim($password !== null ? $password: '');
     $email = trim($email !== null ? $email: '');
-
-    $serverPort = 8080;
-
-    $name = webAppName();
+    $captcha = trim($captcha !== null ? $captcha: '');
 
 
 
@@ -57,6 +60,12 @@
         $errors[] = "Email already exists";
     }
 
+    if (!isset($_SESSION['captcha']) || $_SESSION['captcha'] !== $captcha) {
+        $errors[] = "Invalid captcha code";
+    }
+
+    unset($_SESSION['captcha']);
+
 
     if(!empty($errors)){
         $message = "<ul><li>".implode("</li><li>", $errors)."</li></ul>";
@@ -75,7 +84,6 @@
             redirectToLastPage("Registration Error", "Could not create activation token");
             exit(0);
         }
-
 
         $account = getEmailAccountById(2);
         if($account === null){

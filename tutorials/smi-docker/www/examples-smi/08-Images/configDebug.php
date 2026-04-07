@@ -1,5 +1,5 @@
 <?php
-    $debug = true;
+    $debug = false;
 
     if ( $debug==false ) {
         $captchaValue = @substr(md5(time()), 0, 9);

@@ -4,7 +4,19 @@
     require_once("../../06-Forms/regex.php");
     require_once("../../Lib/lib-mail-v2.php");
 
-    $flags[] = FILTER_NULL_ON_FAILURE;
+
+
+include_once("../../08-Images/configDebug.php");
+
+
+   // $value = "value=\"" . $captchaValue . "\"";
+
+
+
+
+
+
+$flags[] = FILTER_NULL_ON_FAILURE;
 
     $serverName = filter_input( INPUT_SERVER, 'SERVER_NAME', FILTER_SANITIZE_STRING, $flags);
 
@@ -38,7 +50,21 @@
                     <td>Password</td>
                     <td><input type="password" name="password" placeholder="Type your password" required pattern="<?=htmlspecialchars(PASS_REGEX, ENT_QUOTES)?>"></td>
                 </tr>
+                <tr>
+                    <td>Captcha</td>
+                    <td>
+                        <img src="../../08-Images/captchaImage.php" alt="Captcha image"><br>
+                        <label for="captcha">Digit Code</label><br>
+                        <input type="text" name="captcha" id="captcha" required>
+                    </td>
+                </tr>
             </table>
+
+
+
+
+
+
 
             <input type="submit" value="Register"> <input type="reset" value="Clear">
         </form>
