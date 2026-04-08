@@ -10,28 +10,38 @@
     $idUser = getUserIdByActivationToken($token);
 
     if($idUser === null){
-        redirectToLastPage("Activation Error", "Invalid activation token");
-        exit(0);
-    }
-
-    $activated = activateUserById($idUser);
-    if(!$activated){
-        redirectToLastPage("Activation Error", "Could not activate account");
+        redirectToPage("formRegister.php", "Activation Error", "Could not activate account");
         exit(0);
     }
 
     $idRole = getIdRoleByName("user");
 
-    if($idRole === null){
-        $deactivated = deactivateUserById($idUser);
-        if(!$deactivated){
-            //TODO ideally log to admin
+    if ($idRole === null) {
+        redirectToPage("formRegister.php", "Activation Error", "Could not activate account.");
+        exit(0);
+    }
+
+    if(userHasRole($idUser, $idRole)){
+
+        $tokenDeleted = deleteActivationTokenByUserId($idUser);
+        if(!$tokenDeleted){
+            //TODO ideally log for admin
         }
-        redirectToLastPage("Activation Error", "Could not activate account");
+
+        redirectToPage("formLogin.php", "Activation Success", "Your account is already activated.
+         You will be redirected to the login page.");
+        exit(0);
+    }
+
+
+    $activated = activateUserById($idUser);
+    if(!$activated){
+        redirectToPage("formRegister.php", "Activation Error", "Could not activate account");
         exit(0);
     }
 
     $assigned = assignRoleToUser($idUser, $idRole);
+
 
     if(!$assigned){
         $deactivated = deactivateUserById($idUser);
@@ -39,7 +49,7 @@
         if(!$deactivated){
             //TODO ideally log to admin
         }
-        redirectToLastPage("Activation Error", "Could not activate account");
+        redirectToPage("formRegister.php", "Activation Error", "Could not activate account");
 
         exit(0);
     }
@@ -49,6 +59,6 @@
         //TODO ideally log for admin
     }
 
-    redirectToPage("formLogin.php", "Activation Sucess", "Your account was activated successfully.
+    redirectToPage("formLogin.php", "Activation Success", "Your account was activated successfully.
      You will be redirected to the login page.");
     exit(0);

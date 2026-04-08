@@ -5,17 +5,6 @@
     require_once("../../Lib/lib-mail-v2.php");
 
 
-
-include_once("../../08-Images/configDebug.php");
-
-
-   // $value = "value=\"" . $captchaValue . "\"";
-
-
-
-
-
-
 $flags[] = FILTER_NULL_ON_FAILURE;
 
     $serverName = filter_input( INPUT_SERVER, 'SERVER_NAME', FILTER_SANITIZE_STRING, $flags);

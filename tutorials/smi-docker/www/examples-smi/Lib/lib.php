@@ -679,3 +679,32 @@ function deactivateUserById($idUser){
     return $result !== false;
 }
 
+function userHasRole($idUser, $idRole){
+
+    if($idUser === null ||$idUser <= 0){
+        return false;
+    }
+    if($idRole === null || $idRole <= 0){
+        return false;
+    }
+
+    dbConnect(ConfigFile);
+    $databaseName = $GLOBALS['configDataBase'] -> db;
+    mysqli_select_db($GLOBALS['ligacao'], $databaseName);
+
+    $query = "SELECT 1 FROM `$databaseName`.`auth-permissions` WHERE `idUser`='$idUser' AND `idRole` = '$idRole' LIMIT 1";
+    $result = mysqli_query($GLOBALS['ligacao'], $query);
+
+    if($result === false){
+        dbDisconnect();
+        return false;
+    }
+
+    $hasRole = mysqli_num_rows($result) > 0;
+    mysqli_free_result($result);
+
+    dbDisconnect();
+
+    return $hasRole;
+}
+

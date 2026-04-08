@@ -31,10 +31,13 @@ This note tracks what was changed in `07-Auth/Ver3` relative to the original `07
   - `username`
   - `email`
   - `password`
+  - `captcha`
 - Added HTML5 validation:
   - `username` uses `required` and `ALIAS_REGEX`
   - `email` uses `type="email"` and `required`
   - `password` uses `required` and `PASS_REGEX`
+  - `captcha` uses `required`
+- Added CAPTCHA image rendering through `../../08-Images/captchaImage.php`.
 
 ### `processFormRegister.php`
 
@@ -49,18 +52,23 @@ This note tracks what was changed in `07-Auth/Ver3` relative to the original `07
   - `username`
   - `password`
   - `email`
+  - `captcha`
 - Added server-side validation for:
   - username format
   - password format
   - email format
+- Added CAPTCHA validation against `$_SESSION['captcha']`.
+- Added CAPTCHA cleanup through `unset($_SESSION['captcha']);` after validation.
 - Added duplicate checks for username and email through `existUserField(...)`.
 - Added error aggregation and `redirectToLastPage("Registration Error", $message, 5)` on validation failure.
 - Added a success-path call to `createInactiveUser(...)`.
 - Added a check for user-creation failure and an error redirect when insertion fails.
+- Added sender-account loading through `getEmailAccountById(2)` before creating the user and token.
 - Added activation-token creation through `createActivationToken(...)`.
-- Added sender-account loading through `getEmailAccountById(2)`.
 - Added activation URL generation through `getCurrentBaseUrl()`.
 - Added a call to `sendAuthEmail(...)` with the activation link.
+- Added rollback calls after later registration failures through:
+  - `deleteInactiveUserById(...)` when token creation fails
 - Added cleanup on mail-send failure through:
   - `deleteActivationTokenByUserId(...)`
   - `deleteInactiveUserById(...)`
@@ -71,10 +79,12 @@ This note tracks what was changed in `07-Auth/Ver3` relative to the original `07
 - Added token input reading from `$_GET['token']`.
 - Added token lookup through `getUserIdByActivationToken(...)`.
 - Added an invalid-token redirect path.
-- Added activation through `activateUserById(...)`.
 - Added default-role lookup through `getIdRoleByName("user")`.
+- Added role-existence checks through `userHasRole(...)` so repeated activation links do not try to assign the same role twice.
+- Added an "already activated" success path that retries activation-token deletion and redirects to `formLogin.php`.
+- Added activation through `activateUserById(...)`.
 - Added role assignment through `assignRoleToUser(...)`.
-- Added rollback to inactive through `deactivateUserById(...)` when role lookup or role assignment fails.
+- Added rollback to inactive through `deactivateUserById(...)` when role assignment fails after activation.
 - Added deletion of the activation token through `deleteActivationTokenByUserId(...)` after successful activation.
 - Added a redirect to `formLogin.php` after activation.
 
@@ -118,12 +128,18 @@ This note tracks what was changed in `07-Auth/Ver3` relative to the original `07
   - resolves a role id from `auth-roles.friendlyName`
 - Added `deactivateUserById(...)`.
   - updates `auth-basic.active` from `1` back to `0`
+- Added `userHasRole(...)`.
+  - checks whether a user already has a specific role in `auth-permissions`
 
 ## Current Behavior
 
 ### Registration failure
 
 - Validation errors redirect back with an error message.
+- Missing SMTP account configuration redirects back with an error message before any user or token is created.
+- User-creation failure redirects back with an error message.
+- Token-creation failure deletes the inactive user, then redirects back with an error message.
+- Mail-send failure deletes the stored activation token and the inactive user, then redirects back with an error message.
 
 ### Registration success
 
@@ -137,9 +153,12 @@ This note tracks what was changed in `07-Auth/Ver3` relative to the original `07
 
 - `activateAccount.php` now reads the token from the activation URL.
 - The token is resolved to an `idUser` through `getUserIdByActivationToken(...)`.
+- If the token is invalid, the user is redirected to `formRegister.php`.
+- The default `user` role is looked up in `auth-roles`.
+- If the user already has that role, the flow treats the account as already activated, retries token deletion, and redirects to `formLogin.php` with a success message.
 - The matching user is activated by setting `auth-basic.active = 1`.
-- The default `user` role is looked up in `auth-roles` and inserted into `auth-permissions`.
-- If role lookup or role assignment fails after activation, the user is reverted back to inactive.
+- If the user does not yet have the `user` role, it is inserted into `auth-permissions`.
+- If role assignment fails after activation, the user is reverted back to inactive.
 - The activation token is deleted after a successful activation flow.
 - The user is redirected to `formLogin.php`.
 
@@ -160,10 +179,9 @@ The current `Ver3` implementation is still missing:
 - New users cannot log in immediately after registration because login only accepts users with `active = 1`.
 - Since `createInactiveUser(...)` stores new users with `active = 0`, the activation flow is required before `processFormLogin.php` can succeed for them.
 
-## Optional Work Not Yet Integrated
+## Optional Work
 
-- CAPTCHA support is still not connected to the registration form.
-- The exercise marks CAPTCHA as optional, and reusable material exists in `08-Images`.
+- CAPTCHA is now integrated into the registration form and checked server-side using the reusable material from `08-Images`.
 
 ## Workflow Note
 

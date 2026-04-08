@@ -72,6 +72,11 @@
         redirectToLastPage("Registration Error", $message, 5);
         exit(0);
     }else{
+        $account = getEmailAccountById(2);
+        if($account === null){
+            redirectToLastPage("Registration Error", "No e-mail account configured.", 5);
+            exit(0);
+        }
         $idUser = createInactiveUser($username, $password, $email);
 
         if($idUser <= 0){
@@ -81,15 +86,11 @@
 
         $token = createActivationToken($idUser);
         if($token === ''){
+            deleteInactiveUserById($idUser);
             redirectToLastPage("Registration Error", "Could not create activation token");
             exit(0);
         }
 
-        $account = getEmailAccountById(2);
-        if($account === null){
-            redirectToLastPage("Registration Error", "No e-mail account configured.", 5);
-            exit(0);
-        }
         $activationUrl = getCurrentBaseUrl() . "/activateAccount.php?token=".urlencode($token);
         $subject = "Activate your account";
         $message = "Hello $username, \n\n"."Please activate your account using this link:\n".
