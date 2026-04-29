@@ -1,162 +1,184 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <meta http-equiv='Content-Type' content='text/html; charset=utf-8'>
-        <title>Image Processing</title>
-
-        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-
-        <link rel="stylesheet" type="text/css" href="../Styles/GlobalStyle.css">
-    </head>
-
-    <body>
 <?php
-    require_once( "../Lib/lib.php" );
-    require_once( "../Lib/db.php" );
-    require_once( "../Lib/lib-coords.php" );
-    require_once( "../Lib/ImageResize.php" );
 
-    include_once( "config.php" );
-    include_once( "configDebug.php" );
+require_once("../Lib/lib.php");
+require_once("../Lib/db.php");
+require_once("../Lib/lib-coords.php");
+require_once("../Lib/ImageResize.php");
 
-    // Maximum time allowed for the upload
-    set_time_limit( 300 );
+include_once("config.php");
+include_once("configDebug.php");
+require_once("ensureAuth.php");
 
-    if ( $_FILES['userFile']['error']!=0 ) {
-        $msg = showUploadFileError( $_FILES['userFile']['error'] );
-        echo "\t\t<p>$msg</p>\n";
-        echo "\t\t<p><a href='javascript:history.back()'>Back</a></p>\n";
-        echo "\t</body>\n";
-        echo "</html>\n";
-        die();
+$errorMsg = null;
+$successMsg = null;
+$dbMsg = null;
+$messages = array();
+$debugBlocks = array();
+
+$dst = null;
+$srcName = null;
+$userId = null;
+$mimeFileName = null;
+$typeFileName = null;
+$imageFileNameAux = null;
+$imageMimeFileName = null;
+$imageTypeFileName = null;
+$thumbFileNameAux = null;
+$thumbMimeFileName = null;
+$thumbTypeFileName = null;
+$lat = "";
+$lon = "";
+
+set_time_limit(300);
+
+if (!isset($_FILES['userFile'])) {
+    $errorMsg = "No file was submitted.";
+}
+
+if ($errorMsg === null && $_FILES['userFile']['error'] != 0) {
+    $errorMsg = showUploadFileError($_FILES['userFile']['error']);
+}
+
+if ($errorMsg === null) {
+
+    $userId = isset($_SESSION['id']) ? $_SESSION['id'] : null;
+
+    if(!is_int($userId) && !ctype_digit((string)$userId)){
+        $errorMsg = "Invalid authenticated user.";
+    }else{
+        $userId = (int)$userId;
+        $srcName = basename($_FILES['userFile']['name']);
+
+        $src = $_FILES['userFile']['tmp_name'];
+        $configurations = getConfiguration();
+
+        $baseDir =rtrim($configurations['destination'], DIRECTORY_SEPARATOR);
+
+        $userDir = $baseDir . DIRECTORY_SEPARATOR . "user_" . $userId;
+        $thumbsDir = $userDir . DIRECTORY_SEPARATOR . "thumbs";
+
+        if(!is_dir($userDir) && !mkdir($userDir, 0775, true)){
+            $errorMsg = "Could not create user directory";
+        }
+
+        if($errorMsg === null && !is_dir($thumbsDir) && !mkdir($thumbsDir, 0775, true)){
+            $errorMsg = "Could not create thumbs directory";
+        }
+
+        if($errorMsg === null){
+            $ext = strtolower(pathinfo($srcName, PATHINFO_EXTENSION));
+            $originalBaseName = pathinfo($srcName, PATHINFO_FILENAME);
+            $originalBaseName = preg_replace('/[^A-Za-z0-9._-]/', '_', $originalBaseName);
+
+            $randomBytes = openssl_random_pseudo_bytes(4);
+            if ($randomBytes === false) {
+                $errorMsg = "Could not generate a unique file name.";
+            } else {
+                $uniqueSuffix = bin2hex($randomBytes);
+                $storedBaseName = date('Ymd_His') . "_" . $uniqueSuffix;
+
+                if ($originalBaseName !== '') {
+                    $storedBaseName .= "_" . $originalBaseName;
+                }
+
+                $storedFileName = $storedBaseName;
+                if ($ext !== '') {
+                    $storedFileName .= "." . $ext;
+                }
+
+                $dst = $userDir . DIRECTORY_SEPARATOR . $storedFileName;
+
+                if (!move_uploaded_file($src, $dst)) {
+                    $errorMsg = "Could not move uploaded file to '$dst'";
+                }
+            }
+        }
+
     }
+}
 
-    $srcName = $_FILES['userFile']['name'];
-
-    // Read configurations from data base
-    $configurations = getConfiguration();
-    $dstDir = $configurations['destination'];
-
-    // Destination for the uploaded file
-    $src = $_FILES['userFile']['tmp_name'];
-    $dst = $dstDir . DIRECTORY_SEPARATOR . /* $USER_ID . DIRECTORY_SEPARATOR . */ $srcName;
-
-    $copyResult = copy($src, $dst);
-
-    if ( $copyResult === false ) {
-        $msg = "Could not write '$src' to '$dst'";
-        echo "\t\t<p>$msg</p>\n";
-        echo "\t\t<p><a href='javascript:history.back()'>Back</a></p>";
-        echo "\t</bobdy>\n";
-        echo "\t</html>\n";
-        die();
-    }
-
-    unlink($src);
-?>
-        <p>File uploaded with success.</p>
-<?php
+if ($errorMsg === null) {
     $fileInfo = finfo_open(FILEINFO_MIME);
-
     $fileInfoData = finfo_file($fileInfo, $dst);
-    
-    if ( $debug==true ) {
-        echo "<pre>\n";
-        print_r( $fileInfoData );
-        echo "</pre>\n<br>";
+    finfo_close($fileInfo);
+
+    if ($debug == true) {
+        $debugBlocks[] = $fileInfoData;
     }
-    
-    $fileTypeComponents = explode( ";", $fileInfoData);
 
+    $fileTypeComponents = explode(";", $fileInfoData);
     $mimeTypeFileUploaded = explode("/", $fileTypeComponents[0]);
-    $mimeFileName = $mimeTypeFileUploaded[0];
-    $typeFileName = $mimeTypeFileUploaded[1];
 
-    $thumbsDir = $dstDir . DIRECTORY_SEPARATOR . /* $USER_ID . DIRECTORY_SEPARATOR . */ "thumbs";
+    $mimeFileName = isset($mimeTypeFileUploaded[0]) ? $mimeTypeFileUploaded[0] : "";
+    $typeFileName = isset($mimeTypeFileUploaded[1]) ? $mimeTypeFileUploaded[1] : "";
+
+    if ($mimeFileName === "" || $typeFileName === "") {
+        $errorMsg = "Could not determine uploaded file type.";
+    } else {
+        $messages[] = "File is of type $mimeFileName.";
+    }
+}
+
+if ($errorMsg === null) {
     $pathParts = pathinfo($dst);
 
-    $lat = $lon = "";
-
-    if ( $_POST['description']!=NULL ) {
-        $description = addslashes($_POST['description']);
-    }
-    else {
+    if ($_POST['description'] != NULL) {
+        $description = $_POST['description'];
+    } else {
         $description = "No description available";
     }
 
-    if ( $_POST['title']!=NULL ) {
-        $title = addslashes($_POST['title']);
-    }
-    else {
-        $pathParts = pathinfo($srcName);
-        $title = $pathParts['filename'];
+    if ($_POST['title'] != NULL) {
+        $title = $_POST['title'];
+    } else {
+        $pathPartsTitle = pathinfo($srcName);
+        $title = $pathPartsTitle['filename'];
     }
 
     $width = $configurations['thumbWidth'];
     $height = $configurations['thumbHeight'];
-?>
-        <p>File is of type <?php echo $mimeFileName;?>.</p>
-<?php
-
-    $imageFileNameAux = $imageMimeFileName = $imageTypeFileName = null;
-
-    $thumbFileNameAux = $thumbMimeFileName = $thumbTypeFileName = null;
 
     switch ($mimeFileName) {
         case "image":
-            $exif = @exif_read_data($dst, 'IFD0', true);
-        
-            if ( $exif===false ) {
-?>
-        <p>No exif header data found.</p>
-<?php
+            if (function_exists('exif_read_data') && ($typeFileName === 'jpeg' || $typeFileName === 'jpg')) {
+                $exif = @exif_read_data($dst, 'IFD0', true);
+            } else {
+                $exif = false;
             }
-            else {
-                if ( $debug==true ) {
-                    echo "<pre>";
-                    foreach ($exif as $key => $section) {
-                        foreach ($section as $name => $val) {
-                            echo "$key.$name: <br>\n";
-                            print_r( $val );
-                            echo "<br>\n";
-                        }
-                    }
-                    echo "</pre>\n<br>";
+
+            if ($exif === false) {
+                $messages[] = "No exif header data found.";
+            } else {
+                if ($debug == true) {
+                    $debugBlocks[] = print_r($exif, true);
                 }
 
                 $gps = @$exif['GPS'];
-                if ( $gps!=NULL ) {
+                if ($gps != NULL) {
                     $latitudeAux = $gps['GPSLatitude'];
                     $latitudeRef = $gps['GPSLatitudeRef'];
                     $longitudeAux = $gps['GPSLongitude'];
                     $longitudeRef = $gps['GPSLongitudeRef'];
-                                        
-                    if ( ($latitudeAux!=NULL ) && ( $longitudeAux!=NULL ) ) {
 
-                        if ( $debug==true ) {
-                            echo '$latitudeAux: '; print_r($latitudeAux);  echo "<br>\n";
-                            echo '$latitudeRef: '; print_r($latitudeRef);  echo "<br>\n";
-                            echo '$longitudeAux: '; print_r($longitudeAux); echo "<br>\n";
-                            echo '$longitudeRef: '; print_r($longitudeRef); echo "<br>\n";
-                        }                    
-                        
+                    if (($latitudeAux != NULL) && ($longitudeAux != NULL)) {
+                        if ($debug == true) {
+                            $debugBlocks[] =
+                                    '$latitudeAux: ' . print_r($latitudeAux, true) . "\n" .
+                                    '$latitudeRef: ' . print_r($latitudeRef, true) . "\n" .
+                                    '$longitudeAux: ' . print_r($longitudeAux, true) . "\n" .
+                                    '$longitudeRef: ' . print_r($longitudeRef, true);
+                        }
+
                         $lat = getCoordFromEXIF($latitudeAux, $latitudeRef);
                         $lon = getCoordFromEXIF($longitudeAux, $longitudeRef);
-?>
-        <p>File latitude: <?php echo $lat;?></p>
-        <p>File longitude: <?php echo $lon;?></p>
-<?php
+
+                        $messages[] = "File latitude: $lat";
+                        $messages[] = "File longitude: $lon";
+                    } else {
+                        $messages[] = "File include GPS information.";
                     }
-                    else {
-?>
-        <p>File include GPS information.</p>
-<?php
-                    }
-                }
-                else {
-?>
-        <p>File does not have GPS information.</p>
-<?php
+                } else {
+                    $messages[] = "File does not have GPS information.";
                 }
             }
 
@@ -168,49 +190,51 @@
             $thumbMimeFileName = "image";
             $thumbTypeFileName = $typeFileName;
 
-            $resizeObj = new ImageResize( $dst );
+            $resizeObj = new ImageResize($dst);
             $resizeObj->resizeImage($width, $height, 'crop');
             $resizeObj->saveImage($thumbFileNameAux, $typeFileName, 100);
             $resizeObj->close();
             break;
 
         case "video":
-            $size = "$width" . "x" . "$height";
+            $size = $width . "x" . $height;
 
             $imageFileNameAux = $thumbsDir . DIRECTORY_SEPARATOR . $pathParts['filename'] . "-Large.jpg";
             $imageMimeFileName = "image";
             $imageTypeFileName = "jpeg";
-            echo "\t\t<p>Generating video 1st image...</p>\n";
+            $messages[] = "Generating video 1st image...";
 
-            // -itsoffset -1 -> "moves" the film one second forward
-            // -i $dst -> input file
-            // -vcodec mjpeg -> codec do tipo mjpeg
-            // -vframes 1 -> obter uma frame
-            // -s 640x480 -> dimensão do output
-            $cmdFirstImage = " $ffmpegBinary -itsoffset -1 -i $dst -vcodec mjpeg -vframes 1 -an -f rawvideo -s 640x480 $imageFileNameAux";
-        
-            echo "\t\t<p><code>$cmdFirstImage</code></p>\n";
+            $ffmpeg = escapeshellarg($ffmpegBinary);
+            $srcArg = escapeshellarg($dst);
+
+            $imageArg = escapeshellarg($imageFileNameAux);
+
+
+
+            $cmdFirstImage = "$ffmpeg -itsoffset -1 -i $srcArg -vcodec mjpeg -vframes 1 -an -f rawvideo -s 640x480 $imageArg";
+            $messages[] = $cmdFirstImage;
             system($cmdFirstImage, $status);
-            echo "\t\t<p>Status from the generation of video 1st image: $status.</p>\n";
+            $messages[] = "Status from the generation of video 1st image: $status.";
 
             $thumbFileNameAux = $thumbsDir . DIRECTORY_SEPARATOR . $pathParts['filename'] . ".jpg";
             $thumbMimeFileName = "image";
             $thumbTypeFileName = "jpeg";
-            echo "\t\t<p>Generating video thumb...</p>\n";
+            $messages[] = "Generating video thumb...";
 
-            $cmdVideoThumb = "$ffmpegBinary -itsoffset -1  -i $dst -vcodec mjpeg -vframes 1 -an -f rawvideo -s $size $thumbFileNameAux";
-            echo "\t\t<p><code>$cmdVideoThumb</code></p>\n";
+            $thumbArg = escapeshellarg($thumbFileNameAux);
+
+            $cmdVideoThumb = "$ffmpeg -itsoffset -1 -i $srcArg -vcodec mjpeg -vframes 1 -an -f rawvideo -s $size $thumbArg";
+            $messages[] = $cmdVideoThumb;
             system($cmdVideoThumb, $status);
-            echo "\t\t<p>Status from the generation of video thumb: $status.</p>\n";
+            $messages[] = "Status from the generation of video thumb: $status.";
             break;
-    
+
         case "audio":
-            require_once( "Zend/Media/Id3v2.php" );
+            require_once("Zend/Media/Id3v2.php");
 
             $id3 = new Zend_Media_Id3v2($dst);
 
             $mimeTypeAudioAPIC = explode("/", $id3->apic->mimeType);
-            //$mimeAudioAPIC = $mimeTypeAudioAPIC[0];
             $typeAudioAPIC = $mimeTypeAudioAPIC[1];
 
             $imageFileNameAux = $thumbsDir . DIRECTORY_SEPARATOR . $pathParts['filename'] . "-Large." . $typeAudioAPIC;
@@ -228,46 +252,77 @@
             $resizeObj->saveImage($thumbFileNameAux, $typeAudioAPIC, 100);
             $resizeObj->close();
             break;
-        
+
         default:
-            $imageFileNameAux = $dstDir . DIRECTORY_SEPARATOR . "default" . DIRECTORY_SEPARATOR . "Unknown-Large.jpg";
+            $imageFileNameAux = $baseDir . DIRECTORY_SEPARATOR . "default" . DIRECTORY_SEPARATOR . "Unknown-Large.jpg";
             $imageMimeFileName = "image";
             $imageTypeFileName = "jpeg";
 
-            $thumbFileNameAux = $dstDir . DIRECTORY_SEPARATOR . "default" . DIRECTORY_SEPARATOR . "Unknown.jpg";
+            $thumbFileNameAux = $baseDir . DIRECTORY_SEPARATOR . "default" . DIRECTORY_SEPARATOR . "Unknown.jpg";
             $thumbMimeFileName = "image";
             $thumbTypeFileName = "jpeg";
             break;
     }
+}
 
-    // Write information about file into the data base
-    dbConnect( ConfigFile );
-    $dataBaseName = $GLOBALS['configDataBase']->db;
-    
-    mysqli_select_db( $GLOBALS['ligacao'], $dataBaseName );
+if ($errorMsg === null) {
 
-    $latitude = addslashes($lat);
-    $longitude = addslashes($lon);
+    $result = insertFileDetails(
+            $dst,
+            $mimeFileName,
+            $typeFileName,
+            $imageFileNameAux,
+            $imageMimeFileName,
+            $imageTypeFileName,
+            $thumbFileNameAux,
+            $thumbMimeFileName,
+            $thumbTypeFileName,
+            $lat,
+            $lon,
+            $title,
+            $description,
+            $userId);
 
-    $fileName = addslashes($dst);
-    $imageFileName = addslashes($imageFileNameAux);
-    $thumbFileName = addslashes($thumbFileNameAux);
-
-    $query = 
-            "INSERT INTO `$dataBaseName`.`images-details`" .
-            "(`fileName`, `mimeFileName`, `typeFileName`, `imageFileName`, `imageMimeFileName`, `imageTypeFileName`, `thumbFileName`, `thumbMimeFileName`, `thumbTypeFileName`, `latitude`, `longitude`, `title`, `description`) values " .
-            "('$fileName', '$mimeFileName', '$typeFileName', '$imageFileName', '$imageMimeFileName', '$imageTypeFileName', '$thumbFileName', '$thumbMimeFileName', '$thumbTypeFileName', '$latitude', '$longitude', '$title', '$description')";
-
-    if ( mysqli_query( $GLOBALS['ligacao'], $query )==false ) {
-        $msg = "Information about file could not be inserted into the data base. Details : " . dbGetLastError() ;
+    if (!$result['ok']) {
+        $dbMsg = "Information about file could not be inserted into the data base. Details: " . $result['error'];
+        $errorMsg = "Information about file could not be inserted into the data base.";
+    } else {
+        $dbMsg = "Information about file was inserted into data base.";
+        $successMsg = "File uploaded with success.";
     }
-    else {
-        $msg = "Information about file was inserted into data base.";
-    }
 
-    dbDisconnect();
+}
 ?>
-        <p><?php echo $msg;?></p>
-        <p><a href='javascript:history.back()'>Back</a></p>
-    </body>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Image Processing</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <link rel="stylesheet" type="text/css" href="../Styles/GlobalStyle.css">
+</head>
+
+<body>
+<?php if ($errorMsg !== null) { ?>
+    <p><?php echo htmlspecialchars($errorMsg, ENT_QUOTES, 'UTF-8'); ?></p>
+<?php } ?>
+
+<?php if ($successMsg !== null) { ?>
+    <p><?php echo htmlspecialchars($successMsg, ENT_QUOTES, 'UTF-8'); ?></p>
+<?php } ?>
+
+<?php foreach ($messages as $message) { ?>
+    <p><?php echo htmlspecialchars($message, ENT_QUOTES, 'UTF-8'); ?></p>
+<?php } ?>
+
+<?php foreach ($debugBlocks as $debugBlock) { ?>
+    <pre><?php echo htmlspecialchars($debugBlock, ENT_QUOTES, 'UTF-8'); ?></pre>
+<?php } ?>
+
+<?php if ($dbMsg !== null) { ?>
+    <p><?php echo htmlspecialchars($dbMsg, ENT_QUOTES, 'UTF-8'); ?></p>
+<?php } ?>
+
+<p><a href="javascript:history.back()">Back</a></p>
+</body>
 </html>

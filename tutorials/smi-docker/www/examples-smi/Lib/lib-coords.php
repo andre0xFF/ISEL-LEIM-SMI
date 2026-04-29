@@ -24,24 +24,47 @@ function getCoordFromEXIF($rawCoordinate, $coordRef) {
   return "$degrees $minutes' $seconds'' $coordRef";
 }
 
+function getCoordComponent($value) {
+  $normalizedValue = str_replace(",", ".", $value);
+  $normalizedValue = preg_replace('/[^0-9.\-]/', '', $normalizedValue);
+
+  if ($normalizedValue === '' || $normalizedValue === '-' || $normalizedValue === '.') {
+    return 0;
+  }
+
+  return floatval($normalizedValue);
+}
+
 // https://en.wikipedia.org/wiki/Geographic_coordinate_conversion
 function convertDMS2Decimal($coord) {
   if ( $coord=="" || $coord==null ) {
     return 0;
   }
 
-  if ( str_ends_with( $coord, "N") || str_ends_with( $coord, "E") ) {
+  $coord = trim($coord);
+  $coordNumeric = str_replace(",", ".", $coord);
+
+  if (is_numeric($coordNumeric)) {
+    return floatval($coordNumeric);
+  }
+
+  $lastChar = strtoupper(substr( $coord, -1 ));
+
+  if ( $lastChar === "N" || $lastChar === "E" ) {
     $factor = 1;
   }
-  else {
+  else if ( $lastChar === "S" || $lastChar === "W" ) {
     $factor = -1;
   }
+  else {
+    $factor = 1;
+  }
 
-  $components = explode( " ", $coord );
+  $components = preg_split('/\s+/', $coord);
 
-  $degrees = $components[ 0 ];
-  $minutes = intval( $components[ 1 ] )/60;
-  $seconds = intval( $components[ 2 ] )/3660;
+  $degrees = isset($components[0]) ? getCoordComponent($components[0]) : 0;
+  $minutes = isset($components[1]) ? getCoordComponent($components[1]) / 60 : 0;
+  $seconds = isset($components[2]) ? getCoordComponent($components[2]) / 3600 : 0;
 
   return  ($degrees + $minutes + $seconds) * $factor;
 }

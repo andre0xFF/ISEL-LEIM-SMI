@@ -708,3 +708,108 @@ function userHasRole($idUser, $idRole){
     return $hasRole;
 }
 
+function insertFileDetails(
+    $fileName,
+    $mimeFileName,
+    $typeFileName,
+    $imageFileName,
+    $imageMimeFileName,
+    $imageTypeFileName,
+    $thumbFileName,
+    $thumbMimeFileName,
+    $thumbTypeFileName,
+    $latitude,
+    $longitude,
+    $title,
+    $description,
+    $ownerId){
+
+    dbConnect(ConfigFile);
+
+    $dataBaseName = $GLOBALS['configDataBase'] -> db;
+    mysqli_select_db($GLOBALS['ligacao'], $dataBaseName);
+
+    $fileName = addslashes($fileName);
+    $mimeFileName = addslashes($mimeFileName);
+    $typeFileName = addslashes($typeFileName);
+    $imageFileName = addslashes($imageFileName);
+    $imageMimeFileName = addslashes($imageMimeFileName);
+    $imageTypeFileName = addslashes($imageTypeFileName);
+    $thumbFileName = addslashes($thumbFileName);
+    $thumbMimeFileName = addslashes($thumbMimeFileName);
+    $thumbTypeFileName = addslashes($thumbTypeFileName);
+    $latitude = addslashes($latitude);
+    $longitude = addslashes($longitude);
+    $title = addslashes($title);
+    $description = addslashes($description);
+    $ownerId = addslashes($ownerId);
+
+    $query = "INSERT INTO `$dataBaseName`.`images-details`" .
+        "(`fileName`, `mimeFileName`, `typeFileName`, `imageFileName`, `imageMimeFileName`, `imageTypeFileName`, `thumbFileName`, `thumbMimeFileName`, `thumbTypeFileName`, `latitude`, `longitude`, `title`, `description`,`ownerId`) VALUES " .
+        "('$fileName', '$mimeFileName', '$typeFileName', '$imageFileName', '$imageMimeFileName', '$imageTypeFileName', '$thumbFileName', '$thumbMimeFileName', '$thumbTypeFileName', '$latitude', '$longitude', '$title', '$description', '$ownerId')";
+
+    $result = mysqli_query($GLOBALS['ligacao'], $query);
+    $error = $result === false ? dbGetLastError() : null;
+
+    dbDisconnect();
+
+    return array(
+        'ok' => $result !== false,
+        'error' => $error
+    );
+
+}
+
+function getFilesByOwnerId($ownerId){
+
+    dbConnect(ConfigFile);
+
+    $dataBaseName = $GLOBALS['configDataBase'] -> db;
+
+    mysqli_select_db($GLOBALS['ligacao'], $dataBaseName);
+
+    $ownerId = addslashes($ownerId);
+
+    $query = "SELECT `id`, `fileName` FROM `$dataBaseName`.`images-details` WHERE `ownerId`='$ownerId'";
+    $result = mysqli_query($GLOBALS['ligacao'], $query);
+
+    $files = array();
+    while (($row = mysqli_fetch_array($result)) != false) {
+        $files[] = $row;
+    }
+
+    mysqli_free_result($result);
+    dbDisconnect();
+
+    return $files;
+}
+
+function updateFileDetails($id, $latitude, $longitude, $title, $description){
+
+    dbConnect(ConfigFile);
+
+    $dataBaseName = $GLOBALS['configDataBase'] -> db;
+    mysqli_select_db($GLOBALS['ligacao'], $dataBaseName);
+
+    $id = addslashes($id);
+    $latitude = addslashes($latitude);
+    $longitude = addslashes($longitude);
+    $title = addslashes($title);
+    $description = addslashes($description);
+
+    $query = "UPDATE `$dataBaseName`.`images-details` SET " .
+        "`latitude`='$latitude', " .
+        "`longitude`='$longitude', " .
+        "`title`='$title', " .
+        "`description`='$description' " .
+        "WHERE `id`='$id'";
+
+    $result = mysqli_query($GLOBALS['ligacao'], $query);
+    $error = $result === false ? dbGetLastError() : null;
+
+    dbDisconnect();
+
+    return array(
+        'ok' => $result !== false,
+        'error' => $error);
+}

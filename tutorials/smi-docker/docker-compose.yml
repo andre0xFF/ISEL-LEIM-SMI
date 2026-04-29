@@ -9,6 +9,7 @@ services:
       GMAIL_APP_PASSWORD: ${GMAIL_APP_PASSWORD}
     volumes:
       - ./www:/var/www/html
+      - ./storage:/var/www/storage
     depends_on:
       - db
     restart: unless-stopped

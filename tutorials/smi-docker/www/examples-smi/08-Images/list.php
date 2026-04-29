@@ -1,16 +1,22 @@
 <?php
     require_once( "../Lib/lib.php" );
     require_once( "../Lib/db.php" );
+    require_once("ensureAuth.php");
 
     // Read from the data base the configuration details
     $configDetails = getConfiguration();
     $numColls = 0 + $configDetails['numColls'];
 
+    $sessionUserId = isset($_SESSION['id']) ? $_SESSION['id'] : null;
+
+    if (!is_int($sessionUserId) && !ctype_digit((string)$sessionUserId)) {
+        http_response_code(403);
+        exit("Invalid authenticated user");
+    }
+
     // Read from the data base the list of the files
-    dbConnect(ConfigFile);
-    mysqli_select_db( $GLOBALS['ligacao'], $GLOBALS['configDataBase']->db);
-    $query = "SELECT `id`, `fileName` FROM `images-details`";
-    $result = mysqli_query($GLOBALS['ligacao'], $query);
+    $sessionUserId = (int)$sessionUserId;
+    $files = getFilesByOwnerId($sessionUserId);
 ?>
 <!DOCTYPE html>
 <html>
@@ -31,10 +37,11 @@
 <?php
     $currCol = 1;
 
-    while ($imageData = mysqli_fetch_array($result)) {
+    foreach ($files as $imageData){
+
         $id = $imageData['id'];
 
-        if ($currCol == 1) {
+        if($currCol == 1){
             echo "<tr>\n";
         }
 
@@ -49,8 +56,6 @@
         }
     }
 
-    mysqli_free_result($result);
-    dbDisconnect();
 ?>
 
         </table>

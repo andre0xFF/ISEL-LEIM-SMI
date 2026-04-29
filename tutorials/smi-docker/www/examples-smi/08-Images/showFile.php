@@ -1,6 +1,4 @@
-<!DOCTYPE html>
-<html>
-    <?php
+<?php
     ini_set('display_errors', 'On');
 
     error_reporting(E_ALL);
@@ -11,27 +9,77 @@
 
     include_once( "config.php" );
     include_once( "configKeys.php" );
+    require_once("ensureAuth.php");
 
     $name = webAppName();
 
-    // TODO validate input data
-    $id = $_GET['id'];
+
+    $id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
+
+    if (!$id) {
+        http_response_code(400);
+        exit("Invalid id");
+    }
 
     // Read from the data base details about the image
     $fileDetails = getFileDetails($id);
 
-    $fileDetailsFileName = $fileDetails['fileName'];
-    $fileDetailsMime = $fileDetails['mimeFileName'];
-    $fileDetailsType = $fileDetails['typeFileName'];
-    $fileDetailsLatitude = $fileDetails['latitude'];
-    $fileDetailsLongitude = $fileDetails['longitude'];
-    $fileDetailsTitle = $fileDetails['title'];
+    if (!$fileDetails) {
+        http_response_code(404);
+        exit("File not found");
+    }
+
+    $sessionUserId = isset($_SESSION['id']) ? $_SESSION['id'] : null;
+
+    if (!is_int($sessionUserId) && !ctype_digit((string)$sessionUserId)) {
+        http_response_code(403);
+        exit("Invalid authenticated user");
+    }
+
+    $sessionUserId = (int)$sessionUserId;
+    $fileOwnerId = isset($fileDetails['ownerId']) ? $fileDetails['ownerId'] : null;
+
+    if (!is_int($fileOwnerId) && !ctype_digit((string)$fileOwnerId)) {
+        http_response_code(500);
+        exit("Stored file has no valid owner");
+    }
+
+    $fileOwnerId = (int)$fileOwnerId;
+
+    if ($fileOwnerId !== $sessionUserId) {
+        http_response_code(403);
+        exit("You do not have permission to access this file");
+    }
+
+
+    $fileDetailsFileName = isset($fileDetails['fileName']) ? $fileDetails['fileName'] : '';
+    $fileDetailsMime = isset($fileDetails['mimeFileName']) ? $fileDetails['mimeFileName'] : '';
+    $fileDetailsType = isset($fileDetails['typeFileName']) ? $fileDetails['typeFileName'] : '';
+    $fileDetailsLatitude = isset($fileDetails['latitude']) ? $fileDetails['latitude'] : '';
+    $fileDetailsLongitude = isset($fileDetails['longitude']) ? $fileDetails['longitude'] : '';
+    $fileDetailsTitle = isset($fileDetails['title']) ? $fileDetails['title'] : '';
     $fileDetailsDescription = htmlentities($fileDetails['description'], ENT_QUOTES, "UTF-8");
 
     $dateNow = date('F d Y');
 
+    if ($fileDetailsFileName === '') {
+        http_response_code(500);
+        exit("Invalid stored file path");
+    }
+
+    if (!file_exists($fileDetailsFileName) || !is_readable($fileDetailsFileName)) {
+        http_response_code(404);
+        exit("Stored file not available");
+    }
+
+    if ($fileDetailsMime === '' || $fileDetailsType === '') {
+        http_response_code(500);
+        exit("Invalid stored file metadata");
+    }
+
+
     $pathParts = pathinfo($fileDetailsFileName);
-    $fileName = $pathParts['filename'];
+    $fileName = isset($pathParts['filename']) ? $pathParts['filename'] : (isset($pathParts['basename']) ? $pathParts['basename'] : '');
 
     $locationGoogle = getCoordInGoogleFormat($fileDetailsLatitude, $fileDetailsLongitude);
     $latGoogle = $locationGoogle['latitude'];
@@ -42,6 +90,8 @@
     
     $defaultZoom = 10;
     ?>
+    <!DOCTYPE html>
+    <html>
 
     <head>
         <meta http-equiv='Content-Type' content='text/html; charset=utf-8'>
@@ -210,13 +260,13 @@
                 <tr>
                     <td>Mime</td>
                     <td><?php echo $fileDetailsMime ?></td>
-                    <td><input type="text" size=32 name="mime" value="<?php echo $fileDetailsMime ?>"></td>
+                    <td><input type="text" disabled size=32 name="mime" value="<?php echo $fileDetailsMime ?>"></td>
                 </tr>
 
                 <tr>
                     <td>Type</td>
                     <td><?php echo $fileDetailsType ?></td>
-                    <td><input type="text" size=32 name="type" value="<?php echo $fileDetailsType ?>"></td>
+                    <td><input type="text" disabled size=32 name="type" value="<?php echo $fileDetailsType ?>"></td>
                 </tr>        
             </table>
 

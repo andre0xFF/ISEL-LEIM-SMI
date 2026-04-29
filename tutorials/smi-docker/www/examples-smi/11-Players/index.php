@@ -4,6 +4,10 @@ ini_set('display_errors', 'On');
 
 error_reporting(E_ALL);
 
+function endsWith($value, $suffix) {
+    return $suffix === '' || substr($value, -strlen($suffix)) === $suffix;
+}
+
 function listFiles($directory, $extension) {
 	try {
 		if (strpos($extension, '.') !== 0) {
@@ -13,7 +17,7 @@ function listFiles($directory, $extension) {
         $files = [];
         if (is_dir($directory)) {
             foreach (scandir($directory) as $file) {
-                if (is_file("$directory/$file") && str_ends_with($file, $extension)) {
+                if (is_file("$directory/$file") && endsWith($file, $extension)) {
                     $files[] = ["nome" => pathinfo( $file, PATHINFO_FILENAME) ];
                 }
             }

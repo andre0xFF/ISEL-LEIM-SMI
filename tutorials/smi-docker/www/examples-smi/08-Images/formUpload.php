@@ -1,11 +1,12 @@
-<!DOCTYPE html>
-<html>
 <?php
   require_once( "../Lib/lib.php" );
   require_once( "../Lib/db.php" );
+  require_once("ensureAuth.php");
 
   $configurations = getConfiguration();
 ?>
+<!DOCTYPE html>
+<html>
     <head>
         <meta http-equiv='Content-Type' content='text/html; charset=utf-8'>
         <title>Image Processing - Upload file</title>
