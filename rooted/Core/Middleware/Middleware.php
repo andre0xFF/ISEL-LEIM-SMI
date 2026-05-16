@@ -38,9 +38,9 @@ class Middleware
             return;
         }
 
-        $middleware = static::MAP[$key] ?? false;
+        $middleware_class = static::MAP[$key] ?? false;
 
-        if (!$middleware) {
+        if (!$middleware_class) {
             throw new \Exception(
                 "No matching middleware found for key '{$key}'.",
             );
@@ -49,6 +49,7 @@ class Middleware
         // Instantiate the middleware class and call handle().
         // handle() either allows the request to proceed (by returning)
         // or blocks it (by redirecting and calling exit()).
-        new $middleware()->handle();
+        $middleware = new $middleware_class();
+        $middleware->handle();
     }
 }
