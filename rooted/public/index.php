@@ -16,7 +16,6 @@
  *  5. Clean up flash data at the end of the request.
  */
 
-use Core\Session;
 use Core\ValidationException;
 
 // __DIR__ is the directory of THIS file (public/). Going one level up
@@ -60,11 +59,11 @@ try {
 } catch (ValidationException $exception) {
     // Validation failed — flash errors and old input into the session
     // so they survive the redirect, then send the user back to the form.
-    Session::flash("errors", $exception->errors);
-    Session::flash("old", $exception->old);
+    $_SESSION["_flash"]["errors"] = $exception->errors;
+    $_SESSION["_flash"]["old"] = $exception->old;
 
     return redirect($router->previousUrl());
 }
 
 // Clear flash data so it doesn't leak into the next request.
-Session::unflash();
+unset($_SESSION["_flash"]);
