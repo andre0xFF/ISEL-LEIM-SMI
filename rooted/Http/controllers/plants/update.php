@@ -5,17 +5,13 @@ use Core\Database;
 
 $db = App::resolve(Database::class);
 
-$currentUserId = $_SESSION["user"]["id"] ?? null;
-
-authorize($currentUserId);
-
 $plant = $db
     ->query("SELECT * FROM plants WHERE id = :id", [
         "id" => $_GET["id"],
     ])
     ->findOrFail();
 
-authorize($plant["user_id"] === $currentUserId);
+authorize($plant["user_id"] === $_SESSION["user"]["id"]);
 
 // TODO: validate input
 

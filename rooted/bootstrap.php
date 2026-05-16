@@ -16,7 +16,7 @@ $container = new Container();
 
 // Register a factory for the Database class. The callable is only invoked
 // when a controller calls App::resolve(Database::class), not at boot time.
-$container->bind("Core\Database", function () {
+$container->bind(Database::class, function () {
     // config.php returns an array with 'database', 'username', and 'password'
     // keys, reading from environment variables with fallback defaults.
     $config = require base_path("config.php");

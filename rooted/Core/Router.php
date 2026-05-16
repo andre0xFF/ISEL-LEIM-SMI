@@ -175,12 +175,8 @@ class Router
      */
     protected function abort($code = 404): never
     {
-        http_response_code($code);
-
-        require base_path("views/{$code}.php");
-
-        // die() stops all PHP execution immediately. Without it, the
-        // script would continue running after rendering the error page.
-        die();
+        // Delegate to the global abort() helper in Core/functions.php
+        // to avoid duplicating the same logic.
+        abort($code);
     }
 }

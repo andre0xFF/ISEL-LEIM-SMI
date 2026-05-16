@@ -5,22 +5,16 @@ use Core\Database;
 
 $db = App::resolve(Database::class);
 
-$currentUserId = $_SESSION["user"]["id"] ?? null;
-
-authorize($currentUserId);
-
-$id = $_GET["id"];
-
 $plant = $db
     ->query("SELECT * FROM plants WHERE id = :id", [
-        "id" => $id,
+        "id" => $_GET["id"],
     ])
     ->findOrFail();
 
-authorize($plant["user_id"] === $currentUserId);
+authorize($plant["user_id"] === $_SESSION["user"]["id"]);
 
 $db->query("DELETE FROM plants WHERE id = :id", [
-    "id" => $id,
+    "id" => $_GET["id"],
 ]);
 
 redirect("/plants");

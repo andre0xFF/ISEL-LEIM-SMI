@@ -7,7 +7,7 @@ $db = App::resolve(Database::class);
 
 $plants = $db
     ->query("SELECT * FROM plants WHERE user_id = :user_id", [
-        "user_id" => $_SESSION["user"]["id"] ?? 0,
+        "user_id" => $_SESSION["user"]["id"],
     ])
     ->get();
 
