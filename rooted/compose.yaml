@@ -1,0 +1,51 @@
+services:
+  app:
+    container_name: rooted-app
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    volumes:
+      - .:/workspace:cached
+
+    ports:
+      - "${APP_PORT:-8080}:8080"
+
+    depends_on:
+      db:
+        condition: service_healthy
+
+    environment:
+      DB_HOST: ${DB_HOST:-db}
+      DB_PORT: ${DB_PORT:-3306}
+      DB_NAME: ${DB_NAME:-rooted}
+      DB_USER: ${DB_USER:-root}
+      DB_PASSWORD: ${DB_PASSWORD:-root}
+
+  db:
+    container_name: rooted-db
+    image: mysql:8.0
+    restart: unless-stopped
+    volumes:
+      - mysql-data:/var/lib/mysql
+      # TODO: Add quick comment explaining initdb
+      - ./database:/docker-entrypoint-initdb.d:ro
+
+    ports:
+      - "${MYSQL_PORT:-3306}:3306"
+
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-root}
+      MYSQL_DATABASE: ${DB_NAME:-rooted}
+
+    healthcheck:
+      test:
+        - "CMD-SHELL"
+        - "mysqladmin ping -h 127.0.0.1 -u root -p$$MYSQL_ROOT_PASSWORD && mysql -h 127.0.0.1 -u root -p$$MYSQL_ROOT_PASSWORD $$MYSQL_DATABASE -e 'SELECT 1 FROM users LIMIT 1'"
+
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  mysql-data:
