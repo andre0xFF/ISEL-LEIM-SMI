@@ -9,5 +9,5 @@ return [
     ],
 
     "username" => getenv("DB_USER") ?: "root",
-    "password" => getenv("DB_PASSWORD") ?: "",
+    "password" => getenv("DB_PASSWORD") ?: "root",
 ];

@@ -1,6 +1,9 @@
 # direnv
 .envrc
 
+# Build artifact
+rooted.zip
+
 # Created by https://www.toptal.com/developers/gitignore/api/phpstorm,jetbrains+all,composer
 # Edit at https://www.toptal.com/developers/gitignore?templates=phpstorm,jetbrains+all,composer
 

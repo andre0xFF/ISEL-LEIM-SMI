@@ -28,7 +28,7 @@ services:
     restart: unless-stopped
     volumes:
       - mysql-data:/var/lib/mysql
-      # TODO: Add quick comment explaining initdb
+      # SQL files here run once, in alphabetical order, on first volume creation
       - ./database:/docker-entrypoint-initdb.d:ro
 
     ports:

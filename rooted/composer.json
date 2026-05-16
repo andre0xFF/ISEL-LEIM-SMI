@@ -22,5 +22,14 @@
   },
   "scripts": {
     "start": "php -S localhost:8080 -t public"
+  },
+  "archive": {
+    "exclude": [
+      "/vendor",
+      "/.idea",
+      "/.git",
+      "/.zed",
+      "rooted.zip"
+    ]
   }
 }
