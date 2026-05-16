@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Application Bootstrap — registers shared services in the dependency container.
+ * Application Bootstrap — registers shared services.
  *
  * This file is loaded once per request by the front controller (public/index.php).
  * It wires up everything the application needs (currently just the database)
@@ -9,14 +9,11 @@
  */
 
 use Core\App;
-use Core\Container;
 use Core\Database;
-
-$container = new Container();
 
 // Register a factory for the Database class. The callable is only invoked
 // when a controller calls App::resolve(Database::class), not at boot time.
-$container->bind(Database::class, function () {
+App::bind(Database::class, function () {
     // config.php returns an array with 'database', 'username', and 'password'
     // keys, reading from environment variables with fallback defaults.
     $config = require base_path("config.php");
@@ -27,6 +24,3 @@ $container->bind(Database::class, function () {
         $config["password"],
     );
 });
-
-// Make the container globally accessible via App::resolve().
-App::setContainer($container);

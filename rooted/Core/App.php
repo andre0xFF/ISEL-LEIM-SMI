@@ -2,63 +2,49 @@
 
 namespace Core;
 
+use Exception;
+
 /**
- * Global access point to the dependency injection container.
+ * Simple service container with global static access.
  *
- * Rather than passing the Container instance through every function call,
- * this class stores it as a static property so any file in the application
- * can retrieve shared services with:
+ * Factories are registered once in bootstrap.php with App::bind().
+ * Controllers retrieve instances with App::resolve():
  *
  *   $db = App::resolve(Database::class);
- *
- * The container is set once during bootstrap (see bootstrap.php).
  */
 class App
 {
-    /** @var Container The application's service container. */
-    protected static $container;
+    /** @var array<string, callable> Registered factory functions keyed by class name. */
+    protected static $bindings = [];
 
     /**
-     * Store the container instance for global access.
+     * Register a factory function for the given key.
      *
-     * @param  Container $container
-     * @return void
-     */
-    public static function setContainer($container): void
-    {
-        static::$container = $container;
-    }
-
-    /**
-     * Get the container instance.
-     *
-     * @return Container
-     */
-    public static function container(): Container
-    {
-        return static::$container;
-    }
-
-    /**
-     * Shortcut to register a binding on the container.
-     *
-     * @param  string   $key       The service key (typically a class name).
-     * @param  callable $resolver  Factory function that creates the instance.
+     * @param  string   $key       Typically a fully-qualified class name (e.g. 'Core\Database').
+     * @param  callable $resolver  A function that creates and returns the instance.
      * @return void
      */
     public static function bind($key, $resolver): void
     {
-        static::container()->bind($key, $resolver);
+        static::$bindings[$key] = $resolver;
     }
 
     /**
-     * Shortcut to resolve a service from the container.
+     * Build and return the instance registered under the given key.
      *
-     * @param  string $key  The service key that was used in bind().
-     * @return mixed        The instance returned by the factory function.
+     * @param  string $key  The key that was used in bind().
+     * @return mixed        The object returned by the factory function.
+     *
+     * @throws Exception If no binding exists for the given key.
      */
     public static function resolve($key)
     {
-        return static::container()->resolve($key);
+        if (!array_key_exists($key, static::$bindings)) {
+            throw new Exception("No matching binding found for '{$key}'.");
+        }
+
+        $resolver = static::$bindings[$key];
+
+        return call_user_func($resolver);
     }
 }
