@@ -47,8 +47,15 @@ $db->query("INSERT INTO users(email, password) VALUES(:email, :password)", [
     "password" => password_hash($password, PASSWORD_BCRYPT),
 ]);
 
-new Authenticator()->login([
+$authenticator = new Authenticator();
+
+$authenticator->login([
+    "id" => $db->lastInsertId(),
     "email" => $email,
+    "role" => "user",
 ]);
+
+// New registrations skip 2FA — the user just proved identity by creating the account.
+$_SESSION["user"]["2fa_verified"] = true;
 
 redirect("/");
