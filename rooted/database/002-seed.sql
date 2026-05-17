@@ -4,6 +4,11 @@
 
 USE `rooted`;
 
+-- Ensure the connection interprets this file as UTF-8.
+-- Without this, accented characters (é, ã, ç) may be stored
+-- as Latin-1 bytes, causing mojibake when read back as UTF-8.
+SET NAMES utf8mb4;
+
 -- Users
 INSERT INTO `users` (`email`, `password`, `role`, `email_verified`) VALUES
     ('admin@rooted.local', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'admin', 1),
