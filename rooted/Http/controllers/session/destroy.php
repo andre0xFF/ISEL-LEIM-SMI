@@ -2,6 +2,7 @@
 
 use Core\Authenticator;
 
-new Authenticator()->logout();
+$authenticator = new Authenticator();
+$authenticator->logout();
 
 redirect("/");
