@@ -38,11 +38,24 @@ require BASE_PATH . "Core/functions.php";
 // so controllers can retrieve them with App::resolve().
 require BASE_PATH . "bootstrap.php";
 
+// Setup wizard guard — if no admin exists, redirect to /setup.
+$requestPath = parse_url($_SERVER["REQUEST_URI"])["path"];
+if (!in_array($requestPath, ["/setup"])) {
+    try {
+        $adminCount = Core\App::resolve(Core\Database::class)
+            ->query("SELECT COUNT(*) as cnt FROM users WHERE role = 'admin'")
+            ->find();
+        if ($adminCount && (int) $adminCount["cnt"] === 0) {
+            header("Location: /setup");
+            exit();
+        }
+    } catch (\Exception $e) {
+        // DB not ready yet — let the request proceed (setup will handle it)
+    }
+}
+
 $router = new \Core\Router();
 
-// Load route definitions. routes.php returns a function that receives
-// the router, keeping the dependency explicit instead of relying on
-// PHP's implicit scope sharing through require.
 $routes = require BASE_PATH . "routes.php";
 $routes($router);
 
