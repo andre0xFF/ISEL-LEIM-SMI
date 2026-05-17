@@ -113,7 +113,7 @@ class Router
      *
      * This is designed to be chained after a route method:
      *   $router->get("/plants", "plants/index.php")->only("auth");
-     *   $router->get("/users", "users/index.php")->only("auth", "admin");
+     $router->get("/users", "users/index.php")->only("auth", "role:admin");
      *
      * @param  string ...$keys  Middleware keys defined in Middleware::MAP.
      * @return $this
