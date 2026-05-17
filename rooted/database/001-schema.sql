@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS `users` (
     `id`                    INT UNSIGNED    NOT NULL AUTO_INCREMENT,
     `email`                 VARCHAR(255)    NOT NULL,
     `password`              VARCHAR(255)    NOT NULL,
-    `role`                  ENUM('admin', 'moderator', 'user') NOT NULL DEFAULT 'user',
+    `role`                  ENUM('admin', 'moderator', 'user', 'guest') NOT NULL DEFAULT 'user',
     `two_factor_code`       VARCHAR(6)      DEFAULT NULL,
     `two_factor_expires_at` DATETIME        DEFAULT NULL,
     `email_verified`        TINYINT(1)      NOT NULL DEFAULT 0,
