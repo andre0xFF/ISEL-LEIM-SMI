@@ -4,7 +4,9 @@ ARG INSTALL_XDEBUG=false
 
 # Install system dependencies + PHP extensions
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    && docker-php-ext-install pdo pdo_mysql \
+    libzip-dev \
+    libcurl4-openssl-dev \
+    && docker-php-ext-install pdo pdo_mysql zip curl \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
