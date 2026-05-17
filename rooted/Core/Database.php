@@ -108,4 +108,16 @@ class Database
 
         return $result;
     }
+
+    /**
+     * Get the ID of the last inserted row.
+     *
+     * Useful after an INSERT to retrieve the auto-increment ID.
+     *
+     * @return string  The last insert ID (as a string, per PDO convention).
+     */
+    public function lastInsertId(): string
+    {
+        return $this->connection->lastInsertId();
+    }
 }
