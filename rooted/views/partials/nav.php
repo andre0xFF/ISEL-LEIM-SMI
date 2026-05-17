@@ -3,8 +3,19 @@
         <div class="flex h-16 items-center justify-between">
             <div class="flex items-center">
                 <div class="flex-shrink-0">
-                    <img class="h-8 w-8" src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500"
-                         alt="Rooted">
+                    <svg class="h-8 w-8" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+                        <!-- Leaf -->
+                        <path d="M32 6C32 6 14 14 14 30c0 8 4 14 10 17" stroke="#818cf8" stroke-width="3" stroke-linecap="round" fill="#a5b4fc" fill-opacity="0.3"/>
+                        <path d="M32 6C32 6 50 14 50 30c0 8-4 14-10 17" stroke="#818cf8" stroke-width="3" stroke-linecap="round" fill="#a5b4fc" fill-opacity="0.3"/>
+                        <!-- Leaf vein / stem -->
+                        <line x1="32" y1="6" x2="32" y2="44" stroke="#818cf8" stroke-width="3" stroke-linecap="round"/>
+                        <!-- Roots -->
+                        <path d="M32 44 C32 48 28 54 22 58" stroke="#c084fc" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+                        <path d="M32 44 C32 50 34 56 42 58" stroke="#c084fc" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+                        <path d="M32 44 C32 50 30 55 32 60" stroke="#c084fc" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+                        <path d="M27 50 C25 52 22 52 20 54" stroke="#c084fc" stroke-width="2" stroke-linecap="round" fill="none"/>
+                        <path d="M37 52 C39 54 42 53 44 54" stroke="#c084fc" stroke-width="2" stroke-linecap="round" fill="none"/>
+                    </svg>
                 </div>
                 <div class="hidden md:block">
                     <div class="ml-10 flex items-baseline space-x-4">
