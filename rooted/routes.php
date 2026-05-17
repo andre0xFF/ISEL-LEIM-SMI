@@ -1,42 +1,62 @@
 <?php
 
-/**
- * Route definitions — maps URL + HTTP method pairs to controller files.
- *
- * Returns a function that receives the Router instance. This avoids
- * relying on PHP's implicit scope sharing through require.
- */
-
 use Core\Router;
 
 return function (Router $router) {
     $router->get("/", "index.php");
 
-    // Plant routes — browsing is for any authenticated user, management for moderators
-    $router->get("/plants", "plants/index.php")->only("auth");
-    $router->get("/plant", "plants/show.php")->only("auth");
+    // Plants — browsing open to everyone, CUD restricted to moderators
+    $router->get("/plants", "plants/index.php");
+    $router->get("/plant", "plants/show.php");
     $router
         ->get("/plants/create", "plants/create.php")
         ->only("auth", "role:moderator");
+    $router->post("/plants", "plants/store.php")->only("auth", "role:moderator");
+    $router->get("/plant/edit", "plants/edit.php")->only("auth", "role:moderator");
+    $router->patch("/plant", "plants/update.php")->only("auth", "role:moderator");
+    $router->delete("/plant", "plants/destroy.php")->only("auth", "role:moderator");
+
+    // Tags
+    $router->get("/tags", "tags/index.php")->only("auth");
+    $router->get("/tags/create", "tags/create.php")->only("auth", "role:moderator");
+    $router->post("/tags", "tags/store.php")->only("auth", "role:moderator");
+    $router->get("/tag/edit", "tags/edit.php")->only("auth", "role:moderator");
+    $router->patch("/tag", "tags/update.php")->only("auth", "role:moderator");
+    $router->delete("/tag", "tags/destroy.php")->only("auth", "role:moderator");
+
+    // Media
+    $router->get("/media", "media/serve.php");
     $router
-        ->post("/plants", "plants/store.php")
+        ->get("/media/batch-upload", "media/batch-upload-form.php")
         ->only("auth", "role:moderator");
     $router
-        ->get("/plant/edit", "plants/edit.php")
+        ->post("/media/batch-upload", "media/batch-upload.php")
         ->only("auth", "role:moderator");
     $router
-        ->patch("/plant", "plants/update.php")
+        ->get("/media/batch-download", "media/batch-download.php")
         ->only("auth", "role:moderator");
-    $router
-        ->delete("/plant", "plants/destroy.php")
-        ->only("auth", "role:moderator");
+
+    // Subscriptions
+    $router->get("/subscriptions", "subscriptions/index.php")->only("auth");
+    $router->post("/subscriptions", "subscriptions/store.php")->only("auth");
+    $router->delete("/subscription", "subscriptions/destroy.php")->only("auth");
+
+    // Profile
+    $router->get("/profile", "profile/edit.php")->only("auth");
+    $router->patch("/profile", "profile/update.php")->only("auth");
 
     // User management — admin only
     $router->get("/users", "users/index.php")->only("auth", "role:admin");
     $router->get("/user", "users/show.php")->only("auth", "role:admin");
+    $router->get("/users/create", "users/create.php")->only("auth", "role:admin");
     $router->post("/users", "users/store.php")->only("auth", "role:admin");
+    $router->get("/user/edit", "users/edit.php")->only("auth", "role:admin");
     $router->put("/user", "users/update.php")->only("auth", "role:admin");
     $router->delete("/user", "users/destroy.php")->only("auth", "role:admin");
+
+    // Settings — admin only
+    $router->get("/settings", "settings/edit.php")->only("auth", "role:admin");
+    $router->patch("/settings", "settings/update.php")->only("auth", "role:admin");
 
     // Registration — guests only
     $router->get("/register", "registration/create.php")->only("guest");
@@ -51,4 +71,17 @@ return function (Router $router) {
     $router->get("/verify", "verification/show.php")->only("auth");
     $router->post("/verify", "verification/store.php")->only("auth");
     $router->post("/resend-2fa", "verification/resend.php")->only("auth");
+
+    // RSS feed
+    $router->get("/rss", "rss/feed.php");
+
+    // Map
+    $router->get("/map", "map/index.php");
+
+    // PlantNet identification
+    $router->post("/identify", "identify/store.php")->only("auth", "role:moderator");
+
+    // Setup wizard
+    $router->get("/setup", "setup/index.php");
+    $router->post("/setup", "setup/store.php");
 };

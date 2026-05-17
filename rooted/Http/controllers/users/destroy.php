@@ -5,22 +5,17 @@ use Core\Database;
 
 $db = App::resolve(Database::class);
 
-$currentUserId = $_SESSION["user"]["id"] ?? null;
-
-authorize($currentUserId);
-
-$id = $_GET["id"];
-
 $user = $db
     ->query("SELECT * FROM users WHERE id = :id", [
-        "id" => $id,
+        "id" => $_GET["id"],
     ])
     ->findOrFail();
 
-authorize($user["id"] === $currentUserId);
+// Prevent self-deletion
+authorize($user["id"] !== $_SESSION["user"]["id"]);
 
 $db->query("DELETE FROM users WHERE id = :id", [
-    "id" => $id,
+    "id" => $user["id"],
 ]);
 
-redirect("/");
+redirect("/users");

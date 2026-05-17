@@ -1,38 +1,56 @@
 <?php
 
-/**
- * GET /plants — List all plants belonging to the logged-in user.
- *
- * This controller follows the standard read pattern:
- *  1. Resolve the database connection from the service container.
- *  2. Query for data using a prepared statement.
- *  3. Pass the results to a view for rendering.
- */
-
 use Core\App;
 use Core\Database;
 
-// App::resolve() retrieves the Database instance that was registered
-// in bootstrap.php. This is the dependency injection pattern — the
-// controller doesn't create the connection itself, it asks the
-// container for one.
 $db = App::resolve(Database::class);
 
-// Fetch all plants owned by the current user. The :user_id placeholder
-// is a prepared statement parameter — the database treats it as data,
-// never as SQL, which prevents SQL injection.
-// ->get() returns all matching rows as an array of associative arrays.
-$plants = $db
-    ->query("SELECT * FROM plants WHERE user_id = :user_id", [
-        "user_id" => $_SESSION["user"]["id"],
-    ])
-    ->get();
+$q = $_GET["q"] ?? "";
+$tagFilter = $_GET["tag"] ?? "";
+$isGuest = !($_SESSION["user"] ?? false);
 
-// Render the view. The second argument is an associative array that
-// view() passes to extract(), which turns each key into a local
-// variable inside the view file — so $heading and $plants are
-// available directly in plants/index.view.php.
+// Base query — join with tags and meta for search
+$sql = "SELECT DISTINCT p.* FROM plants p";
+$params = [];
+
+if ($tagFilter) {
+    $sql .= " INNER JOIN plant_tag pt ON pt.plant_id = p.id";
+    $sql .= " AND pt.tag_id = :tag_id";
+    $params["tag_id"] = $tagFilter;
+}
+
+if ($q) {
+    $sql .= " LEFT JOIN plant_meta pm ON pm.plant_id = p.id";
+}
+
+$conditions = [];
+
+// Visibility: guests see public only, authenticated see all
+if ($isGuest) {
+    $conditions[] = "p.visibility = 'public'";
+}
+
+// Text search across name, body, and meta values
+if ($q) {
+    $conditions[] = "(p.name LIKE :q OR p.body LIKE :q OR pm.value LIKE :q)";
+    $params["q"] = "%{$q}%";
+}
+
+if ($conditions) {
+    $sql .= " WHERE " . implode(" AND ", $conditions);
+}
+
+$sql .= " ORDER BY p.created_at DESC";
+
+$plants = $db->query($sql, $params)->get();
+
+// Get all tags for the filter sidebar
+$tags = $db->query("SELECT * FROM tags ORDER BY type, name")->get();
+
 view("plants/index.view.php", [
-    "heading" => "My Plants",
+    "heading" => "Plants",
     "plants" => $plants,
+    "tags" => $tags,
+    "q" => $q,
+    "tagFilter" => $tagFilter,
 ]);

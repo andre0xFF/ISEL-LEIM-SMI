@@ -5,25 +5,63 @@ use Core\Database;
 
 $db = App::resolve(Database::class);
 
-$currentUserId = $_SESSION["user"]["id"] ?? null;
-
-authorize($currentUserId);
-
-$id = $_GET["id"];
-
 $user = $db
     ->query("SELECT * FROM users WHERE id = :id", [
-        "id" => $id,
+        "id" => $_GET["id"],
     ])
     ->findOrFail();
 
-authorize($user["id"] === $currentUserId);
+$email = trim($_POST["email"] ?? "");
+$role = $_POST["role"] ?? $user["role"];
+$newPassword = $_POST["new_password"] ?? "";
 
-// TODO: validate input
+$errors = [];
 
-$db->query("UPDATE users SET email = :email WHERE id = :id", [
-    "email" => $_POST["email"],
-    "id" => $id,
-]);
+// Validate email
+if ($email === "" || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+    $errors["email"] = "A valid email address is required.";
+}
+
+// Check uniqueness excluding this user
+if ($email !== "" && $email !== $user["email"]) {
+    $existing = $db
+        ->query("SELECT id FROM users WHERE email = :email AND id != :id", [
+            "email" => $email,
+            "id" => $user["id"],
+        ])
+        ->find();
+
+    if ($existing) {
+        $errors["email"] = "That email is already taken.";
+    }
+}
+
+// Validate role
+if (!in_array($role, ["admin", "moderator", "user"])) {
+    $errors["role"] = "Role must be admin, moderator, or user.";
+}
+
+if (!empty($errors)) {
+    $_SESSION["_flash"]["errors"] = $errors;
+    return redirect("/user/edit?id=" . $user["id"]);
+}
+
+if ($newPassword !== "") {
+    $db->query(
+        "UPDATE users SET email = :email, role = :role, password = :password WHERE id = :id",
+        [
+            "email" => $email,
+            "role" => $role,
+            "password" => password_hash($newPassword, PASSWORD_BCRYPT),
+            "id" => $user["id"],
+        ],
+    );
+} else {
+    $db->query("UPDATE users SET email = :email, role = :role WHERE id = :id", [
+        "email" => $email,
+        "role" => $role,
+        "id" => $user["id"],
+    ]);
+}
 
 redirect("/users");
