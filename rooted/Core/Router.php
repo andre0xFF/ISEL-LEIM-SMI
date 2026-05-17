@@ -42,7 +42,7 @@ class Router
             "uri" => $uri,
             "controller" => $controller,
             "method" => $method,
-            "middleware" => null,
+            "middleware" => [],
         ];
 
         return $this;
@@ -109,19 +109,18 @@ class Router
     }
 
     /**
-     * Attach middleware to the most recently registered route.
+     * Attach one or more middlewares to the most recently registered route.
      *
      * This is designed to be chained after a route method:
      *   $router->get("/plants", "plants/index.php")->only("auth");
+     *   $router->get("/users", "users/index.php")->only("auth", "admin");
      *
-     * @param  string $key  A middleware key defined in Middleware::MAP (e.g. "auth", "guest").
+     * @param  string ...$keys  Middleware keys defined in Middleware::MAP.
      * @return $this
      */
-    public function only($key): self
+    public function only(string ...$keys): self
     {
-        // array_key_last returns the key of the last element — i.e. the
-        // route that was just added by the preceding get/post/etc. call.
-        $this->routes[array_key_last($this->routes)]["middleware"] = $key;
+        $this->routes[array_key_last($this->routes)]["middleware"] = $keys;
 
         return $this;
     }
@@ -144,7 +143,9 @@ class Router
                 $route["uri"] === $uri &&
                 $route["method"] === strtoupper($method)
             ) {
-                Middleware::resolve($route["middleware"]);
+                foreach ($route["middleware"] as $middleware) {
+                    Middleware::resolve($middleware);
+                }
 
                 return require base_path(
                     "Http/controllers/" . $route["controller"],
@@ -170,10 +171,10 @@ class Router
     /**
      * Halt execution and render an error page.
      *
-     * @param  int $code  HTTP status code (default: 404).
+     * @param  int $code  HTTP status code (default: NOT_FOUND_ERR).
      * @return never
      */
-    protected function abort($code = 404): never
+    protected function abort($code = Response . NOT_FOUND_ERR): never
     {
         // Delegate to the global abort() helper in Core/functions.php
         // to avoid duplicating the same logic.
