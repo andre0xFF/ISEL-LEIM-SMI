@@ -10,7 +10,8 @@ $form = LoginForm::validate(
     ],
 );
 
-$signedIn = new Authenticator()->attempt(
+$authenticator = new Authenticator();
+$signedIn = $authenticator->attempt(
     $attributes["email"],
     $attributes["password"],
 );
@@ -24,4 +25,11 @@ if (!$signedIn) {
         ->throw();
 }
 
-redirect("/");
+// Credentials are valid — now start the 2FA flow.
+// Generate a code, email it, and redirect to the verification page.
+$authenticator->sendTwoFactorCode(
+    $_SESSION["user"]["id"],
+    $_SESSION["user"]["email"],
+);
+
+redirect("/verify");
