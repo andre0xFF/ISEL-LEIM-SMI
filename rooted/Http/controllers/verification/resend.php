@@ -1,10 +1,13 @@
 <?php
 
-// TODO: Implement 2FA code resend logic.
-//
-// Example:
-//   $user = $_SESSION['user'] ?? null;
-//   authorize($user);
-//   // Generate and send a new 2FA code to the user's email/phone.
-//   // Store the new code in the session or database.
-//   redirect('/verify');
+use Core\Authenticator;
+
+$authenticator = new Authenticator();
+$authenticator->sendTwoFactorCode(
+    $_SESSION["user"]["id"],
+    $_SESSION["user"]["email"],
+);
+
+$_SESSION["_flash"]["success"] = "A new code has been sent to your email.";
+
+redirect("/verify");
