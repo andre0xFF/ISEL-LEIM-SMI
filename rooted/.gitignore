@@ -1,3 +1,10 @@
+# Uploaded media files (keep directory structure, ignore contents)
+storage/app/media/*
+!storage/app/media/.gitkeep
+
+# Email log (development)
+storage/app/mail.log
+
 # direnv
 .envrc
 
