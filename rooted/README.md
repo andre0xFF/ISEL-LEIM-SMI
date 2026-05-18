@@ -148,15 +148,15 @@ This project uses sessions for authentication (remembering who is logged in) and
 Every request follows the same path through the application:
 
 ```
-
 Browser request (e.g. GET /plants)
-→ PHP built-in server
-→ public/index.php (1. front controller)
-→ bootstrap.php (2. register services)
-→ routes.php (3. find matching route)
-→ Http/controllers/ (4. execute controller)
-→ views/ (5. render HTML response)
-
+  → PHP built-in server
+  → public/index.php       (1. front controller)
+  → bootstrap.php          (2. register services)
+  → setup wizard guard     (3. redirect to /setup if no admin exists)
+  → routes.php             (4. find matching route)
+  → Middleware              (5. check access — auth, role, 2FA)
+  → Http/controllers/      (6. execute controller)
+  → views/                 (7. render HTML response)
 ```
 
 ### 1. Front Controller (`public/index.php`)
@@ -175,11 +175,17 @@ php -S 0.0.0.0:8080 -t public
 
 ### 2. Bootstrap (`bootstrap.php`)
 
-The front controller loads `bootstrap.php`, which sets up the **service container** — a registry where shared objects (like the database connection) are stored so they can be retrieved anywhere:
+The front controller loads `bootstrap.php`, which registers shared services — like the database connection — so they can be retrieved from anywhere using `App::resolve()`:
 
 ```php
-$container->bind("Core\Database", function () {
-    return new Database($config["database"], ...);
+App::bind(Database::class, function () {
+    $config = require base_path("config.php");
+
+    return new Database(
+        $config["database"],
+        $config["username"],
+        $config["password"],
+    );
 });
 ```
 
@@ -189,23 +195,30 @@ Later, any controller can retrieve the database with:
 $db = App::resolve(Database::class);
 ```
 
-This avoids creating multiple database connections and keeps configuration centralized.
+`App` is a simple static class with a `$bindings` array — `bind()` stores a factory closure under a key, and `resolve()` calls it. This avoids creating multiple database connections and keeps configuration centralized.
 
-### 3. Routing (`routes.php`)
+### 3. Setup Wizard Guard
 
-The router maps URL + HTTP method pairs to controller files:
+Before routing, the front controller checks whether any admin user exists in the database. If not (e.g. on first run), every request except `/setup` is redirected to the setup wizard, which lets you create the initial admin account.
+
+### 4. Routing (`routes.php`)
+
+The `routes.php` file returns a closure that receives a `Router` and registers all URL + HTTP method pairs:
 
 ```php
-$router->get("/plants", "plants/index.php")->only("auth");
-$router->post("/plants", "plants/store.php")->only("auth");
-$router->get("/login", "session/create.php")->only("guest");
+return function (Router $router) {
+    $router->get("/plants", "plants/index.php");
+    $router->post("/plants", "plants/store.php")->only("auth", "role:moderator");
+    $router->get("/login", "session/create.php")->only("guest");
+    // ...
+};
 ```
 
 - `$router->get("/plants", "plants/index.php")` means: when a `GET` request hits `/plants`, execute `Http/controllers/plants/index.php`.
-- `->only("auth")` applies **middleware** — in this case, requiring the user to be logged in. If they aren't, they'll be redirected. `->only("guest")` does the opposite: only accessible if you're _not_ logged in (like the login page).
+- `->only("auth", "role:moderator")` applies **middleware** — in this case, requiring the user to be logged in _and_ have at least the `moderator` role.
 - HTML forms can only send `GET` and `POST`. For `DELETE`, `PATCH`, and `PUT` methods, a hidden form field `_method` is used to override the actual HTTP method (this is a common pattern called **method spoofing**).
 
-### 4. Controllers (`Http/controllers/`)
+### 5. Controllers (`Http/controllers/`)
 
 Controllers are plain PHP files (not classes) organized by resource. Each file handles exactly one action:
 
@@ -229,21 +242,67 @@ The pattern is always: **resolve dependencies → query/mutate data → render a
 ```
 Http/controllers/
 ├── index.php               # Home page
+├── identify/
+│   └── store.php           # POST   /identify       — PlantNet identification
+├── map/
+│   └── index.php           # GET    /map             — interactive map
+├── media/
+│   ├── batch-download.php  # GET    /media/batch-download
+│   ├── batch-upload-form.php # GET  /media/batch-upload — show form
+│   ├── batch-upload.php    # POST   /media/batch-upload — handle upload
+│   └── serve.php           # GET    /media            — serve a media file
 ├── plants/                 # Plant CRUD
-│   ├── index.php           # GET    /plants        — list
-│   ├── show.php            # GET    /plant          — detail
-│   ├── create.php          # GET    /plants/create  — show form
-│   ├── store.php           # POST   /plants         — handle form
-│   ├── edit.php            # GET    /plant/edit      — show edit form
-│   ├── update.php          # PATCH  /plant           — handle edit
-│   └── destroy.php         # DELETE /plant           — delete
+│   ├── index.php           # GET    /plants           — list
+│   ├── show.php            # GET    /plant            — detail
+│   ├── create.php          # GET    /plants/create    — show form
+│   ├── store.php           # POST   /plants           — handle form
+│   ├── edit.php            # GET    /plant/edit       — show edit form
+│   ├── update.php          # PATCH  /plant            — handle edit
+│   └── destroy.php         # DELETE /plant            — delete
+├── profile/                # User profile
+│   ├── edit.php            # GET    /profile          — show profile
+│   └── update.php          # PATCH  /profile          — update profile
 ├── registration/           # User registration
+│   ├── create.php          # GET    /register         — show form
+│   └── store.php           # POST   /register         — handle form
+├── rss/
+│   └── feed.php            # GET    /rss              — RSS feed
 ├── session/                # Login / logout
-├── users/                  # User management
+│   ├── create.php          # GET    /login            — show form
+│   ├── store.php           # POST   /session          — handle login
+│   └── destroy.php         # DELETE /session          — logout
+├── settings/               # Application settings (admin)
+│   ├── edit.php            # GET    /settings         — show form
+│   └── update.php          # PATCH  /settings         — update
+├── setup/                  # First-run setup wizard
+│   ├── index.php           # GET    /setup            — show form
+│   └── store.php           # POST   /setup            — create admin
+├── subscriptions/          # Tag subscriptions
+│   ├── index.php           # GET    /subscriptions    — list
+│   ├── store.php           # POST   /subscriptions    — subscribe
+│   └── destroy.php         # DELETE /subscription     — unsubscribe
+├── tags/                   # Tag CRUD
+│   ├── index.php           # GET    /tags             — list
+│   ├── create.php          # GET    /tags/create      — show form
+│   ├── store.php           # POST   /tags             — handle form
+│   ├── edit.php            # GET    /tag/edit         — show edit form
+│   ├── update.php          # PATCH  /tag              — handle edit
+│   └── destroy.php         # DELETE /tag              — delete
+├── users/                  # User management (admin)
+│   ├── index.php           # GET    /users            — list
+│   ├── show.php            # GET    /user             — detail
+│   ├── create.php          # GET    /users/create     — show form
+│   ├── store.php           # POST   /users            — handle form
+│   ├── edit.php            # GET    /user/edit        — show edit form
+│   ├── update.php          # PUT    /user             — handle edit
+│   └── destroy.php         # DELETE /user             — delete
 └── verification/           # Two-factor authentication
+    ├── show.php            # GET    /verify           — show 2FA form
+    ├── store.php           # POST   /verify           — verify code
+    └── resend.php          # POST   /resend-2fa       — resend code
 ```
 
-### 5. Views (`views/`)
+### 6. Views (`views/`)
 
 Views are PHP templates that mix HTML with PHP to render the response. They receive data from controllers via the `view()` helper:
 
@@ -267,22 +326,59 @@ views/
 │   ├── head.php            # <head> tag, CSS links
 │   ├── nav.php             # Navigation bar
 │   ├── banner.php          # Page banner
+│   ├── errors.php          # Validation error messages
 │   └── footer.php          # Page footer
 ├── 403.php                 # Forbidden error page
 ├── 404.php                 # Not found error page
-└── index.view.php          # Home page
+├── index.view.php          # Home page
+├── map/
+│   └── index.view.php      # Interactive map
+├── media/
+│   └── batch-upload.view.php # Batch upload form
+├── plants/
+│   ├── index.view.php      # Plant listing
+│   ├── show.view.php       # Single plant detail
+│   ├── create.view.php     # Create plant form
+│   └── edit.view.php       # Edit plant form
+├── profile/
+│   └── edit.view.php       # User profile form
+├── registration/
+│   └── create.view.php     # Registration form
+├── session/
+│   └── create.view.php     # Login form
+├── settings/
+│   └── edit.view.php       # Application settings form
+├── setup/
+│   └── index.view.php      # Setup wizard form
+├── subscriptions/
+│   └── index.view.php      # Subscription listing
+├── tags/
+│   ├── index.view.php      # Tag listing
+│   ├── create.view.php     # Create tag form
+│   └── edit.view.php       # Edit tag form
+├── users/
+│   ├── index.view.php      # User listing
+│   ├── show.view.php       # User detail
+│   ├── create.view.php     # Create user form
+│   └── edit.view.php       # Edit user form
+└── verification/
+    └── show.view.php       # 2FA verification form
 ```
 
 ### Middleware
 
-Middleware runs _before_ a controller to guard access. This project has two:
+Middleware runs _before_ a controller to guard access. This project has four:
 
-| Key     | Class                           | Behavior                                  |
-| ------- | ------------------------------- | ----------------------------------------- |
-| `auth`  | `Core\Middleware\Authenticated` | Requires the user to be logged in         |
-| `guest` | `Core\Middleware\Guest`         | Requires the user to **not** be logged in |
+| Key        | Class                           | Behavior                                                      |
+| ---------- | ------------------------------- | ------------------------------------------------------------- |
+| `auth`     | `Core\Middleware\Authenticated` | Requires the user to be logged in                             |
+| `guest`    | `Core\Middleware\Guest`         | Requires the user to **not** be logged in                     |
+| `role`     | `Core\Middleware\Role`          | Requires a minimum role (e.g. `role:moderator`, `role:admin`) |
+| `verified` | `Core\Middleware\Verified`      | Requires 2FA verification to be completed                     |
 
-They're applied in routes with `->only("auth")` or `->only("guest")`.
+They're applied in routes with `->only("auth")`, `->only("guest")`, or chained like `->only("auth", "role:moderator")`.
+
+The `role` middleware uses a hierarchy: `guest < user < moderator < admin`. A route guarded with `role:moderator` will allow moderators _and_ admins, but block regular users.
 
 ### Database
 
@@ -290,14 +386,33 @@ SQL files live in the `database/` directory and are executed in alphabetical ord
 
 ```
 database/
-├── 001-schema.sql          # Table definitions (users, plants)
-└── 002-seed.sql            # Seed data (default admin user)
+├── 001-schema.sql          # Table definitions
+└── 002-seed.sql            # Seed data (demo users, plants, tags, etc.)
 ```
 
-The default admin credentials are:
+The schema defines these tables:
 
-- **Email:** `admin@rooted.local`
-- **Password:** `password`
+| Table           | Purpose                                                                         |
+| --------------- | ------------------------------------------------------------------------------- |
+| `users`         | User accounts with roles (`admin`, `moderator`, `user`, `guest`) and 2FA fields |
+| `plants`        | Plant entries with name, description, and visibility (`public`/`internal`)      |
+| `media`         | File attachments (image/video/audio) linked to plants                           |
+| `tags`          | Taxonomy tags (`primary` or `secondary`)                                        |
+| `plant_tag`     | Many-to-many relationship between plants and tags                               |
+| `plant_meta`    | Key-value metadata per plant (soil type, sun, watering, GPS coordinates, etc.)  |
+| `subscriptions` | Users subscribe to tags to receive notifications                                |
+| `settings`      | Application-wide key-value configuration (SMTP, app name, etc.)                 |
+
+The seed data includes several demo users. All passwords are `password`:
+
+| Email                    | Role      | Verified |
+| ------------------------ | --------- | -------- |
+| `admin@rooted.local`     | admin     | ✅       |
+| `moderator@rooted.local` | moderator | ✅       |
+| `maria@rooted.local`     | moderator | ✅       |
+| `joao@rooted.local`      | user      | ✅       |
+| `ana@rooted.local`       | user      | ✅       |
+| `pedro@rooted.local`     | user      | ❌       |
 
 The database connection is configured in `config.php`, which reads from environment variables with sensible defaults.
 
@@ -307,32 +422,43 @@ The database connection is configured in `config.php`, which reads from environm
 
 ```
 rooted/
-├── Core/                   # Framework classes
-│   ├── Middleware/          # Route middleware (Authenticated, Guest)
-│   ├── App.php             # Service locator
-│   ├── Container.php       # Dependency injection container
-│   ├── Database.php        # PDO wrapper
-│   ├── Router.php          # URL routing
-│   ├── Session.php         # Session management
-│   ├── Authenticator.php   # Login/logout logic
-│   ├── Validator.php       # Input validation
-│   └── functions.php       # Global helper functions (view, redirect, etc.)
-├── Http/                   # HTTP layer
-│   ├── controllers/        # File-based controllers (one per action)
-│   └── Forms/              # Form validation classes
-├── views/                  # PHP view templates
-│   └── partials/           # Reusable fragments (head, nav, footer)
-├── public/                 # Document root (only web-accessible directory)
-│   └── index.php           # Front controller — single entry point
-├── database/               # SQL schema and seed files
-├── vendor/                 # Composer dependencies (git-ignored)
-├── bootstrap.php           # Service container setup
-├── config.php              # Database config (reads environment variables)
-├── routes.php              # All route definitions
-├── compose.yaml            # Docker Compose services (app + MySQL)
-├── Dockerfile              # PHP development container
-├── composer.json           # Dependencies and scripts
-└── composer.lock           # Locked dependency versions
+├── Core/                       # Framework classes
+│   ├── Middleware/              # Route middleware
+│   │   ├── Middleware.php       # Middleware registry/dispatcher
+│   │   ├── Authenticated.php   # "auth" — requires login
+│   │   ├── Guest.php           # "guest" — requires no login
+│   │   ├── Role.php            # "role:X" — requires minimum role
+│   │   └── Verified.php        # "verified" — requires 2FA
+│   ├── App.php                 # Static service registry (bind/resolve)
+│   ├── Authenticator.php       # Login, logout, and 2FA logic
+│   ├── Database.php            # PDO wrapper
+│   ├── Mailer.php              # Email sending via mail() with logging
+│   ├── MediaService.php        # File upload, storage, and retrieval
+│   ├── NotificationService.php # Email notifications for subscriptions
+│   ├── PlantNetService.php     # PlantNet API integration for plant identification
+│   ├── Response.php            # HTTP status code constants
+│   ├── Router.php              # URL routing with middleware support
+│   ├── ValidationException.php # Exception carrying validation errors and old input
+│   ├── Validator.php           # Input validation helpers
+│   ├── WeatherService.php      # Open-Meteo API integration for weather data
+│   └── functions.php           # Global helper functions (view, redirect, abort, etc.)
+├── Http/                       # HTTP layer
+│   ├── controllers/            # File-based controllers (one per action)
+│   └── Forms/                  # Form validation classes
+├── views/                      # PHP view templates
+│   └── partials/               # Reusable fragments (head, nav, footer, errors)
+├── public/                     # Document root (only web-accessible directory)
+│   └── index.php               # Front controller — single entry point
+├── database/                   # SQL schema and seed files
+├── storage/                    # Uploaded files (media, mail logs)
+├── vendor/                     # Composer dependencies (git-ignored)
+├── bootstrap.php               # Service registration (binds Database to App)
+├── config.php                  # Database config (reads environment variables)
+├── routes.php                  # All route definitions
+├── compose.yaml                # Docker Compose services (app + MySQL)
+├── Dockerfile                  # PHP development container
+├── composer.json               # Dependencies and autoloading
+└── composer.lock               # Locked dependency versions
 ```
 
 ## Contributing
