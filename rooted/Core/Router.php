@@ -174,7 +174,7 @@ class Router
      * @param  int $code  HTTP status code (default: NOT_FOUND_ERR).
      * @return never
      */
-    protected function abort($code = Response . NOT_FOUND_ERR): never
+    protected function abort(int $code = Response::NOT_FOUND): never
     {
         // Delegate to the global abort() helper in Core/functions.php
         // to avoid duplicating the same logic.
