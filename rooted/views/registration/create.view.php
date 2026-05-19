@@ -10,15 +10,15 @@
         <form method="POST" action="/register" class="space-y-6">
             <div>
                 <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
-                <input type="email" id="email" name="email" value="<?= htmlspecialchars(old("email")) ?>"
-                       required
+                <input type="email" id="email" name="email" autocomplete="email" value="<?= htmlspecialchars(old("email")) ?>"
+                       required maxlength="255"
                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
             </div>
 
             <div>
                 <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
                 <input type="password" id="password" name="password"
-                       required
+                       required minlength="7" maxlength="255" autocomplete="new-password"
                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
             </div>
 
