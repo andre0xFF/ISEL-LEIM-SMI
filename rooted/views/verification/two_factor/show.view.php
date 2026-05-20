@@ -24,7 +24,7 @@
             Enter it below to continue.
         </p>
 
-        <form method="POST" action="/verify" class="space-y-6">
+        <form method="POST" action="/two-factor" class="space-y-6">
             <div>
                 <label for="code" class="block text-sm font-medium text-gray-700">Verification Code</label>
                 <input type="text" id="code" name="code" maxlength="6" inputmode="numeric" pattern="[0-9]{6}"

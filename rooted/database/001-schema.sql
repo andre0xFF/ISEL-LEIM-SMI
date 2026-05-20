@@ -28,6 +28,21 @@ CREATE TABLE IF NOT EXISTS `users` (
     -- TODO: Explain ENGINE.
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+
+
+CREATE TABLE IF NOT EXISTS email_verifications (
+   `user_id` INT UNSIGNED NOT NULL,
+   `token_hash` CHAR(64) NOT NULL,
+   `expires_at` DATETIME NOT NULL,
+   `consumed_at` DATETIME DEFAULT NULL,
+   `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+   PRIMARY KEY (user_id),
+   UNIQUE KEY uk_email_verifications_token_hash (token_hash),
+   CONSTRAINT fk_email_verifications_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
 -- Plants
 CREATE TABLE IF NOT EXISTS `plants` (
     `id`            INT UNSIGNED    NOT NULL AUTO_INCREMENT,
@@ -118,3 +133,5 @@ CREATE TABLE IF NOT EXISTS `settings` (
     PRIMARY KEY (`id`),
     UNIQUE KEY `uk_settings_key` (`key`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+

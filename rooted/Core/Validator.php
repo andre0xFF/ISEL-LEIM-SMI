@@ -4,6 +4,15 @@ namespace Core;
 
 class Validator
 {
+
+    public const STRONG_PASSWORD_PATTERN = '^(?=.*[A-Za-z])(?=.*\d)(?=.*[^A-Za-z\d]).+$';
+
+    public static function strongPassword($value): bool{
+
+        return preg_match('/'.self::STRONG_PASSWORD_PATTERN. '/', $value) === 1;
+    }
+
+
     public static function string($value, $min = 1, $max = INF)
     {
         $value = trim((string) $value);

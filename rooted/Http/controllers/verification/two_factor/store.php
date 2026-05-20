@@ -8,7 +8,7 @@ if ($code === "") {
     $_SESSION["_flash"]["errors"] = [
         "code" => "Please enter the verification code.",
     ];
-    return redirect("/verify");
+    return redirect("/two-factor");
 }
 
 $authenticator = new Authenticator();
@@ -18,7 +18,7 @@ if (!$valid) {
     $_SESSION["_flash"]["errors"] = [
         "code" => "Invalid or expired code. Please try again.",
     ];
-    return redirect("/verify");
+    return redirect("/two-factor");
 }
 
 // Mark the session as fully verified.

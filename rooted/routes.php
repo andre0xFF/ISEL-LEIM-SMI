@@ -68,9 +68,12 @@ return function (Router $router) {
     $router->delete("/session", "session/destroy.php")->only("auth");
 
     // 2FA Verification
-    $router->get("/verify", "verification/show.php")->only("auth");
-    $router->post("/verify", "verification/store.php")->only("auth");
-    $router->post("/resend-2fa", "verification/resend.php")->only("auth");
+    $router->get("/two-factor", "verification/two_factor/show.php")->only("auth");
+    $router->post("/two-factor", "verification/two_factor/store.php")->only("auth");
+    $router->post("/resend-2fa", "verification/two_factor/resend.php")->only("auth");
+
+    // Registration email verification
+    $router->get("/verify", "verification/email/show.php")->only("guest");
 
     // RSS feed
     $router->get("/rss", "rss/feed.php");

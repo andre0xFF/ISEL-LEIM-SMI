@@ -2,6 +2,9 @@
 
 namespace Core;
 
+use PHPMailer\PHPMailer\Exception;
+use PHPMailer\PHPMailer\PHPMailer;
+
 /**
  * Simple email utility.
  *
@@ -20,20 +23,71 @@ class Mailer
      * @param  string $body     Plain-text body.
      * @return bool             True if mail() accepted the message (or if logging succeeded).
      */
-    public static function send(string $to, string $subject, string $body): bool
+    public static function send(string $to, string $subject, string $body, ?string $htmlBody = null): bool
     {
         // Always log — this is the reliable way to see emails in development.
         static::log($to, $subject, $body);
 
-        // Attempt real delivery. mail() may return false if no MTA is
-        // configured, but we don't treat that as a fatal error.
-        $headers = implode("\r\n", [
-            "From: noreply@rooted.local",
-            "Reply-To: noreply@rooted.local",
-            "Content-Type: text/plain; charset=UTF-8",
-        ]);
+        $db = App::resolve(Database::class);
 
-        return @mail($to, $subject, $body, $headers);
+        $rows = $db->query("SELECT `key`, value FROM settings")->get();
+
+        $settings = [];
+
+        foreach ($rows as $row){
+            $settings[$row["key"]] = $row["value"];
+        }
+
+        $host = $settings["smtp_host"] ?? "";
+        $port = (int) ($settings["smtp_port"] ?? 587);
+        $username = $settings["smtp_user"] ?? "";
+        $password = $settings["smtp_password"] ?? "";
+        $fromAddress = $settings["smtp_from_address"] ?? "noreply@rooted.local";
+        $fromName = $settings["smtp_from_name"] ?? "Rooted";
+
+        if($host === "" || $username === "" || $password === ""){
+            return false;
+        }
+
+        $mail = new PHPMailer(true);
+
+        try{
+
+            $mail->isSMTP();
+            $mail->Host = $host;
+            $mail->Port = $port;
+            $mail->SMTPAuth = true;
+            $mail->Username = $username;
+            $mail->Password = $password;
+
+            if ($port === 465) {
+                $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
+            } else {
+                $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+            }
+
+            $mail->CharSet = "UTF-8";
+
+            $mail->setFrom($fromAddress, $fromName);
+            $mail->addAddress($to);
+
+            if($htmlBody !== null){
+                $mail->isHTML(true);
+                $mail->Body = $htmlBody;
+                $mail->AltBody = $body;
+
+            }else{
+                $mail->Body = $body;
+                $mail->AltBody = $body;
+            }
+
+            $mail->Subject = $subject;
+
+            return $mail->send();
+        } catch (Exception $e) {
+            return false;
+        }
+
     }
 
     /**

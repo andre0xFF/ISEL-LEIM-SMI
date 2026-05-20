@@ -13,7 +13,7 @@ class Verified
     public function handle(): void
     {
         if (!($_SESSION["user"]["2fa_verified"] ?? false)) {
-            redirect("/verify");
+            redirect("/two-factor");
         }
     }
 }

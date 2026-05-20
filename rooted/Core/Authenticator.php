@@ -8,6 +8,7 @@ namespace Core;
  */
 class Authenticator
 {
+    protected ?string $lastAttemptFailure = null;
     /**
      * Verify credentials and log the user in if they match.
      *
@@ -17,22 +18,40 @@ class Authenticator
      */
     public function attempt($email, $password): bool
     {
+        $this->lastAttemptFailure = null;
+
         $user = App::resolve(Database::class)
             ->query("SELECT * FROM users WHERE email = :email", [
                 "email" => $email,
             ])
             ->find();
 
-        if ($user) {
-            if (password_verify($password, $user["password"])) {
-                $this->login($user);
-
-                return true;
-            }
+        if(!$user){
+            $this->lastAttemptFailure = "invalid_credentials";
+            return false;
         }
 
-        return false;
+        if(!password_verify($password, $user["password"])){
+            $this->lastAttemptFailure = "invalid_credentials";
+            return false;
+        }
+
+        if(!(int) $user["email_verified"]){
+            $this->lastAttemptFailure = "email_unverified";
+            return false;
+        }
+
+        $this->login($user);
+
+        return true;
     }
+
+
+    public function lastAttemptFailure(): ?string{
+        return $this->lastAttemptFailure;
+    }
+
+
 
     /**
      * Store the user's identity in the session.
@@ -77,10 +96,21 @@ class Authenticator
      * @param  string $email   The user's email address.
      * @return void
      */
-    public function sendTwoFactorCode(int $userId, string $email): void
+    public function sendTwoFactorCode(int $userId, string $email): bool
     {
         $code = str_pad((string) random_int(0, 999999), 6, "0", STR_PAD_LEFT);
         $expiresAt = date("Y-m-d H:i:s", strtotime("+10 minutes"));
+
+        $sendSucceeded = Mailer::send(
+            $email,
+            "Rooted — Your verification code",
+            "Your verification code is: {$code}\n\nThis code expires in 10 minutes.",
+        );
+
+        if(!$sendSucceeded){
+            return false;
+        }
+
 
         App::resolve(Database::class)->query(
             "UPDATE users SET two_factor_code = :code, two_factor_expires_at = :expires WHERE id = :id",
@@ -91,18 +121,14 @@ class Authenticator
             ],
         );
 
-        Mailer::send(
-            $email,
-            "Rooted — Your verification code",
-            "Your verification code is: {$code}\n\nThis code expires in 10 minutes.",
-        );
+    return true;
+
     }
 
     /**
      * Verify a submitted 2FA code against the database.
      *
-     * On success the code is cleared from the database and `email_verified`
-     * is set to 1.
+     * On success the code is cleared from the database.
      *
      * @param  int    $userId  The user's ID.
      * @param  string $code    The 6-digit code the user submitted.
@@ -133,7 +159,7 @@ class Authenticator
 
         // Code is valid — clear it and mark the email as verified.
         $db->query(
-            "UPDATE users SET two_factor_code = NULL, two_factor_expires_at = NULL, email_verified = 1 WHERE id = :id",
+            "UPDATE users SET two_factor_code = NULL, two_factor_expires_at = NULL WHERE id = :id",
             ["id" => $userId],
         );
 
