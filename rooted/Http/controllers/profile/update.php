@@ -2,6 +2,8 @@
 
 use Core\App;
 use Core\Database;
+use Core\EmailVerificationService;
+use Core\Validator;
 
 $db = App::resolve(Database::class);
 
@@ -38,13 +40,16 @@ if ($newPassword !== "") {
         $errors["current_password"] = "Current password is incorrect.";
     }
 
-    if (strlen($newPassword) < 7) {
+    if(!Validator::string($newPassword,7, 255)){
         $errors["new_password"] = "New password must be at least 7 characters.";
+    } elseif (!Validator::strongPassword($newPassword)) {
+        $errors["new_password"] = "Password must include at least one letter, one number, and one special character.";
     }
 
-    if ($newPassword !== $passwordConfirmation) {
+    if (!Validator::matches($newPassword, $passwordConfirmation)) {
         $errors["password_confirmation"] = "Password confirmation does not match.";
     }
+
 }
 
 if (!empty($errors)) {
@@ -54,6 +59,25 @@ if (!empty($errors)) {
 
 // Build update query
 $emailChanged = $email !== $user["email"];
+
+
+if($emailChanged){
+    $sendSuccess = EmailVerificationService::sendForUser(
+        (int) $user["id"], $email,
+
+    );
+
+
+    if(!$sendSuccess){
+        $_SESSION["_flash"]["errors"] =
+            ["email" => "We could not send a verification email to the new address. Your email was not changed.", ];
+        return redirect("/profile");
+    }
+}
+
+
+
+
 
 if ($newPassword !== "") {
     $db->query(
@@ -78,5 +102,12 @@ if ($newPassword !== "") {
 
 // Update session email
 $_SESSION["user"]["email"] = $email;
+
+if($emailChanged) {
+    $_SESSION["_flash"]["success"] = "Your email address was updated. Please check your new inbox to verify it.";
+
+}else{
+    $_SESSION["_flash"]["success"] = "Your profile was updated.";
+}
 
 redirect("/profile");

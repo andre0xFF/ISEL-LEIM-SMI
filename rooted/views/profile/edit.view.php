@@ -37,14 +37,20 @@
             <div>
                 <label for="new_password" class="block text-sm font-medium text-gray-700">New Password</label>
                 <input type="password" id="new_password" name="new_password"
+                       minlength="7" maxlength="255" pattern="<?= htmlspecialchars(Core\Validator::STRONG_PASSWORD_PATTERN) ?>"
+                       title="Password must include at least one letter, one number and one special character."
                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
                 <p class="mt-1 text-xs text-gray-500">Leave blank to keep current password.</p>
             </div>
 
             <!-- Confirm Password -->
             <div>
-                <label for="confirm_password" class="block text-sm font-medium text-gray-700">Confirm New Password</label>
-                <input type="password" id="confirm_password" name="confirm_password"
+                <label for="password_confirmation" class="block text-sm font-medium text-gray-700">Confirm New Password</label>
+                <input type="password" id="password_confirmation" name="password_confirmation"
+                       minlength="7"
+                       maxlength="255"
+                       pattern="<?= htmlspecialchars(Core\Validator::STRONG_PASSWORD_PATTERN) ?>"
+                       title="Password must include at least one letter, one number and one special character."
                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
             </div>
 
