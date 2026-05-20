@@ -2,8 +2,8 @@
 
 use Core\App;
 use Core\Database;
+use Core\EmailVerificationService;
 use Core\Validator;
-use Core\Mailer;
 
 $email = trim($_POST["email"] ?? "");
 $password = $_POST["password"] ?? "";
@@ -51,43 +51,10 @@ $db->query("INSERT INTO users(email, password) VALUES(:email, :password)", [
 
 $userId = (int) $db->lastInsertId();
 
-$token = bin2hex(random_bytes(32));
-$tokenHash = hash("sha256", $token);
-$expiresAt = date("Y-m-d H:i:s", strtotime("+24 hours"));
 
-$db->query(
-    "INSERT INTO email_verifications(user_id, token_hash, expires_at) VALUES(:user_id, :token_hash, :expires_at)",
-    [
-        "user_id" => $userId,
-        "token_hash" => $tokenHash,
-        "expires_at" => $expiresAt,
-    ]
-);
+$sendSucceeded = EmailVerificationService::sendForUser($userId, $email);
 
-$appUrlSetting = $db
-    ->query("SELECT value FROM settings WHERE `key` = 'app_url'")
-    ->find();
 
-$appUrl = rtrim($appUrlSetting["value"] ?? "http://localhost:8080", "/");
-
-$verifyUrl = $appUrl . "/verify?token=" . urlencode($token);
-
-$plainBody = "Click the link below to verify your account:\n\n{$verifyUrl}\n\nThis link expires in 24 hours.";
-
-$htmlBody = '
-    <p>Click the link below to verify your account:</p>
-    <p><a href="' .
-    htmlspecialchars($verifyUrl, ENT_QUOTES, "UTF-8") .
-    '">Verify your account</a></p>
-    <p>This link expires in 24 hours.</p>
-';
-
-$sendSucceeded = Mailer::send(
-    $email,
-    "Rooted - Verify your email",
-    $plainBody,
-    $htmlBody,
-);
 
 if (!$sendSucceeded) {
     $db->query("DELETE FROM email_verifications WHERE user_id = :user_id", [

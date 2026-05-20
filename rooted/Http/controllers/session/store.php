@@ -21,6 +21,8 @@ if (!$signedIn) {
 
     if($authenticator->lastAttemptFailure() === "email_unverified") {
 
+        $_SESSION["_flash"]["resend_verification_email"] = $attributes["email"];
+
         $form->error(
             "email",
             "Please verify your email before logging in.",

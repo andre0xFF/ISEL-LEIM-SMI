@@ -29,16 +29,25 @@ $verification = $db->query(
     [
         "token_hash" => $tokenHash,
     ]
-)
-    ->find();
+)->find();
 
-if (
-    !$verification ||
-    $verification["consumed_at"] !== null ||
-    strtotime($verification["expires_at"]) < time() ||
-    (int) $verification["email_verified"] === 1
-) {
+
+if(!$verification){
     abort(404);
+}
+
+if((int) $verification["email_verified"] === 1){
+    $_SESSION["_flash"]["success"] = "Your email is already verified";
+
+    return redirect("/login");
+}
+
+if ($verification["consumed_at"] !== null || strtotime($verification["expires_at"]) < time()) {
+
+    return view("verification/email/expired.view.php", [
+        "heading" => "Verification Link Expired",
+        "email"=> $verification["email"],]);
+
 }
 
 $db->query(

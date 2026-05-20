@@ -15,6 +15,29 @@
             <?php $fieldErrors = $_SESSION["_flash"]["errors"] ?? []; ?>
             <?php require base_path("views/partials/errors.php"); ?>
 
+            <?php if (!empty($_SESSION["_flash"]["resend_verification_email"])): ?>
+                <div class="mb-4 rounded-md bg-blue-50 p-4">
+                    <p class="mb-3 text-sm text-blue-800">
+                        Need a new verification link?
+                    </p>
+
+                    <form method="POST" action="/verify/resend">
+                        <input
+                                type="hidden"
+                                name="email"
+                                value="<?= htmlspecialchars($_SESSION["_flash"]["resend_verification_email"]) ?>"
+                        >
+
+                        <button
+                                type="submit"
+                                class="rounded-md bg-blue-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-blue-700"
+                        >
+                            Resend verification email
+                        </button>
+                    </form>
+                </div>
+            <?php endif; ?>
+
             <form method="POST" action="/session" class="space-y-6">
                 <div>
                     <label for="email" class="block text-sm font-medium text-gray-700">Email</label>

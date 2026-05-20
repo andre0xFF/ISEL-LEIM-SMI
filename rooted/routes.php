@@ -74,6 +74,7 @@ return function (Router $router) {
 
     // Registration email verification
     $router->get("/verify", "verification/email/show.php")->only("guest");
+    $router->post("/verify/resend", "verification/email/resend.php")->only("guest");
 
     // RSS feed
     $router->get("/rss", "rss/feed.php");
