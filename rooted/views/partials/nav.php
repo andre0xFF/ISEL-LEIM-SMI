@@ -24,11 +24,22 @@
                            class="<?= urlIs("/")
                                ? "bg-gray-900 text-white"
                                : "text-gray-300" ?> hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Home</a>
+
                         <a href="/plants"
                            class="<?= urlIs("/plants")
                                ? "bg-gray-900 text-white"
                                : "text-gray-300" ?> hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Plants</a>
 
+                        <a href="/map"
+                           class="<?= urlIs("/map")
+                                   ? "bg-gray-900 text-white"
+                                   : "text-gray-300" ?> hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Map</a>
+                        
+                        <a href="/rss"
+                           class="<?= urlIs("/rss")
+                           ? "bg-gray-900 text-white"
+                                   : "text-gray-300" ?> hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">RSS</a>
+                        
                         <?php if ($_SESSION["user"] ?? false): ?>
                             <?php $role = $_SESSION["user"]["role"]; ?>
 
@@ -40,6 +51,15 @@
                                    class="<?= urlIs("/tags")
                                        ? "bg-gray-900 text-white"
                                        : "text-gray-300" ?> hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Tags</a>
+                                <a href="/media/batch-upload"
+                                   class="<?= urlIs("/media/batch-upload")
+                                           ? "bg-gray-900 text-white"
+                                           : "text-gray-300" ?> hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Batch Upload</a>
+
+                                <a href="/media/batch-download"
+                                   class="<?= urlIs("/media/batch-download")
+                                           ? "bg-gray-900 text-white"
+                                           : "text-gray-300" ?> hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Batch Download</a>
                             <?php endif; ?>
 
                             <!-- Auth: Subscriptions -->

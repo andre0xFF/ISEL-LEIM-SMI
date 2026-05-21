@@ -13,7 +13,7 @@
                         $plant["name"],
                     ) ?></h2>
                     <p class="mt-1 text-sm text-gray-500">By <?= htmlspecialchars(
-                        $plant["user_email"] ?? "unknown",
+                        $plant["author_email"] ?? "unknown",
                     ) ?></p>
                 </div>
                 <span class="rounded-full px-2 py-1 text-xs font-medium
