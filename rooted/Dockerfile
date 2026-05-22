@@ -6,7 +6,8 @@ ARG INSTALL_XDEBUG=false
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libzip-dev \
     libcurl4-openssl-dev \
-    && docker-php-ext-install pdo pdo_mysql zip curl \
+    libonig-dev \
+    && docker-php-ext-install pdo pdo_mysql zip curl mbstring \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
@@ -25,6 +26,13 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/
 COPY docker/php/uploads.ini /usr/local/etc/php/conf.d/uploads.ini
 
 WORKDIR /workspace
+
+# Copy composer files first for better layer caching
+COPY composer.json composer.lock ./
+RUN composer install --no-dev --optimize-autoloader --no-interaction
+
+# Copy the rest of the application
+COPY . .
 
 EXPOSE 8080
 
