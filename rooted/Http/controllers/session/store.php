@@ -18,17 +18,12 @@ $signedIn = $authenticator->attempt(
 );
 
 if (!$signedIn) {
-
-    if($authenticator->lastAttemptFailure() === "email_unverified") {
-
+    if ($authenticator->lastAttemptFailure() === "email_unverified") {
         $_SESSION["_flash"]["resend_verification_email"] = $attributes["email"];
 
-        $form->error(
-            "email",
-            "Please verify your email before logging in.",
-
-        )->throw();
-
+        $form
+            ->error("email", "Please verify your email before logging in.")
+            ->throw();
     }
 
     $form
@@ -37,25 +32,22 @@ if (!$signedIn) {
             "No matching account found for that email address and password.",
         )
         ->throw();
+}
 
-    }
+$sendSucced = $authenticator->sendTwoFactorCode(
+    $_SESSION["user"]["id"],
+    $_SESSION["user"]["email"],
+);
 
-    $sendSucced = $authenticator->sendTwoFactorCode(
-        $_SESSION["user"]["id"],
-        $_SESSION["user"]["email"],
-    );
+if (!$sendSucced) {
+    $authenticator->logout();
 
-    if(!$sendSucced){
-        $authenticator->logout();
-
-        $form->error(
+    $form
+        ->error(
             "email",
             "We could not send the verification email right now. Please try again.",
-        )->throw();
+        )
+        ->throw();
+}
 
-    }
-
-    redirect("/two-factor");
-
-
-
+redirect("/two-factor");
