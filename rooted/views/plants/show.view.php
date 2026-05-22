@@ -46,9 +46,8 @@
                                 ): ?>
                                     <img src="/media?id=<?= $item[
                                         "id"
-                                    ] ?>" alt="<?= htmlspecialchars(
-    $item["original_name"] ?? "media",
-) ?>" class="rounded-lg max-w-full">
+                                    ] ?>" alt="<?= htmlspecialchars($item["original_name"] ?? "media",
+                                    ) ?>" class="rounded-lg max-w-full">
                                 <?php elseif (
                                     str_starts_with(
                                         $item["mime_type"],
@@ -175,6 +174,15 @@
                                 class="rounded-md bg-red-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-red-700"
                                 onclick="return confirm('Are you sure you want to delete this plant?')">
                             Delete
+                        </button>
+                    </form>
+                <?php endif; ?>
+                <?php if ($_SESSION["user"] ?? false): ?>
+                    <form method="POST" action="/my-garden">
+                        <input type="hidden" name="plant_id" value="<?= $plant["id"] ?>">
+                        <button type="submit"
+                                class="rounded-md bg-emerald-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-emerald-700">
+                            Add to My Garden
                         </button>
                     </form>
                 <?php endif; ?>

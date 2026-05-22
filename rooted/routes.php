@@ -8,13 +8,22 @@ return function (Router $router) {
     // Plants — browsing open to everyone, CUD restricted to moderators
     $router->get("/plants", "plants/index.php");
     $router->get("/plant", "plants/show.php");
-    $router
-        ->get("/plants/create", "plants/create.php")
-        ->only("auth", "role:moderator");
+    $router->get("/plants/create", "plants/create.php")->only("auth", "role:moderator");
     $router->post("/plants", "plants/store.php")->only("auth", "role:moderator");
     $router->get("/plant/edit", "plants/edit.php")->only("auth", "role:moderator");
     $router->patch("/plant", "plants/update.php")->only("auth", "role:moderator");
     $router->delete("/plant", "plants/destroy.php")->only("auth", "role:moderator");
+
+    // My Garden
+    $router->get("/my-garden", "garden/index.php")->only("auth");
+    $router->post("/my-garden", "garden/store.php")->only("auth");
+    $router->delete("/garden-plant", "garden/destroy.php")->only("auth");
+    $router->get("/garden-plant", "garden/show.php")->only("auth");
+
+    // Garden Media
+    $router->get("/garden-media", "garden/media/serve.php")->only("auth");
+    $router->post("/garden-media", "garden/media/store.php")->only("auth");
+    $router->delete("/garden-media", "garden/media/destroy.php")->only("auth");
 
     // Tags
     $router->get("/tags", "tags/index.php")->only("auth");
@@ -26,15 +35,9 @@ return function (Router $router) {
 
     // Media
     $router->get("/media", "media/serve.php");
-    $router
-        ->get("/media/batch-upload", "media/batch-upload-form.php")
-        ->only("auth", "role:moderator");
-    $router
-        ->post("/media/batch-upload", "media/batch-upload.php")
-        ->only("auth", "role:moderator");
-    $router
-        ->get("/media/batch-download", "media/batch-download.php")
-        ->only("auth", "role:moderator");
+    $router->get("/media/batch-upload", "media/batch-upload-form.php")->only("auth", "role:moderator");
+    $router->post("/media/batch-upload", "media/batch-upload.php")->only("auth", "role:moderator");
+    $router->get("/media/batch-download", "media/batch-download.php")->only("auth", "role:moderator");
 
     // Subscriptions
     $router->get("/subscriptions", "subscriptions/index.php")->only("auth");

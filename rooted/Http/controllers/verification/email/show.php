@@ -37,7 +37,7 @@ if(!$verification){
 }
 
 if((int) $verification["email_verified"] === 1){
-    $_SESSION["_flash"]["success"] = "Your email is already verified";
+    $_SESSION["_flash"]["success"] = "Your email is already verified.";
 
     return redirect("/login");
 }

@@ -30,6 +30,11 @@
                                ? "bg-gray-900 text-white"
                                : "text-gray-300" ?> hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Plants</a>
 
+                        <a href="/my-garden"
+                           class="<?= urlIs("/my-garden")
+                                   ? "bg-gray-900 text-white"
+                                   : "text-gray-300" ?> hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">My Garden</a>
+
                         <a href="/map"
                            class="<?= urlIs("/map")
                                    ? "bg-gray-900 text-white"
