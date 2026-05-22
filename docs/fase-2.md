@@ -59,7 +59,7 @@ O Moderador (equivalente ao perfil _Simpatizante_ descrito no enunciado) é o pr
 | M14 | Editar conteúdo global      | Modificação de qualquer conteúdo no sistema, independentemente do autor                                                                                |
 | M15 | Apagar conteúdo global      | Remoção de qualquer conteúdo no sistema, independentemente do autor                                                                                    |
 
-> **Nota sobre M14/M15 — Edição e remoção global de conteúdos:** O enunciado atribui ao Simpatizante a capacidade de _"gerir os seus conteúdos (apagar, modificar, etc.)"_. Na aplicação Rooted, optámos por alargar este âmbito ao permitir que o Moderador edite e remova qualquer conteúdo, independentemente do autor. Esta decisão decorre do papel de melhoria que o Moderador assume na plataforma: sendo o perfil responsável pela qualidade e organização dos conteúdos, é expectável que possa corrigir ou remover conteúdos inadequados sem depender da intervenção de um Administrador. A designação _Moderador_ reflete precisamente esta responsabilidade adicional face ao perfil _Simpatizante_ original.
+> **Nota sobre M14/M15: Edição e remoção global de conteúdos:** O enunciado atribui ao Simpatizante a capacidade de _"gerir os seus conteúdos (apagar, modificar, etc.)"_. Na aplicação Rooted, optámos por alargar este âmbito ao permitir que o Moderador edite e remova qualquer conteúdo, independentemente do autor. Esta decisão decorre do papel de melhoria que o Moderador assume na plataforma: sendo o perfil responsável pela qualidade e organização dos conteúdos, é expectável que possa corrigir ou remover conteúdos inadequados sem depender da intervenção de um Administrador. A designação _Moderador_ reflete precisamente esta responsabilidade adicional face ao perfil _Simpatizante_ original.
 
 ### Administrador
 
@@ -220,17 +220,29 @@ O sistema utiliza uma base de dados relacional MySQL para armazenar a informaç�
 
 Representa uma conta registada no sistema.
 
-| Atributo                | Tipo         | Descrição                                          |
-| ----------------------- | ------------ | -------------------------------------------------- |
-| `id`                    | INT          | Identificador único                                |
-| `email`                 | VARCHAR(255) | Endereço de email (único)                          |
-| `password`              | VARCHAR(255) | Hash da password                                   |
-| `role`                  | ENUM         | Perfil do utilizador: `admin`, `moderator`, `user` |
-| `two_factor_code`       | VARCHAR(6)   | Código temporário para autenticação 2FA            |
-| `two_factor_expires_at` | DATETIME     | Data de expiração do código 2FA                    |
-| `email_verified`        | TINYINT(1)   | Indica se o email foi verificado                   |
-| `created_at`            | TIMESTAMP    | Data de criação                                    |
-| `updated_at`            | TIMESTAMP    | Data da última atualização                         |
+| Atributo                | Tipo         | Descrição                                                   |
+| ----------------------- | ------------ | ----------------------------------------------------------- |
+| `id`                    | INT          | Identificador único                                         |
+| `email`                 | VARCHAR(255) | Endereço de email (único)                                   |
+| `password`              | VARCHAR(255) | Hash da password                                            |
+| `role`                  | ENUM         | Perfil do utilizador: `admin`, `moderator`, `user`, `guest` |
+| `two_factor_code`       | VARCHAR(6)   | Código temporário para autenticação 2FA                     |
+| `two_factor_expires_at` | DATETIME     | Data de expiração do código 2FA                             |
+| `email_verified`        | TINYINT(1)   | Indica se o email foi verificado                            |
+| `created_at`            | TIMESTAMP    | Data de criação                                             |
+| `updated_at`            | TIMESTAMP    | Data da última atualização                                  |
+
+### Verificação de Email (`email_verifications`)
+
+Armazena os tokens de verificação de email enviados durante o registo de novos utilizadores.
+
+| Atributo      | Tipo      | Descrição                                 |
+| ------------- | --------- | ----------------------------------------- |
+| `user_id`     | INT (FK)  | Referência ao utilizador (chave primária) |
+| `token_hash`  | CHAR(64)  | Hash do token de verificação (único)      |
+| `expires_at`  | DATETIME  | Data de expiração do token                |
+| `consumed_at` | DATETIME  | Data em que o token foi utilizado         |
+| `created_at`  | TIMESTAMP | Data de criação                           |
 
 ### Planta (`plants`)
 
@@ -303,6 +315,32 @@ Regista a subscrição de um utilizador a uma etiqueta para efeitos de notifica�
 | `tag_id`     | INT (FK)  | Referência à etiqueta subscrita |
 | `created_at` | TIMESTAMP | Data da subscrição              |
 
+### Jardim do Utilizador (`garden_plants`)
+
+Permite a um utilizador guardar plantas no seu jardim pessoal, com notas próprias.
+
+| Atributo     | Tipo      | Descrição                                   |
+| ------------ | --------- | ------------------------------------------- |
+| `id`         | INT       | Identificador único                         |
+| `user_id`    | INT (FK)  | Referência ao utilizador                    |
+| `plant_id`   | INT (FK)  | Referência à planta                         |
+| `notes`      | TEXT      | Notas pessoais do utilizador sobre a planta |
+| `created_at` | TIMESTAMP | Data de criação                             |
+
+### Multimédia do Jardim (`garden_media`)
+
+Armazena os conteúdos multimédia associados a uma entrada no jardim pessoal do utilizador.
+
+| Atributo          | Tipo         | Descrição                                   |
+| ----------------- | ------------ | ------------------------------------------- |
+| `id`              | INT          | Identificador único                         |
+| `garden_plant_id` | INT (FK)     | Referência à entrada no jardim              |
+| `type`            | ENUM         | Tipo de conteúdo: `image`, `video`, `audio` |
+| `path`            | VARCHAR(255) | Caminho relativo do ficheiro                |
+| `filename`        | VARCHAR(255) | Nome original do ficheiro                   |
+| `mime_type`       | VARCHAR(100) | Tipo MIME do ficheiro                       |
+| `created_at`      | TIMESTAMP    | Data de criação                             |
+
 ### Configuração (`settings`)
 
 Armazena os parâmetros de configuração da aplicação (base de dados, serviço de email).
@@ -321,6 +359,9 @@ Armazena os parâmetros de configuração da aplicação (base de dados, serviç
 - Uma **planta** pode ter vários pares de **meta-informação** (1:N)
 - Um **utilizador** pode subscrever várias **etiquetas** (N:M, via `subscriptions`)
 - Um **utilizador** (administrador ou moderador) pode criar várias **etiquetas** (1:N)
+- Um **utilizador** tem no máximo uma **verificação de email** pendente (1:1)
+- Um **utilizador** pode guardar várias **plantas** no seu jardim pessoal (N:M, via `garden_plants`)
+- Uma entrada no **jardim** pode ter vários **conteúdos multimédia** (1:N, via `garden_media`)
 
 ## Anexos
 
@@ -333,11 +374,3 @@ Os diagramas C4 (Contexto, Contentores e Componentes) que ilustram graficamente 
 ### Esquema XML para Upload em Lote
 
 A estrutura do ficheiro `metadata.xml` utilizado nas operações de upload e download em lote (M11, M13) será documentada nesta secção, incluindo um exemplo representativo e a descrição dos elementos XML suportados.
-
-# Desenvolvimento da Aplicação Web
-
-<!--TODO-->
-
-# Testes
-
-<!--TODO-->
