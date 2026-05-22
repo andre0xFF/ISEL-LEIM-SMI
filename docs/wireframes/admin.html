@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rooted — Admin Wireframes</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, "Segoe UI", Helvetica, Arial, sans-serif; color: #333; background: #fff; line-height: 1.5; padding: 2rem; max-width: 960px; margin: 0 auto; }
+  h1 { font-size: 1.6rem; margin-bottom: 0.5rem; }
+  h2 { font-size: 1.3rem; margin-bottom: 1rem; color: #444; }
+  h3 { font-size: 1rem; margin-bottom: 0.5rem; color: #555; }
+
+  /* Table of contents */
+  .toc { background: #fafafa; border: 1px solid #ddd; border-radius: 4px; padding: 1.2rem 1.5rem; margin-bottom: 2rem; }
+  .toc h2 { margin-bottom: 0.6rem; font-size: 1.1rem; }
+  .toc ol { padding-left: 1.4rem; }
+  .toc li { margin-bottom: 0.25rem; }
+  .toc a { color: #555; text-decoration: none; }
+  .toc a:hover { text-decoration: underline; }
+
+  /* Wireframe section wrapper */
+  .wireframe-section { margin-bottom: 2.5rem; }
+  .wireframe-section > h2 { font-size: 1.15rem; color: #333; margin-bottom: 0.6rem; }
+
+  /* The bordered wireframe box */
+  .wireframe { border: 2px solid #bbb; border-radius: 4px; background: #fff; overflow: hidden; }
+
+  /* Navbar */
+  .wf-navbar { background: #444; color: #ccc; font-size: 0.75rem; padding: 0.5rem 0.8rem; display: flex; justify-content: space-between; align-items: center; }
+  .wf-navbar .wf-nav-left { display: flex; align-items: center; gap: 0.9rem; flex-wrap: wrap; }
+  .wf-navbar .wf-logo { color: #fff; font-weight: 700; font-size: 0.85rem; margin-right: 0.3rem; }
+  .wf-navbar a { color: #bbb; text-decoration: none; }
+  .wf-navbar .wf-nav-right { display: flex; align-items: center; gap: 0.7rem; white-space: nowrap; }
+  .wf-navbar .wf-nav-right .wf-logout { color: #e88; }
+
+  /* Page heading banner */
+  .wf-banner { background: #e8e8e8; padding: 0.8rem 1rem; border-bottom: 1px solid #ccc; }
+  .wf-banner h3 { color: #333; font-size: 1rem; margin: 0; }
+
+  /* Main content area */
+  .wf-body { background: #f5f5f5; padding: 1rem; color: #666; font-size: 0.8rem; }
+
+  /* Tables */
+  .wf-table { width: 100%; border-collapse: collapse; font-size: 0.78rem; background: #fff; }
+  .wf-table th { background: #e0e0e0; color: #555; text-align: left; padding: 0.45rem 0.6rem; border: 1px solid #ccc; font-weight: 600; }
+  .wf-table td { padding: 0.45rem 0.6rem; border: 1px solid #ccc; color: #666; }
+  .wf-table tr:nth-child(even) td { background: #fafafa; }
+
+  /* Badges */
+  .badge { display: inline-block; padding: 0.1rem 0.45rem; border-radius: 3px; font-size: 0.7rem; font-weight: 600; color: #fff; }
+  .badge-admin { background: #8b5fc7; }
+  .badge-moderator { background: #5b8dd9; }
+  .badge-user { background: #999; }
+  .badge-primary { background: #8b5fc7; }
+  .badge-secondary { background: #5b8dd9; }
+
+  /* Verified marks */
+  .verified-yes { color: #5a5; font-weight: 700; }
+  .verified-no { color: #c55; font-weight: 700; }
+
+  /* Links inside wireframes */
+  .wf-link { color: #668; text-decoration: underline; cursor: default; }
+  .wf-back { color: #668; text-decoration: none; font-size: 0.8rem; }
+  .wf-back::before { content: "← "; }
+
+  /* Buttons */
+  .wf-btn { display: inline-block; padding: 0.35rem 0.9rem; border: 1px solid #aaa; border-radius: 3px; background: #ddd; color: #444; font-size: 0.78rem; cursor: default; font-weight: 600; }
+  .wf-btn-primary { background: #777; color: #fff; border-color: #666; }
+  .wf-btn-danger { background: #c55; color: #fff; border-color: #a44; }
+  .wf-btn-sm { padding: 0.2rem 0.55rem; font-size: 0.72rem; }
+
+  /* Forms */
+  .wf-form { max-width: 420px; }
+  .wf-form-wide { max-width: 520px; }
+  .wf-field { margin-bottom: 0.7rem; }
+  .wf-field label { display: block; font-size: 0.75rem; color: #555; margin-bottom: 0.2rem; font-weight: 600; }
+  .wf-field .wf-hint { font-size: 0.68rem; color: #999; margin-top: 0.15rem; }
+  .wf-input { width: 100%; padding: 0.35rem 0.5rem; border: 1px solid #bbb; border-radius: 3px; background: #fff; color: #666; font-size: 0.78rem; }
+  select.wf-input { appearance: auto; }
+
+  /* Fieldset */
+  .wf-fieldset { border: 1px solid #ccc; border-radius: 3px; padding: 0.8rem; margin-bottom: 1rem; background: #fff; }
+  .wf-fieldset legend { font-size: 0.8rem; font-weight: 700; color: #555; padding: 0 0.3rem; }
+
+  /* Definition list */
+  .wf-dl { font-size: 0.8rem; }
+  .wf-dl dt { font-weight: 600; color: #555; margin-top: 0.5rem; }
+  .wf-dl dd { color: #666; margin-left: 0; margin-bottom: 0.3rem; }
+
+  /* Header bar (count + button) */
+  .wf-header-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.7rem; }
+  .wf-header-bar span { font-size: 0.8rem; color: #666; }
+
+  /* Setup wizard (standalone) */
+  .wf-setup-card { max-width: 480px; margin: 0 auto; background: #fff; border: 2px solid #bbb; border-radius: 6px; padding: 2rem 1.5rem; }
+  .wf-setup-card .wf-setup-logo { text-align: center; font-size: 1.3rem; font-weight: 700; margin-bottom: 0.2rem; }
+  .wf-setup-card .wf-setup-title { text-align: center; font-size: 1.1rem; color: #444; margin-bottom: 0.15rem; }
+  .wf-setup-card .wf-setup-subtitle { text-align: center; font-size: 0.82rem; color: #999; margin-bottom: 1.3rem; }
+  .wf-setup-card h4 { font-size: 0.85rem; color: #555; margin-bottom: 0.5rem; border-bottom: 1px solid #ddd; padding-bottom: 0.25rem; }
+  .wf-setup-card .wf-section { margin-bottom: 1rem; }
+
+  /* Actions cell */
+  .wf-actions { display: flex; gap: 0.4rem; align-items: center; }
+
+  /* Dividers */
+  hr.wf-divider { border: none; border-top: 1px dashed #ccc; margin: 2rem 0; }
+
+  /* Inline form row */
+  .wf-form-actions { display: flex; gap: 0.7rem; align-items: center; margin-top: 0.5rem; }
+</style>
+</head>
+<body>
+
+<h1>🌱 Rooted — Admin Wireframes</h1>
+<p style="color:#888; margin-bottom:1.5rem; font-size:0.9rem;">Greyscale wireframe mockups for admin-facing pages.</p>
+
+<!-- Table of Contents -->
+<nav class="toc">
+  <h2>Table of Contents</h2>
+  <ol>
+    <li><a href="#users-list">Users List</a></li>
+    <li><a href="#user-detail">User Detail</a></li>
+    <li><a href="#create-user">Create User</a></li>
+    <li><a href="#edit-user">Edit User</a></li>
+    <li><a href="#tags-management">Tags Management</a></li>
+    <li><a href="#create-tag">Create Tag</a></li>
+    <li><a href="#edit-tag">Edit Tag</a></li>
+    <li><a href="#settings">Settings</a></li>
+    <li><a href="#setup-wizard">Setup Wizard</a></li>
+  </ol>
+</nav>
+
+<!-- ============================================================ -->
+<!-- 1. Users List -->
+<!-- ============================================================ -->
+<section class="wireframe-section" id="users-list">
+  <h2>1. Users List</h2>
+  <div class="wireframe">
+    <div class="wf-navbar">
+      <div class="wf-nav-left">
+        <span class="wf-logo">🌱 Rooted</span>
+        <a href="#">Home</a>
+        <a href="#">Plants</a>
+        <a href="#">My Garden</a>
+        <a href="#">Map</a>
+        <a href="#">RSS</a>
+        <a href="#">Tags</a>
+        <a href="#">Batch Upload</a>
+        <a href="#">Batch Download</a>
+        <a href="#">Subscriptions</a>
+        <a href="#">Users</a>
+        <a href="#">Settings</a>
+      </div>
+      <div class="wf-nav-right">
+        <span>admin@example.com</span>
+        <span class="wf-logout">Log Out</span>
+      </div>
+    </div>
+    <div class="wf-banner"><h3>Users</h3></div>
+    <div class="wf-body">
+      <table class="wf-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Verified</th>
+            <th>Created</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td>admin@example.com</td>
+            <td><span class="badge badge-admin">admin</span></td>
+            <td><span class="verified-yes">✓</span></td>
+            <td>2025-01-10</td>
+            <td><a class="wf-link" href="#">View</a></td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>mod@example.com</td>
+            <td><span class="badge badge-moderator">moderator</span></td>
+            <td><span class="verified-yes">✓</span></td>
+            <td>2025-02-14</td>
+            <td><a class="wf-link" href="#">View</a></td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td>jane@example.com</td>
+            <td><span class="badge badge-user">user</span></td>
+            <td><span class="verified-yes">✓</span></td>
+            <td>2025-03-01</td>
+            <td><a class="wf-link" href="#">View</a></td>
+          </tr>
+          <tr>
+            <td>4</td>
+            <td>bob@example.com</td>
+            <td><span class="badge badge-user">user</span></td>
+            <td><span class="verified-no">✗</span></td>
+            <td>2025-03-22</td>
+            <td><a class="wf-link" href="#">View</a></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<hr class="wf-divider">
+
+<!-- ============================================================ -->
+<!-- 2. User Detail -->
+<!-- ============================================================ -->
+<section class="wireframe-section" id="user-detail">
+  <h2>2. User Detail</h2>
+  <div class="wireframe">
+    <div class="wf-navbar">
+      <div class="wf-nav-left">
+        <span class="wf-logo">🌱 Rooted</span>
+        <a href="#">Home</a>
+        <a href="#">Plants</a>
+        <a href="#">My Garden</a>
+        <a href="#">Map</a>
+        <a href="#">RSS</a>
+        <a href="#">Tags</a>
+        <a href="#">Batch Upload</a>
+        <a href="#">Batch Download</a>
+        <a href="#">Subscriptions</a>
+        <a href="#">Users</a>
+        <a href="#">Settings</a>
+      </div>
+      <div class="wf-nav-right">
+        <span>admin@example.com</span>
+        <span class="wf-logout">Log Out</span>
+      </div>
+    </div>
+    <div class="wf-banner"><h3>User Detail</h3></div>
+    <div class="wf-body">
+      <dl class="wf-dl">
+        <dt>ID</dt>
+        <dd>2</dd>
+        <dt>Email</dt>
+        <dd>mod@example.com</dd>
+        <dt>Role</dt>
+        <dd><span class="badge badge-moderator">moderator</span></dd>
+        <dt>Email Verified</dt>
+        <dd>Yes</dd>
+        <dt>Created</dt>
+        <dd>2025-02-14</dd>
+      </dl>
+      <br>
+      <a class="wf-back" href="#">Back to users</a>
+    </div>
+  </div>
+</section>
+
+<hr class="wf-divider">
+
+<!-- ============================================================ -->
+<!-- 3. Create User -->
+<!-- ============================================================ -->
+<section class="wireframe-section" id="create-user">
+  <h2>3. Create User</h2>
+  <div class="wireframe">
+    <div class="wf-navbar">
+      <div class="wf-nav-left">
+        <span class="wf-logo">🌱 Rooted</span>
+        <a href="#">Home</a>
+        <a href="#">Plants</a>
+        <a href="#">My Garden</a>
+        <a href="#">Map</a>
+        <a href="#">RSS</a>
+        <a href="#">Tags</a>
+        <a href="#">Batch Upload</a>
+        <a href="#">Batch Download</a>
+        <a href="#">Subscriptions</a>
+        <a href="#">Users</a>
+        <a href="#">Settings</a>
+      </div>
+      <div class="wf-nav-right">
+        <span>admin@example.com</span>
+        <span class="wf-logout">Log Out</span>
+      </div>
+    </div>
+    <div class="wf-banner"><h3>Create User</h3></div>
+    <div class="wf-body">
+      <div class="wf-form">
+        <div class="wf-field">
+          <label>Email</label>
+          <input class="wf-input" type="text" placeholder="user@example.com">
+        </div>
+        <div class="wf-field">
+          <label>Password</label>
+          <input class="wf-input" type="password" placeholder="••••••••">
+        </div>
+        <div class="wf-field">
+          <label>Role</label>
+          <select class="wf-input">
+            <option>User</option>
+            <option>Moderator</option>
+            <option>Admin</option>
+          </select>
+        </div>
+        <div class="wf-form-actions">
+          <span class="wf-btn wf-btn-primary">Create User</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="wf-divider">
+
+<!-- ============================================================ -->
+<!-- 4. Edit User -->
+<!-- ============================================================ -->
+<section class="wireframe-section" id="edit-user">
+  <h2>4. Edit User</h2>
+  <div class="wireframe">
+    <div class="wf-navbar">
+      <div class="wf-nav-left">
+        <span class="wf-logo">🌱 Rooted</span>
+        <a href="#">Home</a>
+        <a href="#">Plants</a>
+        <a href="#">My Garden</a>
+        <a href="#">Map</a>
+        <a href="#">RSS</a>
+        <a href="#">Tags</a>
+        <a href="#">Batch Upload</a>
+        <a href="#">Batch Download</a>
+        <a href="#">Subscriptions</a>
+        <a href="#">Users</a>
+        <a href="#">Settings</a>
+      </div>
+      <div class="wf-nav-right">
+        <span>admin@example.com</span>
+        <span class="wf-logout">Log Out</span>
+      </div>
+    </div>
+    <div class="wf-banner"><h3>Edit User</h3></div>
+    <div class="wf-body">
+      <div class="wf-form">
+        <div class="wf-field">
+          <label>Email</label>
+          <input class="wf-input" type="text" value="mod@example.com">
+        </div>
+        <div class="wf-field">
+          <label>New Password</label>
+          <input class="wf-input" type="password" placeholder="">
+          <div class="wf-hint">Leave blank to keep current</div>
+        </div>
+        <div class="wf-field">
+          <label>Role</label>
+          <select class="wf-input">
+            <option>User</option>
+            <option selected>Moderator</option>
+            <option>Admin</option>
+          </select>
+        </div>
+        <div class="wf-form-actions">
+          <span class="wf-btn wf-btn-primary">Update User</span>
+          <a class="wf-link" href="#">Cancel</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="wf-divider">
+
+<!-- ============================================================ -->
+<!-- 5. Tags Management -->
+<!-- ============================================================ -->
+<section class="wireframe-section" id="tags-management">
+  <h2>5. Tags Management</h2>
+  <div class="wireframe">
+    <div class="wf-navbar">
+      <div class="wf-nav-left">
+        <span class="wf-logo">🌱 Rooted</span>
+        <a href="#">Home</a>
+        <a href="#">Plants</a>
+        <a href="#">My Garden</a>
+        <a href="#">Map</a>
+        <a href="#">RSS</a>
+        <a href="#">Tags</a>
+        <a href="#">Batch Upload</a>
+        <a href="#">Batch Download</a>
+        <a href="#">Subscriptions</a>
+        <a href="#">Users</a>
+        <a href="#">Settings</a>
+      </div>
+      <div class="wf-nav-right">
+        <span>admin@example.com</span>
+        <span class="wf-logout">Log Out</span>
+      </div>
+    </div>
+    <div class="wf-banner"><h3>Tags</h3></div>
+    <div class="wf-body">
+      <div class="wf-header-bar">
+        <span>4 tags</span>
+        <span class="wf-btn wf-btn-primary wf-btn-sm">+ Create Tag</span>
+      </div>
+      <table class="wf-table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Creator</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Succulent</td>
+            <td><span class="badge badge-primary">primary</span></td>
+            <td>admin@example.com</td>
+            <td>
+              <div class="wf-actions">
+                <a class="wf-link" href="#">Edit</a>
+                <span class="wf-btn wf-btn-danger wf-btn-sm">Delete</span>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>Indoor</td>
+            <td><span class="badge badge-primary">primary</span></td>
+            <td>admin@example.com</td>
+            <td>
+              <div class="wf-actions">
+                <a class="wf-link" href="#">Edit</a>
+                <span class="wf-btn wf-btn-danger wf-btn-sm">Delete</span>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>Low Light</td>
+            <td><span class="badge badge-secondary">secondary</span></td>
+            <td>mod@example.com</td>
+            <td>
+              <div class="wf-actions">
+                <a class="wf-link" href="#">Edit</a>
+                <span class="wf-btn wf-btn-danger wf-btn-sm">Delete</span>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>Pet Friendly</td>
+            <td><span class="badge badge-secondary">secondary</span></td>
+            <td>jane@example.com</td>
+            <td>
+              <div class="wf-actions">
+                <a class="wf-link" href="#">Edit</a>
+                <span class="wf-btn wf-btn-danger wf-btn-sm">Delete</span>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<hr class="wf-divider">
+
+<!-- ============================================================ -->
+<!-- 6. Create Tag -->
+<!-- ============================================================ -->
+<section class="wireframe-section" id="create-tag">
+  <h2>6. Create Tag</h2>
+  <div class="wireframe">
+    <div class="wf-navbar">
+      <div class="wf-nav-left">
+        <span class="wf-logo">🌱 Rooted</span>
+        <a href="#">Home</a>
+        <a href="#">Plants</a>
+        <a href="#">My Garden</a>
+        <a href="#">Map</a>
+        <a href="#">RSS</a>
+        <a href="#">Tags</a>
+        <a href="#">Batch Upload</a>
+        <a href="#">Batch Download</a>
+        <a href="#">Subscriptions</a>
+        <a href="#">Users</a>
+        <a href="#">Settings</a>
+      </div>
+      <div class="wf-nav-right">
+        <span>admin@example.com</span>
+        <span class="wf-logout">Log Out</span>
+      </div>
+    </div>
+    <div class="wf-banner"><h3>Create Tag</h3></div>
+    <div class="wf-body">
+      <div class="wf-form">
+        <div class="wf-field">
+          <label>Name</label>
+          <input class="wf-input" type="text" placeholder="Tag name">
+        </div>
+        <div class="wf-field">
+          <label>Type</label>
+          <select class="wf-input">
+            <option>Primary</option>
+            <option>Secondary</option>
+          </select>
+          <div class="wf-hint">Only admins can create primary tags</div>
+        </div>
+        <div class="wf-form-actions">
+          <span class="wf-btn wf-btn-primary">Create Tag</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="wf-divider">
+
+<!-- ============================================================ -->
+<!-- 7. Edit Tag -->
+<!-- ============================================================ -->
+<section class="wireframe-section" id="edit-tag">
+  <h2>7. Edit Tag</h2>
+  <div class="wireframe">
+    <div class="wf-navbar">
+      <div class="wf-nav-left">
+        <span class="wf-logo">🌱 Rooted</span>
+        <a href="#">Home</a>
+        <a href="#">Plants</a>
+        <a href="#">My Garden</a>
+        <a href="#">Map</a>
+        <a href="#">RSS</a>
+        <a href="#">Tags</a>
+        <a href="#">Batch Upload</a>
+        <a href="#">Batch Download</a>
+        <a href="#">Subscriptions</a>
+        <a href="#">Users</a>
+        <a href="#">Settings</a>
+      </div>
+      <div class="wf-nav-right">
+        <span>admin@example.com</span>
+        <span class="wf-logout">Log Out</span>
+      </div>
+    </div>
+    <div class="wf-banner"><h3>Edit Tag</h3></div>
+    <div class="wf-body">
+      <div class="wf-form">
+        <div class="wf-field">
+          <label>Name</label>
+          <input class="wf-input" type="text" value="Low Light">
+        </div>
+        <div class="wf-field">
+          <label>Type</label>
+          <select class="wf-input">
+            <option>Primary</option>
+            <option selected>Secondary</option>
+          </select>
+        </div>
+        <div class="wf-form-actions">
+          <span class="wf-btn wf-btn-primary">Update Tag</span>
+          <a class="wf-link" href="#">Cancel</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="wf-divider">
+
+<!-- ============================================================ -->
+<!-- 8. Settings -->
+<!-- ============================================================ -->
+<section class="wireframe-section" id="settings">
+  <h2>8. Settings</h2>
+  <div class="wireframe">
+    <div class="wf-navbar">
+      <div class="wf-nav-left">
+        <span class="wf-logo">🌱 Rooted</span>
+        <a href="#">Home</a>
+        <a href="#">Plants</a>
+        <a href="#">My Garden</a>
+        <a href="#">Map</a>
+        <a href="#">RSS</a>
+        <a href="#">Tags</a>
+        <a href="#">Batch Upload</a>
+        <a href="#">Batch Download</a>
+        <a href="#">Subscriptions</a>
+        <a href="#">Users</a>
+        <a href="#">Settings</a>
+      </div>
+      <div class="wf-nav-right">
+        <span>admin@example.com</span>
+        <span class="wf-logout">Log Out</span>
+      </div>
+    </div>
+    <div class="wf-banner"><h3>Settings</h3></div>
+    <div class="wf-body">
+      <div class="wf-form-wide">
+        <fieldset class="wf-fieldset">
+          <legend>SMTP Configuration</legend>
+          <div class="wf-field">
+            <label>smtp_host</label>
+            <input class="wf-input" type="text" placeholder="smtp.example.com">
+          </div>
+          <div class="wf-field">
+            <label>smtp_port</label>
+            <input class="wf-input" type="text" placeholder="587">
+          </div>
+          <div class="wf-field">
+            <label>smtp_user</label>
+            <input class="wf-input" type="text" placeholder="user@example.com">
+          </div>
+          <div class="wf-field">
+            <label>smtp_password</label>
+            <input class="wf-input" type="password" placeholder="••••••••">
+          </div>
+          <div class="wf-field">
+            <label>smtp_from_address</label>
+            <input class="wf-input" type="text" placeholder="noreply@example.com">
+          </div>
+          <div class="wf-field">
+            <label>smtp_from_name</label>
+            <input class="wf-input" type="text" placeholder="Rooted">
+          </div>
+        </fieldset>
+        <fieldset class="wf-fieldset">
+          <legend>Application</legend>
+          <div class="wf-field">
+            <label>app_name</label>
+            <input class="wf-input" type="text" placeholder="Rooted">
+          </div>
+          <div class="wf-field">
+            <label>app_url</label>
+            <input class="wf-input" type="text" placeholder="https://rooted.example.com">
+          </div>
+        </fieldset>
+        <div class="wf-form-actions">
+          <span class="wf-btn wf-btn-primary">Save Settings</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="wf-divider">
+
+<!-- ============================================================ -->
+<!-- 9. Setup Wizard -->
+<!-- ============================================================ -->
+<section class="wireframe-section" id="setup-wizard">
+  <h2>9. Setup Wizard</h2>
+  <div class="wireframe" style="background: #f5f5f5; padding: 2rem 1rem;">
+    <div class="wf-setup-card">
+      <div class="wf-setup-logo">🌱 Rooted</div>
+      <div class="wf-setup-title">Welcome to Rooted</div>
+      <div class="wf-setup-subtitle">Let's set up your application</div>
+
+      <div class="wf-section">
+        <h4>Administrator Account</h4>
+        <div class="wf-field">
+          <label>Email</label>
+          <input class="wf-input" type="text" placeholder="admin@example.com">
+        </div>
+        <div class="wf-field">
+          <label>Password</label>
+          <input class="wf-input" type="password" placeholder="••••••••">
+        </div>
+      </div>
+
+      <div class="wf-section">
+        <h4>SMTP Configuration (optional)</h4>
+        <div class="wf-field">
+          <label>smtp_host</label>
+          <input class="wf-input" type="text" placeholder="smtp.example.com">
+        </div>
+        <div class="wf-field">
+          <label>smtp_port</label>
+          <input class="wf-input" type="text" placeholder="587">
+        </div>
+        <div class="wf-field">
+          <label>smtp_user</label>
+          <input class="wf-input" type="text" placeholder="user@example.com">
+        </div>
+        <div class="wf-field">
+          <label>smtp_password</label>
+          <input class="wf-input" type="password" placeholder="••••••••">
+        </div>
+      </div>
+
+      <div class="wf-form-actions" style="justify-content: center;">
+        <span class="wf-btn wf-btn-primary">Complete Setup</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+</body>
+</html>
