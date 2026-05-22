@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rooted — Authenticated Wireframes</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: Arial, Helvetica, sans-serif; color: #333; background: #fff; padding: 24px; max-width: 960px; margin: 0 auto; }
+
+  /* ---- Table of Contents ---- */
+  .toc { background: #f5f5f5; border: 1px solid #ccc; padding: 20px 28px; margin-bottom: 40px; border-radius: 4px; }
+  .toc h2 { font-size: 18px; margin-bottom: 12px; color: #444; }
+  .toc ol { padding-left: 22px; }
+  .toc li { margin-bottom: 6px; }
+  .toc a { color: #555; text-decoration: none; }
+  .toc a:hover { text-decoration: underline; }
+
+  /* ---- Wireframe section ---- */
+  .wireframe-section { margin-bottom: 48px; }
+  .wireframe-section > h2 { font-size: 16px; color: #888; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
+
+  /* The bordered box representing one page */
+  .page-frame { border: 2px solid #ccc; background: #fff; border-radius: 4px; overflow: hidden; }
+
+  /* ---- Shared Navbar ---- */
+  .navbar { background: #444; color: #ddd; display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; font-size: 13px; flex-wrap: wrap; gap: 6px; }
+  .navbar .logo { font-weight: bold; font-size: 15px; color: #fff; margin-right: 18px; white-space: nowrap; }
+  .navbar .nav-links { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+  .navbar .nav-links span { color: #bbb; cursor: default; }
+  .navbar .nav-links span:hover { color: #fff; }
+  .navbar .nav-right { display: flex; align-items: center; gap: 12px; white-space: nowrap; }
+  .navbar .nav-right .user-email { color: #ccc; }
+  .navbar .nav-right .logout { color: #f99; cursor: default; }
+
+  /* ---- Banner ---- */
+  .banner { background: #e8e8e8; padding: 18px 20px; border-bottom: 1px solid #ccc; }
+  .banner h1 { font-size: 20px; color: #444; font-weight: 700; }
+
+  /* ---- Main content area ---- */
+  .main { padding: 20px; }
+
+  /* ---- Form helpers ---- */
+  .form-group { margin-bottom: 16px; }
+  .form-group label { display: block; font-size: 13px; color: #666; margin-bottom: 4px; font-weight: 600; }
+  .form-group .hint { font-size: 11px; color: #999; margin-top: 2px; }
+
+  .input-box { width: 100%; border: 1px solid #ccc; background: #f5f5f5; padding: 8px 10px; font-size: 13px; color: #666; border-radius: 3px; }
+  textarea.input-box { resize: vertical; }
+  select.input-box { max-width: 220px; }
+
+  .btn { display: inline-block; padding: 8px 18px; font-size: 13px; border: 1px solid #bbb; background: #e0e0e0; color: #444; border-radius: 3px; cursor: default; font-weight: 600; }
+  .btn-primary { background: #666; color: #fff; border-color: #555; }
+  .btn-danger { background: #c55; color: #fff; border-color: #a44; }
+  .btn-sm { padding: 5px 12px; font-size: 12px; }
+  .btn-indigo { background: #556; color: #fff; border-color: #445; }
+
+  .link { color: #666; text-decoration: underline; font-size: 13px; cursor: default; }
+  .link-red { color: #c55; }
+
+  /* ---- Tags / Checkboxes ---- */
+  .tag-group { margin-bottom: 10px; }
+  .tag-group .tag-group-title { font-size: 12px; color: #888; font-weight: 700; margin-bottom: 4px; }
+  .tag-group label.cb { font-size: 13px; color: #666; margin-right: 14px; font-weight: 400; cursor: default; }
+
+  /* ---- Meta rows ---- */
+  .meta-row { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; }
+  .meta-row .input-box { width: 40%; }
+  .meta-row .remove-btn { color: #999; font-size: 16px; cursor: default; }
+
+  /* ---- Media grid ---- */
+  .media-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 10px; }
+  .media-placeholder { background: #ddd; border: 1px solid #ccc; height: 100px; display: flex; align-items: center; justify-content: center; color: #999; font-size: 12px; border-radius: 3px; }
+  .media-item { text-align: center; }
+  .media-item .media-placeholder { margin-bottom: 6px; }
+  .media-item label.cb, .media-item .link { font-size: 12px; color: #888; }
+
+  /* ---- Cards ---- */
+  .card { border: 1px solid #ccc; background: #f5f5f5; border-radius: 4px; padding: 16px; margin-bottom: 14px; }
+  .card h3 { font-size: 15px; color: #444; margin-bottom: 4px; }
+  .card p { font-size: 13px; color: #666; margin-bottom: 8px; }
+
+  .notes-box { background: #e9e9e9; border: 1px solid #ccc; padding: 10px 12px; font-size: 13px; color: #777; border-radius: 3px; margin-bottom: 10px; font-style: italic; }
+  .card-actions { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
+  .badge { display: inline-block; padding: 2px 8px; font-size: 11px; border-radius: 10px; font-weight: 600; }
+  .badge-vis { background: #ddd; color: #666; }
+  .badge-primary { background: #d8d0e8; color: #635; }
+  .badge-secondary { background: #cde0f0; color: #356; }
+  .badge-date { background: #e8e8e8; color: #666; }
+
+  /* ---- Subscription grid ---- */
+  .sub-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 14px; }
+  .sub-card { border: 1px solid #ccc; background: #f5f5f5; border-radius: 4px; padding: 14px; text-align: center; }
+  .sub-card h4 { font-size: 14px; color: #444; margin-bottom: 6px; }
+  .sub-card .badge { margin-bottom: 10px; }
+
+  /* ---- Misc ---- */
+  .section-title { font-size: 14px; font-weight: 700; color: #555; margin-bottom: 8px; margin-top: 18px; }
+  .upload-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-top: 8px; }
+  .xml-box { background: #f0f0f0; border: 1px solid #ccc; padding: 12px; font-family: monospace; font-size: 12px; color: #666; border-radius: 3px; white-space: pre; overflow-x: auto; margin-bottom: 14px; line-height: 1.5; }
+
+  hr.page-break { border: none; border-top: 2px dashed #ccc; margin: 48px 0; }
+</style>
+</head>
+<body>
+
+<!-- =============================== -->
+<!-- TABLE OF CONTENTS               -->
+<!-- =============================== -->
+<div class="toc">
+  <h2>Wireframes — Authenticated Pages</h2>
+  <ol>
+    <li><a href="#create-plant">Create Plant</a></li>
+    <li><a href="#edit-plant">Edit Plant</a></li>
+    <li><a href="#my-garden">My Garden</a></li>
+    <li><a href="#garden-detail">Garden Plant Detail</a></li>
+    <li><a href="#subscriptions">Subscriptions</a></li>
+    <li><a href="#profile">Profile</a></li>
+    <li><a href="#two-factor">Two-Factor Verification</a></li>
+    <li><a href="#batch-upload">Batch Upload</a></li>
+  </ol>
+</div>
+
+
+<!-- =============================== -->
+<!-- 1. CREATE PLANT                 -->
+<!-- =============================== -->
+<section class="wireframe-section" id="create-plant">
+  <h2>1 &mdash; Create Plant</h2>
+  <div class="page-frame">
+
+    <!-- Navbar -->
+    <div class="navbar">
+      <div style="display:flex;align-items:center;flex-wrap:wrap;gap:6px;">
+        <span class="logo">🌱 Rooted</span>
+        <div class="nav-links">
+          <span>Home</span>
+          <span>Plants</span>
+          <span>My Garden</span>
+          <span>Map</span>
+          <span>RSS</span>
+          <span>Tags</span>
+          <span>Batch Upload</span>
+          <span>Batch Download</span>
+          <span>Subscriptions</span>
+        </div>
+      </div>
+      <div class="nav-right">
+        <span class="user-email">user@example.com</span>
+        <span class="logout">Log Out</span>
+      </div>
+    </div>
+
+    <!-- Banner -->
+    <div class="banner"><h1>New Plant</h1></div>
+
+    <!-- Content -->
+    <div class="main">
+      <div class="form-group">
+        <label>Name</label>
+        <input class="input-box" type="text" placeholder="Plant name…">
+      </div>
+
+      <div class="form-group">
+        <label>Description</label>
+        <textarea class="input-box" rows="5" placeholder="Describe this plant…"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>Visibility</label>
+        <select class="input-box">
+          <option>public</option>
+          <option>internal</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Upload media files</label>
+        <input type="file" multiple style="font-size:13px;color:#666;">
+      </div>
+
+      <!-- Tags -->
+      <div class="form-group">
+        <label>Tags</label>
+        <div class="tag-group">
+          <div class="tag-group-title">Primary:</div>
+          <label class="cb"><input type="checkbox"> Flores</label>
+          <label class="cb"><input type="checkbox"> Hortícolas</label>
+        </div>
+        <div class="tag-group">
+          <div class="tag-group-title">Secondary:</div>
+          <label class="cb"><input type="checkbox"> Interior</label>
+          <label class="cb"><input type="checkbox"> Rega Gota-a-Gota</label>
+        </div>
+      </div>
+
+      <!-- Meta-information -->
+      <div class="form-group">
+        <label>Meta-information</label>
+        <div class="meta-row">
+          <input class="input-box" type="text" placeholder="Key (e.g. Solo)">
+          <input class="input-box" type="text" placeholder="Value (e.g. Argiloso)">
+          <span class="remove-btn">&times;</span>
+        </div>
+        <div class="meta-row">
+          <input class="input-box" type="text" placeholder="Key">
+          <input class="input-box" type="text" placeholder="Value">
+          <span class="remove-btn">&times;</span>
+        </div>
+        <button class="btn btn-sm" style="margin-top:4px;">+ Add meta</button>
+      </div>
+
+      <div style="margin-top:20px;">
+        <button class="btn btn-primary">Create Plant</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="page-break">
+
+
+<!-- =============================== -->
+<!-- 2. EDIT PLANT                   -->
+<!-- =============================== -->
+<section class="wireframe-section" id="edit-plant">
+  <h2>2 &mdash; Edit Plant</h2>
+  <div class="page-frame">
+
+    <div class="navbar">
+      <div style="display:flex;align-items:center;flex-wrap:wrap;gap:6px;">
+        <span class="logo">🌱 Rooted</span>
+        <div class="nav-links">
+          <span>Home</span>
+          <span>Plants</span>
+          <span>My Garden</span>
+          <span>Map</span>
+          <span>RSS</span>
+          <span>Tags</span>
+          <span>Batch Upload</span>
+          <span>Batch Download</span>
+          <span>Subscriptions</span>
+        </div>
+      </div>
+      <div class="nav-right">
+        <span class="user-email">user@example.com</span>
+        <span class="logout">Log Out</span>
+      </div>
+    </div>
+
+    <div class="banner"><h1>Edit Plant</h1></div>
+
+    <div class="main">
+      <div class="form-group">
+        <label>Name</label>
+        <input class="input-box" type="text" value="Rosa Vermelha">
+      </div>
+
+      <div class="form-group">
+        <label>Description</label>
+        <textarea class="input-box" rows="5">A beautiful red rose, perfect for temperate gardens. Requires moderate watering and partial sunlight.</textarea>
+      </div>
+
+      <div class="form-group">
+        <label>Visibility</label>
+        <select class="input-box">
+          <option selected>public</option>
+          <option>internal</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Upload media files</label>
+        <input type="file" multiple style="font-size:13px;color:#666;">
+      </div>
+
+      <!-- Existing Media -->
+      <div class="form-group">
+        <label>Existing Media</label>
+        <div class="media-grid">
+          <div class="media-item">
+            <div class="media-placeholder">media-1.jpg</div>
+            <label class="cb"><input type="checkbox"> Remove</label>
+          </div>
+          <div class="media-item">
+            <div class="media-placeholder">media-2.jpg</div>
+            <label class="cb"><input type="checkbox"> Remove</label>
+          </div>
+          <div class="media-item">
+            <div class="media-placeholder">media-3.jpg</div>
+            <label class="cb"><input type="checkbox"> Remove</label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tags -->
+      <div class="form-group">
+        <label>Tags</label>
+        <div class="tag-group">
+          <div class="tag-group-title">Primary:</div>
+          <label class="cb"><input type="checkbox" checked> Flores</label>
+          <label class="cb"><input type="checkbox"> Hortícolas</label>
+        </div>
+        <div class="tag-group">
+          <div class="tag-group-title">Secondary:</div>
+          <label class="cb"><input type="checkbox" checked> Interior</label>
+          <label class="cb"><input type="checkbox"> Rega Gota-a-Gota</label>
+        </div>
+      </div>
+
+      <!-- Meta-information -->
+      <div class="form-group">
+        <label>Meta-information</label>
+        <div class="meta-row">
+          <input class="input-box" type="text" value="Solo">
+          <input class="input-box" type="text" value="Argiloso">
+          <span class="remove-btn">&times;</span>
+        </div>
+        <div class="meta-row">
+          <input class="input-box" type="text" value="Rega">
+          <input class="input-box" type="text" value="Moderada">
+          <span class="remove-btn">&times;</span>
+        </div>
+        <button class="btn btn-sm" style="margin-top:4px;">+ Add meta</button>
+      </div>
+
+      <div style="margin-top:20px;display:flex;gap:14px;align-items:center;">
+        <button class="btn btn-primary">Update Plant</button>
+        <a class="link" href="#">Cancel</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="page-break">
+
+
+<!-- =============================== -->
+<!-- 3. MY GARDEN                    -->
+<!-- =============================== -->
+<section class="wireframe-section" id="my-garden">
+  <h2>3 &mdash; My Garden</h2>
+  <div class="page-frame">
+
+    <div class="navbar">
+      <div style="display:flex;align-items:center;flex-wrap:wrap;gap:6px;">
+        <span class="logo">🌱 Rooted</span>
+        <div class="nav-links">
+          <span>Home</span>
+          <span>Plants</span>
+          <span>My Garden</span>
+          <span>Map</span>
+          <span>RSS</span>
+          <span>Tags</span>
+          <span>Batch Upload</span>
+          <span>Batch Download</span>
+          <span>Subscriptions</span>
+        </div>
+      </div>
+      <div class="nav-right">
+        <span class="user-email">user@example.com</span>
+        <span class="logout">Log Out</span>
+      </div>
+    </div>
+
+    <div class="banner"><h1>My Garden</h1></div>
+
+    <div class="main">
+      <!-- Card 1 -->
+      <div class="card">
+        <h3>Rosa Vermelha</h3>
+        <p>A beautiful red rose, perfect for temperate gardens.</p>
+        <div class="notes-box">My personal notes about this plant&hellip;</div>
+        <div class="card-actions">
+          <a class="link" href="#">Open garden entry</a>
+          <a class="link" href="#">View catalog plant</a>
+          <a class="link link-red" href="#">Remove</a>
+          <span class="badge badge-vis">public</span>
+        </div>
+      </div>
+
+      <!-- Card 2 -->
+      <div class="card">
+        <h3>Manjericão</h3>
+        <p>Aromatic herb commonly used in Mediterranean cuisine.</p>
+        <div class="notes-box">My personal notes about this plant&hellip;</div>
+        <div class="card-actions">
+          <a class="link" href="#">Open garden entry</a>
+          <a class="link" href="#">View catalog plant</a>
+          <a class="link link-red" href="#">Remove</a>
+          <span class="badge badge-vis">internal</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="page-break">
+
+
+<!-- =============================== -->
+<!-- 4. GARDEN PLANT DETAIL          -->
+<!-- =============================== -->
+<section class="wireframe-section" id="garden-detail">
+  <h2>4 &mdash; Garden Plant Detail</h2>
+  <div class="page-frame">
+
+    <div class="navbar">
+      <div style="display:flex;align-items:center;flex-wrap:wrap;gap:6px;">
+        <span class="logo">🌱 Rooted</span>
+        <div class="nav-links">
+          <span>Home</span>
+          <span>Plants</span>
+          <span>My Garden</span>
+          <span>Map</span>
+          <span>RSS</span>
+          <span>Tags</span>
+          <span>Batch Upload</span>
+          <span>Batch Download</span>
+          <span>Subscriptions</span>
+        </div>
+      </div>
+      <div class="nav-right">
+        <span class="user-email">user@example.com</span>
+        <span class="logout">Log Out</span>
+      </div>
+    </div>
+
+    <div class="banner"><h1>Rosa Vermelha &mdash; My Garden</h1></div>
+
+    <div class="main">
+      <div class="card">
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:8px;">
+          <h3 style="margin:0;">Rosa Vermelha</h3>
+          <span class="badge badge-date">Added on 2025-01-15</span>
+          <span class="badge badge-vis">public</span>
+        </div>
+        <p>A beautiful red rose, perfect for temperate gardens. Requires moderate watering and partial sunlight.</p>
+
+        <div class="section-title">Notes</div>
+        <div class="notes-box">My personal notes about this plant&hellip; I planted it on the south side of the garden where it gets plenty of morning sun.</div>
+
+        <div class="section-title">My Garden Album</div>
+        <div class="upload-row">
+          <input type="file" style="font-size:13px;color:#666;">
+          <button class="btn btn-sm btn-primary">Upload to Album</button>
+        </div>
+        <div class="media-grid" style="margin-top:14px;">
+          <div class="media-item">
+            <div class="media-placeholder">album-1.jpg</div>
+            <a class="link link-red" href="#" style="font-size:12px;">Remove media</a>
+          </div>
+          <div class="media-item">
+            <div class="media-placeholder">album-2.jpg</div>
+            <a class="link link-red" href="#" style="font-size:12px;">Remove media</a>
+          </div>
+          <div class="media-item">
+            <div class="media-placeholder">album-3.jpg</div>
+            <a class="link link-red" href="#" style="font-size:12px;">Remove media</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="page-break">
+
+
+<!-- =============================== -->
+<!-- 5. SUBSCRIPTIONS                -->
+<!-- =============================== -->
+<section class="wireframe-section" id="subscriptions">
+  <h2>5 &mdash; Subscriptions</h2>
+  <div class="page-frame">
+
+    <div class="navbar">
+      <div style="display:flex;align-items:center;flex-wrap:wrap;gap:6px;">
+        <span class="logo">🌱 Rooted</span>
+        <div class="nav-links">
+          <span>Home</span>
+          <span>Plants</span>
+          <span>My Garden</span>
+          <span>Map</span>
+          <span>RSS</span>
+          <span>Tags</span>
+          <span>Batch Upload</span>
+          <span>Batch Download</span>
+          <span>Subscriptions</span>
+        </div>
+      </div>
+      <div class="nav-right">
+        <span class="user-email">user@example.com</span>
+        <span class="logout">Log Out</span>
+      </div>
+    </div>
+
+    <div class="banner"><h1>Subscriptions</h1></div>
+
+    <div class="main">
+      <div class="sub-grid">
+        <div class="sub-card">
+          <h4>Flores</h4>
+          <span class="badge badge-primary">primary</span><br><br>
+          <button class="btn btn-sm btn-danger">Unsubscribe</button>
+        </div>
+        <div class="sub-card">
+          <h4>Hortícolas</h4>
+          <span class="badge badge-primary">primary</span><br><br>
+          <button class="btn btn-sm btn-indigo">Subscribe</button>
+        </div>
+        <div class="sub-card">
+          <h4>Interior</h4>
+          <span class="badge badge-secondary">secondary</span><br><br>
+          <button class="btn btn-sm btn-danger">Unsubscribe</button>
+        </div>
+        <div class="sub-card">
+          <h4>Rega Gota-a-Gota</h4>
+          <span class="badge badge-secondary">secondary</span><br><br>
+          <button class="btn btn-sm btn-indigo">Subscribe</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="page-break">
+
+
+<!-- =============================== -->
+<!-- 6. PROFILE                      -->
+<!-- =============================== -->
+<section class="wireframe-section" id="profile">
+  <h2>6 &mdash; Profile</h2>
+  <div class="page-frame">
+
+    <div class="navbar">
+      <div style="display:flex;align-items:center;flex-wrap:wrap;gap:6px;">
+        <span class="logo">🌱 Rooted</span>
+        <div class="nav-links">
+          <span>Home</span>
+          <span>Plants</span>
+          <span>My Garden</span>
+          <span>Map</span>
+          <span>RSS</span>
+          <span>Tags</span>
+          <span>Batch Upload</span>
+          <span>Batch Download</span>
+          <span>Subscriptions</span>
+        </div>
+      </div>
+      <div class="nav-right">
+        <span class="user-email">user@example.com</span>
+        <span class="logout">Log Out</span>
+      </div>
+    </div>
+
+    <div class="banner"><h1>Profile</h1></div>
+
+    <div class="main" style="max-width:480px;">
+      <div class="form-group">
+        <label>Email</label>
+        <input class="input-box" type="email" value="user@example.com">
+      </div>
+
+      <div class="form-group">
+        <label>Current Password</label>
+        <input class="input-box" type="password" placeholder="••••••••">
+        <div class="hint">Required to save changes</div>
+      </div>
+
+      <div class="form-group">
+        <label>New Password</label>
+        <input class="input-box" type="password" placeholder="••••••••">
+      </div>
+
+      <div class="form-group">
+        <label>Confirm Password</label>
+        <input class="input-box" type="password" placeholder="••••••••">
+      </div>
+
+      <div style="margin-top:20px;">
+        <button class="btn btn-primary">Update Profile</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="page-break">
+
+
+<!-- =============================== -->
+<!-- 7. TWO-FACTOR VERIFICATION      -->
+<!-- =============================== -->
+<section class="wireframe-section" id="two-factor">
+  <h2>7 &mdash; Two-Factor Verification</h2>
+  <div class="page-frame">
+
+    <div class="navbar">
+      <div style="display:flex;align-items:center;flex-wrap:wrap;gap:6px;">
+        <span class="logo">🌱 Rooted</span>
+        <div class="nav-links">
+          <span>Home</span>
+          <span>Plants</span>
+          <span>My Garden</span>
+          <span>Map</span>
+          <span>RSS</span>
+          <span>Tags</span>
+          <span>Batch Upload</span>
+          <span>Batch Download</span>
+          <span>Subscriptions</span>
+        </div>
+      </div>
+      <div class="nav-right">
+        <span class="user-email">user@example.com</span>
+        <span class="logout">Log Out</span>
+      </div>
+    </div>
+
+    <div class="banner"><h1>Two-Factor Authentication</h1></div>
+
+    <div class="main" style="text-align:center;max-width:420px;margin:0 auto;padding:40px 20px;">
+      <p style="font-size:14px;color:#666;margin-bottom:24px;">A verification code has been sent to <strong>user@example.com</strong></p>
+
+      <div class="form-group" style="text-align:center;">
+        <input class="input-box" type="text" placeholder="000000" maxlength="6" style="text-align:center;font-size:28px;letter-spacing:10px;max-width:260px;margin:0 auto;display:block;padding:12px;">
+      </div>
+
+      <div style="margin-top:20px;">
+        <button class="btn btn-primary" style="width:200px;">Verify</button>
+      </div>
+
+      <div style="margin-top:18px;">
+        <a class="link" href="#">Resend code</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="page-break">
+
+
+<!-- =============================== -->
+<!-- 8. BATCH UPLOAD                 -->
+<!-- =============================== -->
+<section class="wireframe-section" id="batch-upload">
+  <h2>8 &mdash; Batch Upload</h2>
+  <div class="page-frame">
+
+    <div class="navbar">
+      <div style="display:flex;align-items:center;flex-wrap:wrap;gap:6px;">
+        <span class="logo">🌱 Rooted</span>
+        <div class="nav-links">
+          <span>Home</span>
+          <span>Plants</span>
+          <span>My Garden</span>
+          <span>Map</span>
+          <span>RSS</span>
+          <span>Tags</span>
+          <span>Batch Upload</span>
+          <span>Batch Download</span>
+          <span>Subscriptions</span>
+        </div>
+      </div>
+      <div class="nav-right">
+        <span class="user-email">user@example.com</span>
+        <span class="logout">Log Out</span>
+      </div>
+    </div>
+
+    <div class="banner"><h1>Batch Upload</h1></div>
+
+    <div class="main">
+      <div class="form-group">
+        <label>Upload ZIP file</label>
+        <input type="file" accept=".zip" style="font-size:13px;color:#666;">
+      </div>
+
+      <div class="form-group">
+        <label>Expected XML structure inside the ZIP</label>
+        <div class="xml-box">&lt;plants&gt;
+  &lt;plant&gt;
+    &lt;name&gt;Rosa Vermelha&lt;/name&gt;
+    &lt;description&gt;A beautiful red rose...&lt;/description&gt;
+    &lt;visibility&gt;public&lt;/visibility&gt;
+    &lt;tags&gt;
+      &lt;tag&gt;Flores&lt;/tag&gt;
+    &lt;/tags&gt;
+    &lt;meta&gt;
+      &lt;entry key="Solo"&gt;Argiloso&lt;/entry&gt;
+    &lt;/meta&gt;
+    &lt;media&gt;
+      &lt;file&gt;images/rosa.jpg&lt;/file&gt;
+    &lt;/media&gt;
+  &lt;/plant&gt;
+&lt;/plants&gt;</div>
+      </div>
+
+      <div style="display:flex;gap:14px;align-items:center;margin-top:20px;">
+        <button class="btn btn-primary">Upload</button>
+        <a class="link" href="#">&larr; Back to Plants</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+</body>
+</html>
