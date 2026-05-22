@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rooted — Public Wireframes</title>
+  <style>
+    /* ── Reset & Base ──────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background: #fff;
+      color: #333;
+      line-height: 1.5;
+      padding: 2rem;
+      max-width: 960px;
+      margin: 0 auto;
+    }
+
+    /* ── Table of Contents ─────────────────────────────── */
+    .toc {
+      background: #f5f5f5;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 2.5rem;
+    }
+    .toc h2 { font-size: 1.1rem; margin-bottom: .6rem; }
+    .toc ol { padding-left: 1.4rem; }
+    .toc li { margin-bottom: .25rem; }
+    .toc a { color: #555; text-decoration: none; }
+    .toc a:hover { text-decoration: underline; }
+
+    /* ── Section / Wireframe ───────────────────────────── */
+    .wireframe-section { margin-bottom: 1rem; }
+    .wireframe-section h2 {
+      font-size: 1.15rem;
+      color: #444;
+      margin-bottom: .75rem;
+    }
+    .wireframe {
+      border: 2px solid #bbb;
+      border-radius: 4px;
+      background: #fff;
+      overflow: hidden;
+    }
+    hr.page-break {
+      border: none;
+      border-top: 1px dashed #ccc;
+      margin: 2.5rem 0;
+    }
+
+    /* ── Navbar ─────────────────────────────────────────── */
+    .navbar {
+      background: #444;
+      color: #ddd;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: .55rem 1rem;
+      font-size: .82rem;
+    }
+    .navbar .left { display: flex; align-items: center; gap: 1.2rem; }
+    .navbar .logo { font-weight: bold; font-size: .95rem; color: #fff; }
+    .navbar a { color: #ccc; text-decoration: none; }
+    .navbar .right { display: flex; align-items: center; gap: .8rem; }
+    .navbar .btn-nav {
+      background: #666;
+      color: #eee;
+      border: none;
+      padding: .25rem .65rem;
+      border-radius: 3px;
+      font-size: .78rem;
+      cursor: default;
+    }
+
+    /* ── Banner ─────────────────────────────────────────── */
+    .banner {
+      background: #e8e8e8;
+      border-bottom: 1px solid #ccc;
+      padding: .75rem 1rem;
+    }
+    .banner h1 { font-size: 1.1rem; color: #444; }
+
+    /* ── Main Content Area ─────────────────────────────── */
+    .content {
+      padding: 1rem;
+      background: #f5f5f5;
+      color: #666;
+      font-size: .85rem;
+    }
+
+    /* ── Forms ──────────────────────────────────────────── */
+    .form-group { margin-bottom: .7rem; }
+    .form-group label {
+      display: block;
+      font-size: .78rem;
+      color: #666;
+      margin-bottom: .2rem;
+    }
+    .form-group input {
+      width: 100%;
+      max-width: 320px;
+      padding: .4rem .5rem;
+      border: 1px solid #ccc;
+      border-radius: 3px;
+      background: #fff;
+      font-size: .82rem;
+      color: #888;
+    }
+    .btn {
+      display: inline-block;
+      padding: .4rem .9rem;
+      border: 1px solid #bbb;
+      border-radius: 3px;
+      background: #e0e0e0;
+      color: #555;
+      font-size: .8rem;
+      cursor: default;
+    }
+    .btn-primary {
+      background: #888;
+      color: #fff;
+      border-color: #777;
+    }
+    .btn-green {
+      background: #7a7;
+      color: #fff;
+      border-color: #696;
+    }
+    .btn-red {
+      background: #b77;
+      color: #fff;
+      border-color: #a66;
+    }
+    .btn-small {
+      padding: .25rem .55rem;
+      font-size: .75rem;
+    }
+
+    /* ── Search Bar ─────────────────────────────────────── */
+    .search-bar {
+      display: flex;
+      gap: .4rem;
+      margin-bottom: .75rem;
+    }
+    .search-bar input {
+      flex: 1;
+      max-width: 340px;
+      padding: .4rem .5rem;
+      border: 1px solid #ccc;
+      border-radius: 3px;
+      font-size: .82rem;
+      color: #888;
+    }
+
+    /* ── Tag Pills ──────────────────────────────────────── */
+    .pills { display: flex; flex-wrap: wrap; gap: .35rem; margin-bottom: .75rem; }
+    .pill {
+      padding: .2rem .6rem;
+      border-radius: 12px;
+      font-size: .72rem;
+      cursor: default;
+    }
+    .pill-grey   { background: #ddd; color: #555; }
+    .pill-active { background: #999; color: #fff; }
+    .pill-purple { background: #b8a9d4; color: #3e2a6e; }
+    .pill-blue   { background: #a9c8e8; color: #1e3a5f; }
+
+    /* ── Badge ──────────────────────────────────────────── */
+    .badge {
+      display: inline-block;
+      padding: .12rem .45rem;
+      border-radius: 3px;
+      font-size: .68rem;
+      font-weight: bold;
+      vertical-align: middle;
+    }
+    .badge-green  { background: #c5e1c5; color: #2a6e2a; }
+    .badge-yellow { background: #f0e6b8; color: #7a6a1e; }
+
+    /* ── Grid of Cards ─────────────────────────────────── */
+    .list-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: .75rem;
+    }
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: .65rem;
+    }
+    .card {
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      background: #fff;
+      padding: .7rem;
+    }
+    .card h3 { font-size: .82rem; color: #444; margin-bottom: .3rem; }
+    .card p  { font-size: .72rem; color: #999; margin-bottom: .35rem; }
+
+    /* ── Detail Card ───────────────────────────────────── */
+    .detail-card {
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      background: #fff;
+      padding: 1rem;
+    }
+    .detail-card .header {
+      display: flex;
+      align-items: center;
+      gap: .6rem;
+      margin-bottom: .6rem;
+      flex-wrap: wrap;
+    }
+    .detail-card .header h3 { font-size: .95rem; color: #444; }
+    .detail-card .header .author { font-size: .75rem; color: #999; }
+    .detail-card .desc { font-size: .8rem; color: #777; margin-bottom: .85rem; }
+
+    .media-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: .5rem;
+      margin-bottom: .85rem;
+    }
+    .media-placeholder {
+      background: #ddd;
+      border: 1px solid #ccc;
+      border-radius: 3px;
+      height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: .72rem;
+      color: #888;
+    }
+
+    .tags-section { margin-bottom: .85rem; }
+    .tags-section span.label {
+      font-size: .72rem;
+      color: #888;
+      margin-right: .3rem;
+    }
+
+    .meta-table {
+      width: 100%;
+      max-width: 340px;
+      border-collapse: collapse;
+      margin-bottom: .85rem;
+      font-size: .78rem;
+    }
+    .meta-table td {
+      padding: .3rem .5rem;
+      border: 1px solid #ddd;
+      color: #666;
+    }
+    .meta-table td:first-child {
+      font-weight: bold;
+      background: #f5f5f5;
+      width: 35%;
+    }
+
+    .weather-box {
+      display: inline-block;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      background: #f9f9f9;
+      padding: .45rem .75rem;
+      font-size: .78rem;
+      color: #666;
+      margin-bottom: .85rem;
+    }
+
+    .share-btns { display: flex; gap: .4rem; margin-bottom: .85rem; }
+    .action-btns { display: flex; flex-wrap: wrap; gap: .4rem; }
+
+    /* ── Map Placeholder ───────────────────────────────── */
+    .map-placeholder {
+      background: #ddd;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      height: 340px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: .9rem;
+      color: #888;
+    }
+    .map-marker {
+      position: absolute;
+      width: 18px;
+      height: 18px;
+      background: rgba(102,102,102,.45);
+      border: 2px solid #777;
+      border-radius: 50%;
+    }
+
+    /* ── RSS Box ────────────────────────────────────────── */
+    .rss-box {
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      background: #fff;
+      padding: .85rem 1rem;
+      font-family: monospace;
+      font-size: .78rem;
+      color: #777;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+
+  <h1 style="margin-bottom:.3rem;">🌱 Rooted — Public Wireframes</h1>
+  <p style="color:#888;font-size:.85rem;margin-bottom:1.5rem;">Simple greyscale wireframes for the public-facing pages.</p>
+
+  <!-- ═══════════════════════════════════════════════════
+       TABLE OF CONTENTS
+       ═══════════════════════════════════════════════════ -->
+  <nav class="toc">
+    <h2>Table of Contents</h2>
+    <ol>
+      <li><a href="#home">Home Page</a></li>
+      <li><a href="#login">Login Page</a></li>
+      <li><a href="#register">Register Page</a></li>
+      <li><a href="#plants-listing">Plants Listing</a></li>
+      <li><a href="#plant-detail">Plant Detail</a></li>
+      <li><a href="#map">Map Page</a></li>
+      <li><a href="#rss">RSS Feed</a></li>
+    </ol>
+  </nav>
+
+  <!-- ═══════════════════════════════════════════════════
+       1. HOME PAGE
+       ═══════════════════════════════════════════════════ -->
+  <section class="wireframe-section" id="home">
+    <h2>1 · Home Page</h2>
+    <div class="wireframe">
+      <!-- Navbar (guest) -->
+      <div class="navbar">
+        <div class="left">
+          <span class="logo">🌱 Rooted</span>
+          <a href="#">Home</a>
+          <a href="#">Plants</a>
+          <a href="#">My Garden</a>
+          <a href="#">Map</a>
+          <a href="#">RSS</a>
+        </div>
+        <div class="right">
+          <span class="btn-nav">Register</span>
+          <span class="btn-nav">Log In</span>
+        </div>
+      </div>
+      <!-- Banner -->
+      <div class="banner"><h1>Home</h1></div>
+      <!-- Content -->
+      <div class="content">
+        <p>Hello, Guest. Welcome to the home page.</p>
+      </div>
+    </div>
+  </section>
+
+  <hr class="page-break">
+
+  <!-- ═══════════════════════════════════════════════════
+       2. LOGIN PAGE
+       ═══════════════════════════════════════════════════ -->
+  <section class="wireframe-section" id="login">
+    <h2>2 · Login Page</h2>
+    <div class="wireframe">
+      <div class="navbar">
+        <div class="left">
+          <span class="logo">🌱 Rooted</span>
+          <a href="#">Home</a>
+          <a href="#">Plants</a>
+          <a href="#">My Garden</a>
+          <a href="#">Map</a>
+          <a href="#">RSS</a>
+        </div>
+        <div class="right">
+          <span class="btn-nav">Register</span>
+          <span class="btn-nav">Log In</span>
+        </div>
+      </div>
+      <div class="banner"><h1>Log In</h1></div>
+      <div class="content">
+        <div class="form-group">
+          <label>Email</label>
+          <input type="text" placeholder="user@example.com">
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" placeholder="••••••••">
+        </div>
+        <span class="btn btn-primary">Log In</span>
+      </div>
+    </div>
+  </section>
+
+  <hr class="page-break">
+
+  <!-- ═══════════════════════════════════════════════════
+       3. REGISTER PAGE
+       ═══════════════════════════════════════════════════ -->
+  <section class="wireframe-section" id="register">
+    <h2>3 · Register Page</h2>
+    <div class="wireframe">
+      <div class="navbar">
+        <div class="left">
+          <span class="logo">🌱 Rooted</span>
+          <a href="#">Home</a>
+          <a href="#">Plants</a>
+          <a href="#">My Garden</a>
+          <a href="#">Map</a>
+          <a href="#">RSS</a>
+        </div>
+        <div class="right">
+          <span class="btn-nav">Register</span>
+          <span class="btn-nav">Log In</span>
+        </div>
+      </div>
+      <div class="banner"><h1>Register</h1></div>
+      <div class="content">
+        <div class="form-group">
+          <label>Email</label>
+          <input type="text" placeholder="user@example.com">
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" placeholder="••••••••">
+        </div>
+        <span class="btn btn-primary">Register</span>
+      </div>
+    </div>
+  </section>
+
+  <hr class="page-break">
+
+  <!-- ═══════════════════════════════════════════════════
+       4. PLANTS LISTING
+       ═══════════════════════════════════════════════════ -->
+  <section class="wireframe-section" id="plants-listing">
+    <h2>4 · Plants Listing</h2>
+    <div class="wireframe">
+      <div class="navbar">
+        <div class="left">
+          <span class="logo">🌱 Rooted</span>
+          <a href="#">Home</a>
+          <a href="#">Plants</a>
+          <a href="#">My Garden</a>
+          <a href="#">Map</a>
+          <a href="#">RSS</a>
+        </div>
+        <div class="right">
+          <span style="font-size:.78rem;color:#ccc;">user@example.com</span>
+          <span class="btn-nav">Log Out</span>
+        </div>
+      </div>
+      <div class="banner"><h1>Plants</h1></div>
+      <div class="content">
+        <!-- Search -->
+        <div class="search-bar">
+          <input type="text" placeholder="Search plants…">
+          <span class="btn">Search</span>
+        </div>
+        <!-- Tag filters -->
+        <div class="pills">
+          <span class="pill pill-active">All</span>
+          <span class="pill pill-grey">Flores</span>
+          <span class="pill pill-grey">Hortícolas</span>
+          <span class="pill pill-grey">Suculentas</span>
+        </div>
+        <!-- List header -->
+        <div class="list-header">
+          <span style="font-size:.82rem;color:#666;">6 plant(s)</span>
+          <span class="btn btn-green btn-small">+ New Plant</span>
+        </div>
+        <!-- Card grid -->
+        <div class="card-grid">
+          <div class="card">
+            <h3>Rosa Vermelha</h3>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+            <span class="badge badge-green">public</span>
+          </div>
+          <div class="card">
+            <h3>Manjericão</h3>
+            <p>Sed do eiusmod tempor incididunt ut labore et dolore magna.</p>
+            <span class="badge badge-green">public</span>
+          </div>
+          <div class="card">
+            <h3>Aloe Vera</h3>
+            <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco.</p>
+            <span class="badge badge-yellow">internal</span>
+          </div>
+          <div class="card">
+            <h3>Lavanda</h3>
+            <p>Duis aute irure dolor in reprehenderit in voluptate velit.</p>
+            <span class="badge badge-green">public</span>
+          </div>
+          <div class="card">
+            <h3>Hortelã</h3>
+            <p>Excepteur sint occaecat cupidatat non proident, sunt in culpa.</p>
+            <span class="badge badge-yellow">internal</span>
+          </div>
+          <div class="card">
+            <h3>Girassol</h3>
+            <p>Curabitur pretium tincidunt lacus nulla gravida orci.</p>
+            <span class="badge badge-green">public</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="page-break">
+
+  <!-- ═══════════════════════════════════════════════════
+       5. PLANT DETAIL
+       ═══════════════════════════════════════════════════ -->
+  <section class="wireframe-section" id="plant-detail">
+    <h2>5 · Plant Detail</h2>
+    <div class="wireframe">
+      <div class="navbar">
+        <div class="left">
+          <span class="logo">🌱 Rooted</span>
+          <a href="#">Home</a>
+          <a href="#">Plants</a>
+          <a href="#">My Garden</a>
+          <a href="#">Map</a>
+          <a href="#">RSS</a>
+        </div>
+        <div class="right">
+          <span style="font-size:.78rem;color:#ccc;">user@example.com</span>
+          <span class="btn-nav">Log Out</span>
+        </div>
+      </div>
+      <div class="banner"><h1>Rosa Vermelha</h1></div>
+      <div class="content">
+        <div class="detail-card">
+          <!-- Header -->
+          <div class="header">
+            <h3>Rosa Vermelha</h3>
+            <span class="author">by user@example.com</span>
+            <span class="badge badge-green">public</span>
+          </div>
+          <!-- Description -->
+          <p class="desc">
+            A beautiful red rose plant, perfect for gardens and bouquets.
+            Requires moderate sunlight and regular watering. Blooms in spring
+            and summer with vibrant red petals and a pleasant fragrance.
+          </p>
+          <!-- Media gallery -->
+          <div style="margin-bottom:.25rem;font-size:.75rem;color:#888;font-weight:bold;">Media</div>
+          <div class="media-grid">
+            <div class="media-placeholder">[Image]</div>
+            <div class="media-placeholder">[Video]</div>
+            <div class="media-placeholder">[Audio]</div>
+          </div>
+          <!-- Tags -->
+          <div class="tags-section">
+            <span class="label">Primary:</span>
+            <span class="pill pill-purple">Flores</span>
+            &nbsp;
+            <span class="label">Secondary:</span>
+            <span class="pill pill-blue">Interior</span>
+          </div>
+          <!-- Meta-information -->
+          <div style="margin-bottom:.25rem;font-size:.75rem;color:#888;font-weight:bold;">Meta-information</div>
+          <table class="meta-table">
+            <tr><td>Solo</td><td>Argiloso</td></tr>
+            <tr><td>Rega</td><td>Semanal</td></tr>
+            <tr><td>Exposição</td><td>Meia-sombra</td></tr>
+            <tr><td>Época</td><td>Primavera</td></tr>
+          </table>
+          <!-- Weather widget -->
+          <div class="weather-box">🌤 22°C, Humidity: 65%</div>
+          <br><br>
+          <!-- Share buttons -->
+          <div class="share-btns">
+            <span class="btn btn-small">Share on Facebook</span>
+            <span class="btn btn-small">Share on Twitter</span>
+          </div>
+          <!-- Action buttons -->
+          <div class="action-btns">
+            <span class="btn btn-primary btn-small">Edit</span>
+            <span class="btn btn-red btn-small">Delete</span>
+            <span class="btn btn-green btn-small">Add to My Garden</span>
+            <span class="btn btn-small">🌿 Identify Plant</span>
+            <span class="btn btn-small">← Back to plants</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="page-break">
+
+  <!-- ═══════════════════════════════════════════════════
+       6. MAP PAGE
+       ═══════════════════════════════════════════════════ -->
+  <section class="wireframe-section" id="map">
+    <h2>6 · Map Page</h2>
+    <div class="wireframe">
+      <div class="navbar">
+        <div class="left">
+          <span class="logo">🌱 Rooted</span>
+          <a href="#">Home</a>
+          <a href="#">Plants</a>
+          <a href="#">My Garden</a>
+          <a href="#">Map</a>
+          <a href="#">RSS</a>
+        </div>
+        <div class="right">
+          <span style="font-size:.78rem;color:#ccc;">user@example.com</span>
+          <span class="btn-nav">Log Out</span>
+        </div>
+      </div>
+      <div class="banner"><h1>Map</h1></div>
+      <div class="content">
+        <div class="map-placeholder">
+          [Leaflet Map]
+          <span class="map-marker" style="top:30%;left:25%;"></span>
+          <span class="map-marker" style="top:55%;left:60%;"></span>
+          <span class="map-marker" style="top:40%;left:45%;"></span>
+          <span class="map-marker" style="top:70%;left:30%;"></span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="page-break">
+
+  <!-- ═══════════════════════════════════════════════════
+       7. RSS FEED
+       ═══════════════════════════════════════════════════ -->
+  <section class="wireframe-section" id="rss">
+    <h2>7 · RSS Feed</h2>
+    <div class="wireframe">
+      <div class="navbar">
+        <div class="left">
+          <span class="logo">🌱 Rooted</span>
+          <a href="#">Home</a>
+          <a href="#">Plants</a>
+          <a href="#">My Garden</a>
+          <a href="#">Map</a>
+          <a href="#">RSS</a>
+        </div>
+        <div class="right">
+          <span class="btn-nav">Register</span>
+          <span class="btn-nav">Log In</span>
+        </div>
+      </div>
+      <div class="banner"><h1>RSS Feed</h1></div>
+      <div class="content">
+        <div class="rss-box">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;rss version="2.0"&gt;
+  &lt;channel&gt;
+    &lt;title&gt;Rooted — Plant Feed&lt;/title&gt;
+    &lt;link&gt;/rss&lt;/link&gt;
+    &lt;description&gt;Latest plants shared on Rooted&lt;/description&gt;
+    &lt;item&gt;
+      &lt;title&gt;Rosa Vermelha&lt;/title&gt;
+      &lt;description&gt;A beautiful red rose plant…&lt;/description&gt;
+    &lt;/item&gt;
+    &lt;item&gt;
+      &lt;title&gt;Manjericão&lt;/title&gt;
+      &lt;description&gt;Fresh basil for your garden…&lt;/description&gt;
+    &lt;/item&gt;
+  &lt;/channel&gt;
+&lt;/rss&gt;
+
+RSS Feed — /rss</div>
+      </div>
+    </div>
+  </section>
+
+</body>
+</html>
