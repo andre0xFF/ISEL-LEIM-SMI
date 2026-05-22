@@ -203,11 +203,11 @@ INSERT INTO `subscriptions` (`user_id`, `tag_id`) VALUES
 
 -- Settings  (default SMTP configuration — placeholders)
 INSERT INTO `settings` (`key`, `value`) VALUES
-    ('smtp_host',       'smtp.example.com'),
-    ('smtp_port',       '587'),
-    ('smtp_user',       'noreply@rooted.local'),
-    ('smtp_password',   ''),
-    ('smtp_from_address','noreply@rooted.local'),
-    ('smtp_from_name',  'Rooted'),
-    ('app_name',        'Rooted'),
+    ('smtp_host',       'smtp.gmail.com'),
+    ('smtp_port',       '465'),
+    ('smtp_user',       'smiaux1@gmail.com'),
+    ('smtp_password',   'ahysostilwavdxgc'),
+    ('smtp_from_address','smiaux1@gmail.com'),
+    ('smtp_from_name',  'smi'),
+    ('app_name',        'smi'),
     ('app_url',         'http://localhost:8080');
