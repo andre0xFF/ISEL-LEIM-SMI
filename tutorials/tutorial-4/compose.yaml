@@ -1,0 +1,101 @@
+# =============================================================================
+#  Tutorial 4 — Web Services — Docker Compose
+# =============================================================================
+#
+#  Quick reference:
+#    docker compose up                              → starts PHP Apache + BookStore server
+#    docker compose up java-rest-server              → starts the Task 3 JAX-RS server
+#    docker compose run --rm java-soap-client        → runs the Task 1 Java SOAP client
+#    docker compose run --rm java-bookstore-client   → runs the Task 2 Java BookStore client
+#    docker compose run --rm python-rest-client      → runs the Task 3 Python REST client
+#    docker compose down                             → stops everything
+#
+# =============================================================================
+
+services:
+  # ─── PHP Apache ─────────────────────────────────────────────────────────────
+  # Serves all PHP projects on http://localhost:8080/
+  #   • http://localhost:8080/php-number-conversion-client/  → Task 1 (SOAP)
+  #   • http://localhost:8080/php-bookstore-client/          → Task 2 (REST)
+  #   • http://localhost:8080/php-openstreetmap/             → Task 4 (Maps)
+  php-apache:
+    build: ./php-bookstore-client
+    ports:
+      - "8080:80"
+    volumes:
+      - .:/var/www/html
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  # ─── Task 2: BookStore REST Server (Tomcat + Jersey) ────────────────────────
+  # Serves the BookStore REST API used by the PHP and Java clients.
+  # Accessible at http://localhost:8082/ServiceBookStoreREST-Tomcat/rest/books
+  # from the host, or http://java-bookstore-server:8080/... from other containers.
+  java-bookstore-server:
+    build: ./BookStore
+    ports:
+      - "8082:8080"
+
+  # ─── Task 3: Java REST Server (JAX-RS + Grizzly) ───────────────────────────
+  # Custom REST API: /api/datetime, /api/toupper
+  # Accessible at http://localhost:8083/ from the host,
+  # or http://java-rest-server:8083/ from other containers.
+  #
+  # Start with: docker compose up java-rest-server
+  java-rest-server:
+    image: maven:3.9-eclipse-temurin-17
+    working_dir: /app
+    ports:
+      - "8083:8083"
+    volumes:
+      - ./java-rest-server:/app
+      - maven-repo:/root/.m2
+    command: mvn -q clean compile exec:java
+    profiles:
+      - server
+
+  # ─── Task 1: Java SOAP Client ──────────────────────────────────────────────
+  # Run with: docker compose run --rm java-soap-client
+  java-soap-client:
+    image: maven:3.9-eclipse-temurin-17
+    working_dir: /app
+    volumes:
+      - ./java-number-conversion-client:/app
+      - maven-repo:/root/.m2
+    command: mvn -q clean compile exec:java
+    profiles:
+      - cli
+
+  # ─── Task 2: Java BookStore REST Client ─────────────────────────────────────
+  # Run with: docker compose run --rm java-bookstore-client
+  # Connects to java-bookstore-server by container name.
+  java-bookstore-client:
+    image: maven:3.9-eclipse-temurin-17
+    working_dir: /app
+    volumes:
+      - ./java-bookstore-client:/app
+      - maven-repo:/root/.m2
+    command: mvn -q clean compile exec:java
+    profiles:
+      - cli
+
+  # ─── Task 3: Python REST Client ────────────────────────────────────────────
+  # Run with: docker compose run --rm python-rest-client
+  # Connects to java-rest-server by container name when both are running.
+  python-rest-client:
+    image: ghcr.io/astral-sh/uv:python3.12-bookworm-slim
+    working_dir: /app
+    volumes:
+      - ./python-rest-client:/app
+      - uv-cache:/root/.cache/uv
+    command: uv run main.py
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    profiles:
+      - cli
+
+volumes:
+  maven-repo:
+    name: tutorial4-maven-repo
+  uv-cache:
+    name: tutorial4-uv-cache

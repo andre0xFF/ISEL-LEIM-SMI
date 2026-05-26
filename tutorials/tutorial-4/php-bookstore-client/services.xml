@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<ServiceLocations>
+    <Description>Book store service</Description>
+    <Locations>
+        <ServiceLocation
+        >http://java-bookstore-server:8080/ServiceBookStoreREST-Tomcat/rest/books</ServiceLocation>
+    </Locations>
+</ServiceLocations>
