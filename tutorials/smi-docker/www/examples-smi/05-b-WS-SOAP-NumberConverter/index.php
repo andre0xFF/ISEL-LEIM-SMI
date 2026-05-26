@@ -27,7 +27,11 @@
             
             $operationName1 = "NumberToDollars";
             $operationName2 = "NumberToWords";
-            
+
+            echo "<pre>";
+                print_r($proxy->__getFunctions());
+            echo "</pre>";
+
             $result1_a_raw = $proxy->NumberToDollars( $arg1 );
             print_r( $result1_a_raw );
             

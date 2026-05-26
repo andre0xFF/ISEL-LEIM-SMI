@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ServiceLocations>
+    <Description>Book store service</Description>
+    <Locations>
+        <ServiceLocation>http://host.docker.internal:8082/ServiceBookStoreREST-Tomcat/rest/books</ServiceLocation>
+    </Locations>
+</ServiceLocations>

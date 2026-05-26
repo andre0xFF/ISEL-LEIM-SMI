@@ -10,6 +10,7 @@ RUN apt-get update \
     msmtp \
     ca-certificates \
     unzip \
+    libxml2-dev \
     libfreetype6-dev \
     libjpeg62-turbo-dev \
     libpng-dev \
@@ -17,7 +18,7 @@ RUN apt-get update \
  && docker-php-ext-configure gd \
     --with-freetype-dir=/usr/include/ \
     --with-jpeg-dir=/usr/include/ \
- && docker-php-ext-install mysqli pdo pdo_mysql mbstring gd \
+ && docker-php-ext-install mysqli pdo pdo_mysql mbstring gd soap \
  && pecl install xdebug-2.5.5 \
  && docker-php-ext-enable xdebug \
  && rm -rf /var/lib/apt/lists/*
