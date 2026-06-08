@@ -1,17 +1,32 @@
 <?php
-
+use Core\App;
+use Core\Database;
 use Core\MediaService;
 
-$id = $_GET["id"] ?? null;
+$id = (int) ($_GET["id"] ?? 0);
 
-if (!$id) {
+if ($id <= 0) {
     abort(404);
 }
 
-$media = MediaService::find((int) $id);
+$db = App::resolve(Database::class);
 
-if (!$media) {
-    abort(404);
+
+$media = $db->query(
+    "SELECT m.*,
+    p.visibility
+    FROM media m
+    JOIN plants p ON p.id = m.plant_id
+    WHERE m.id = :id",[
+        "id"=> $id,
+    ])->find();
+
+$isGuest = !($_SESSION["user"] ?? false);
+
+
+
+if ($media["visibility"] === "internal" && $isGuest) {
+    abort(403);
 }
 
 $path = BASE_PATH . "storage/app/" . $media["path"];

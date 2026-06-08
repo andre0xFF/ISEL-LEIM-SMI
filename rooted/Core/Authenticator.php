@@ -80,9 +80,16 @@ class Authenticator
      *
      * @return void
      */
-    public function logout(): void
+    public function logout(bool $destroySession = true): void
     {
-        destroy_session();
+        unset($_SESSION["user"]);
+
+        if ($destroySession) {
+            destroy_session();
+            return;
+        }
+
+        session_regenerate_id(true);
     }
 
     // -----------------------------------------------------------------

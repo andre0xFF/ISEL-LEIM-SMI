@@ -40,12 +40,12 @@ $sendSucced = $authenticator->sendTwoFactorCode(
 );
 
 if (!$sendSucced) {
-    $authenticator->logout();
+    $authenticator->logout(false);
 
     $form
         ->error(
             "email",
-            "We could not send the verification email right now. Please try again.",
+            "We could not send the verification code right now. Please try again.",
         )
         ->throw();
 }
