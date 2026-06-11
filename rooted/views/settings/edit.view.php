@@ -175,6 +175,27 @@
                 </button>
             </div>
         </form>
+
+        <!-- Demo data — one-shot sample content loader for presentations -->
+        <form method="POST" action="/settings/demo-data" class="space-y-4 mt-10"
+              onsubmit="return confirm('Load demo data? This adds sample users, plants and tags meant for demos only.');">
+            <fieldset class="space-y-4">
+                <legend class="text-lg font-semibold text-gray-900 border-b border-gray-200 pb-2 w-full">Demo Data</legend>
+
+                <p class="text-sm text-gray-500">
+                    Loads sample content (demo users, plants, tags, subscriptions)
+                    for demos and presentations. Only available while the database
+                    has no plants or tags yet; it can't be loaded twice.
+                </p>
+            </fieldset>
+
+            <div>
+                <button type="submit"
+                        class="w-full rounded-md border border-indigo-600 bg-white py-2 px-4 text-sm font-medium text-indigo-600 shadow-sm hover:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                    Load Demo Data
+                </button>
+            </div>
+        </form>
     </div>
 </main>
 

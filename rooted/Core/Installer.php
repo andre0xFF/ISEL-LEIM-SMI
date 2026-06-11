@@ -77,8 +77,10 @@ class Installer
      * @param array $config        Same shape as config.php.
      * @param bool  $withDatabase  Include dbname in the DSN or connect server-level only.
      */
-    public static function connect(array $config, bool $withDatabase = true): PDO
-    {
+    public static function connect(
+        array $config,
+        bool $withDatabase = true,
+    ): PDO {
         $db = $config["database"];
 
         $dsn = "mysql:host={$db["host"]};port={$db["port"]};charset={$db["charset"]}";
@@ -96,7 +98,10 @@ class Installer
     /** Check that all REQUIRED_TABLES exist in the given database. */
     public static function schemaExists(PDO $pdo, string $dbname): bool
     {
-        $placeholders = implode(", ", array_fill(0, count(self::REQUIRED_TABLES), "?"));
+        $placeholders = implode(
+            ", ",
+            array_fill(0, count(self::REQUIRED_TABLES), "?"),
+        );
 
         $statement = $pdo->prepare(
             "SELECT COUNT(*) FROM information_schema.tables
@@ -129,11 +134,9 @@ class Installer
         );
         $pdo->exec("USE `{$dbname}`");
 
-        $sql = file_get_contents(base_path("database/001-schema.sql"));
-
-        // Strip "--" comment lines, then split into individual statements.
-        $sql = preg_replace('/^\s*--.*$/m', "", $sql);
-        $statements = array_filter(array_map("trim", explode(";", $sql)));
+        $statements = self::sqlStatements(
+            file_get_contents(base_path("database/001-schema.sql")),
+        );
 
         // The dump declares some foreign keys before the referenced table
         // exists (e.g. garden_media → garden_plants), so disable checks
@@ -143,7 +146,7 @@ class Installer
         try {
             foreach ($statements as $statement) {
                 // Already handled above for the configured database name.
-                if (preg_match('/^(CREATE\s+DATABASE|USE)\b/i', $statement)) {
+                if (preg_match("/^(CREATE\s+DATABASE|USE)\b/i", $statement)) {
                     continue;
                 }
 
@@ -152,5 +155,78 @@ class Installer
         } finally {
             $pdo->exec("SET FOREIGN_KEY_CHECKS = 1");
         }
+    }
+
+    /**
+     * Check whether demo/seed data is already present (used to refuse a
+     * second "Load Demo Data" run).
+     *
+     * Any existing plants or tags also count: the seed's plant_tag /
+     * plant_meta rows assume plant and tag IDs start at 1, so loading it
+     * on top of real content would mis-link rows.
+     */
+    public static function demoDataExists(PDO $pdo): bool
+    {
+        $demoUser = $pdo
+            ->query(
+                "SELECT COUNT(*) FROM users WHERE email = 'admin@rooted.local'",
+            )
+            ->fetchColumn();
+
+        $content = $pdo
+            ->query(
+                "SELECT (SELECT COUNT(*) FROM plants) + (SELECT COUNT(*) FROM tags)",
+            )
+            ->fetchColumn();
+
+        return (int) $demoUser > 0 || (int) $content > 0;
+    }
+
+    /**
+     * Load database/002-seed.sql into the given (already selected) database.
+     *
+     * Runs inside a transaction so a failure leaves the database unchanged.
+     * Skipped statements:
+     *   - USE          (the connection already targets the configured DB)
+     *   - settings     (preserve the admin's configured SMTP/app settings)
+     *
+     * @throws PDOException on any SQL failure (after rollback).
+     */
+    public static function runSeed(PDO $pdo): void
+    {
+        $statements = self::sqlStatements(
+            file_get_contents(base_path("database/002-seed.sql")),
+        );
+
+        $pdo->beginTransaction();
+
+        try {
+            foreach ($statements as $statement) {
+                if (
+                    preg_match(
+                        "/^(USE\b|INSERT\s+INTO\s+`?settings`?)/i",
+                        $statement,
+                    )
+                ) {
+                    continue;
+                }
+
+                $pdo->exec($statement);
+            }
+
+            $pdo->commit();
+        } catch (PDOException $e) {
+            $pdo->rollBack();
+
+            throw $e;
+        }
+    }
+
+    /** Strip "--" comment lines and split a dump into single statements. */
+    private static function sqlStatements(string $sql): array
+    {
+        $sql = preg_replace('/^\s*--.*$/m', "", $sql);
+
+        return array_filter(array_map("trim", explode(";", $sql)));
     }
 }
