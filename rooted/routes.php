@@ -82,6 +82,9 @@ return function (Router $router) {
     $router
         ->patch("/settings", "settings/update.php")
         ->only("auth", "role:admin");
+    $router
+        ->patch("/settings/database", "settings/update-database.php")
+        ->only("auth", "role:admin");
 
     // Registration — guests only
     $router->get("/register", "registration/create.php")->only("guest");
