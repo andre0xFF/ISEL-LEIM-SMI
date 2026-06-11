@@ -85,24 +85,6 @@ CREATE TABLE IF NOT EXISTS `media`
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS `garden_media`
-(
-    `id`              INT UNSIGNED                     NOT NULL AUTO_INCREMENT,
-    `garden_plant_id` INT UNSIGNED                     NOT NULL,
-    `type`            ENUM ('image', 'video', 'audio') NOT NULL DEFAULT 'image',
-    `path`            VARCHAR(255)                     NOT NULL,
-    `filename`        VARCHAR(255)                     NOT NULL,
-    `mime_type`       VARCHAR(100)                     NOT NULL,
-    `created_at`      TIMESTAMP                        NOT NULL DEFAULT CURRENT_TIMESTAMP,
-
-    PRIMARY KEY (`id`),
-    KEY `idx_garden_media_garden_plant_id` (`garden_plant_id`),
-
-    CONSTRAINT `fk_garden_media_garden_plant`
-        FOREIGN KEY (`garden_plant_id`) REFERENCES `garden_plants` (`id`) ON DELETE CASCADE
-) ENGINE = InnoDB
-  DEFAULT CHARSET = utf8mb4
-  COLLATE = utf8mb4_unicode_ci;
 
 -- Tags
 CREATE TABLE IF NOT EXISTS `tags`
@@ -199,6 +181,26 @@ CREATE TABLE IF NOT EXISTS `garden_plants`
         FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
     CONSTRAINT `fk_garden_plants_plant`
         FOREIGN KEY (`plant_id`) REFERENCES `plants` (`id`) ON DELETE CASCADE
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4
+  COLLATE = utf8mb4_unicode_ci;
+
+
+CREATE TABLE IF NOT EXISTS `garden_media`
+(
+    `id`              INT UNSIGNED                     NOT NULL AUTO_INCREMENT,
+    `garden_plant_id` INT UNSIGNED                     NOT NULL,
+    `type`            ENUM ('image', 'video', 'audio') NOT NULL DEFAULT 'image',
+    `path`            VARCHAR(255)                     NOT NULL,
+    `filename`        VARCHAR(255)                     NOT NULL,
+    `mime_type`       VARCHAR(100)                     NOT NULL,
+    `created_at`      TIMESTAMP                        NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    PRIMARY KEY (`id`),
+    KEY `idx_garden_media_garden_plant_id` (`garden_plant_id`),
+
+    CONSTRAINT `fk_garden_media_garden_plant`
+        FOREIGN KEY (`garden_plant_id`) REFERENCES `garden_plants` (`id`) ON DELETE CASCADE
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci;
