@@ -184,8 +184,9 @@
 
                 <p class="text-sm text-gray-500">
                     Loads sample content (demo users, plants, tags, subscriptions)
-                    for demos and presentations. Only available while the database
-                    has no plants or tags yet; it can't be loaded twice.
+                    for demos and presentations. Only available immediately after
+                    setup, while the database still contains only the first admin
+                    and no plants or tags.
                 </p>
             </fieldset>
 

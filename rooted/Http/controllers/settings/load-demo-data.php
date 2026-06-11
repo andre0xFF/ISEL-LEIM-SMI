@@ -15,10 +15,10 @@ use Core\Installer;
 
 $pdo = App::resolve(Database::class)->connection;
 
-if (Installer::demoDataExists($pdo)) {
+if (!Installer::canLoadDemoData($pdo)) {
     $_SESSION["_flash"]["errors"] = [
         "demo_data" =>
-            "Demo data was not loaded: the database already contains plants, tags or demo users.",
+            "Demo data can only be loaded immediately after setup, before any other users, plants or tags exist.",
     ];
 
     redirect("/settings");

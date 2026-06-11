@@ -1,6 +1,9 @@
 -- Seed Data
 -- All seeded passwords are: "password"
 -- bcrypt hash: $2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi
+-- Assumption for the in-app demo-data loader:
+--   a real setup admin already exists as user id 1
+--   this file then inserts demo users as ids 2..7
 
 USE `rooted`;
 
@@ -20,68 +23,68 @@ INSERT INTO `users` (`email`, `password`, `role`, `email_verified`) VALUES
 
 -- Tags  (primary = admin-created, secondary = moderator-created)
 INSERT INTO `tags` (`name`, `type`, `user_id`) VALUES
-    -- Primary tags (created by admin, id=1)
+    -- Primary tags (created by the real setup admin, id=1)
     ('Flores', 'primary',   1),
     ('Hortícolas', 'primary',   1),
     ('Suculentas', 'primary',   1),
     ('Árvores de Fruto', 'primary',   1),
     ('Aromáticas', 'primary',   1),
     ('Trepadeiras', 'primary',   1),
-    -- Secondary tags (created by moderators, ids 2-3)
-    ('Rega Gota-a-Gota', 'secondary', 2),
-    ('Cultivo Interior', 'secondary', 2),
-    ('Compostagem', 'secondary', 3),
-    ('Permacultura', 'secondary', 3),
-    ('Jardim Vertical', 'secondary', 2),
-    ('Polinizadores', 'secondary', 3);
+    -- Secondary tags (created by seeded moderators, ids 3-4)
+    ('Rega Gota-a-Gota', 'secondary', 3),
+    ('Cultivo Interior', 'secondary', 3),
+    ('Compostagem', 'secondary', 4),
+    ('Permacultura', 'secondary', 4),
+    ('Jardim Vertical', 'secondary', 3),
+    ('Polinizadores', 'secondary', 4);
 
 -- Plants
 INSERT INTO `plants` (`user_id`, `name`, `body`, `visibility`) VALUES
-    -- By moderator (id=2)
+    -- By seeded moderator (id=3)
     (
-        2,
+        3,
         'Rosa Trepadeira',
         'A rosa trepadeira é uma planta vigorosa que pode atingir vários metros de altura. Ideal para cobrir pérgulas, muros e vedações. Floresce abundantemente na primavera e verão, produzindo cachos de flores perfumadas.',
         'public'
     ),
 
     (
-        2,
+        3,
         'Tomate Coração de Boi',
         'Variedade tradicional portuguesa de tomate, conhecida pelo seu tamanho generoso e sabor intenso. Frutos com formato irregular, tipo coração, que podem atingir 500g. Excelente para saladas e para cozinhar.',
         'public'
     ),
 
-    (2, 'Aloe Vera',
+    (3, 'Aloe Vera',
      'Planta suculenta muito resistente, originária do Norte de África. Conhecida pelas propriedades medicinais do seu gel. Requer pouca água e adapta-se bem a interiores com boa luminosidade.',
      'public'),
 
-    (2, 'Limoeiro',
+    (3, 'Limoeiro',
      'Árvore de fruto de porte médio, perene, que produz limões ao longo de quase todo o ano em climas mediterrânicos. Prefere solos bem drenados e exposição solar direta.',
      'internal'),
 
-    -- By moderator maria (id=3)
-    (3, 'Manjericão',
+    -- By seeded moderator maria (id=4)
+    (4, 'Manjericão',
      'Erva aromática anual muito utilizada na cozinha mediterrânica. De crescimento rápido, prefere locais quentes e abrigados. Ideal para cultivo em vaso no parapeito da janela.',
      'public'),
 
-    (3, 'Lavanda',
+    (4, 'Lavanda',
      'Arbusto perene aromático, originário da região mediterrânica. As suas flores roxas atraem abelhas e borboletas. Muito resistente à seca após estabelecida. Utilizada em perfumaria e como repelente natural.',
      'public'),
 
-    (3, 'Monstera Deliciosa',
+    (4, 'Monstera Deliciosa',
      'Planta tropical de interior com folhas grandes e fenestradas. Originária das florestas tropicais da América Central. Prefere luz indireta e rega moderada. As folhas podem atingir 90 cm de diâmetro.',
      'public'),
 
-    (3, 'Morangueiro',
+    (4, 'Morangueiro',
      'Planta rasteira perene que produz morangos saborosos na primavera e verão. Adapta-se bem a vasos e floreiras. Prefere solo rico em matéria orgânica e boa exposição solar.',
      'internal'),
 
-    (3, 'Orquídea Phalaenopsis',
+    (4, 'Orquídea Phalaenopsis',
      'A orquídea-borboleta é uma das plantas de interior mais populares. Nativa do sudeste asiático, produz flores elegantes que podem durar meses. Prefere luz indireta e rega semanal por imersão.',
      'public'),
 
-    (3, 'Hera',
+    (4, 'Hera',
      'Trepadeira perene de crescimento rápido, excelente para cobrir muros e paredes. Muito resistente e adaptável a diferentes condições de luz. Pode ser cultivada tanto no exterior como em vasos de interior.',
      'internal');
 
@@ -193,13 +196,13 @@ INSERT INTO `plant_meta` (`plant_id`, `key`, `value`) VALUES
 -- Subscriptions  (users subscribe to tags of interest)
 INSERT INTO `subscriptions` (`user_id`, `tag_id`) VALUES
     -- joao subscribes to: Flores, Suculentas, Cultivo Interior
-    (4, 1), (4, 3), (4, 8),
+    (5, 1), (5, 3), (5, 8),
     -- ana subscribes to: Hortícolas, Aromáticas, Compostagem, Permacultura
-    (5, 2), (5, 5), (5, 9), (5, 10),
+    (6, 2), (6, 5), (6, 9), (6, 10),
     -- pedro subscribes to: Flores, Trepadeiras
-    (6, 1), (6, 6),
-    -- moderator subscribes to: Polinizadores (to track content they care about)
-    (2, 12);
+    (7, 1), (7, 6),
+    -- seeded moderator subscribes to: Polinizadores (to track content they care about)
+    (3, 12);
 
 -- Settings  (default SMTP configuration — placeholders)
 INSERT INTO `settings` (`key`, `value`) VALUES
