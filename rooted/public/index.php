@@ -38,20 +38,24 @@ require BASE_PATH . "Core/functions.php";
 // so controllers can retrieve them with App::resolve().
 require BASE_PATH . "bootstrap.php";
 
-// Setup wizard guard — if no admin exists, redirect to /setup.
+// First-run guard — detect the installer state and redirect to the
+// pending step before normal routing:
+//   db_unavailable → /install/database (collect DB credentials)
+//   schema_missing → /install/schema   (run database/001-schema.sql)
+//   admin_missing  → /setup            (first admin + SMTP)
+//   ready          → continue normally
 $requestPath = parse_url($_SERVER["REQUEST_URI"])["path"];
-if (!in_array($requestPath, ["/setup"])) {
-    try {
-        $adminCount = Core\App::resolve(Core\Database::class)
-            ->query("SELECT COUNT(*) as cnt FROM users WHERE role = 'admin'")
-            ->find();
-        if ($adminCount && (int) $adminCount["cnt"] === 0) {
-            header("Location: /setup");
-            exit();
-        }
-    } catch (\Exception $e) {
-        // DB not ready yet — let the request proceed (setup will handle it)
-    }
+
+$installTarget = match (Core\Installer::state()) {
+    "db_unavailable" => "/install/database",
+    "schema_missing" => "/install/schema",
+    "admin_missing" => "/setup",
+    default => null,
+};
+
+if ($installTarget !== null && $requestPath !== $installTarget) {
+    header("Location: {$installTarget}");
+    exit();
 }
 
 $router = new \Core\Router();

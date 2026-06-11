@@ -5,6 +5,9 @@ storage/app/media/*
 # Email log (development)
 storage/app/mail.log
 
+# Local DB config written by the first-run installer (contains credentials)
+storage/config.local.php
+
 # direnv
 .envrc
 
