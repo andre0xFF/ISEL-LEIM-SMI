@@ -170,57 +170,9 @@
                     </form>
                 <?php endif; ?>
                 <a href="/plants" class="text-sm text-indigo-600 hover:text-indigo-500">&larr; Back to plants</a>
-                <?php if (!empty($canEdit) && !empty($media)): ?>
-                    <button type="button" onclick="identifyPlant()" class="rounded-md bg-emerald-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-emerald-700">
-                        🌿 Identify Plant
-                    </button>
-                    <div id="identify-results" class="hidden mt-2 text-sm text-gray-600"></div>
-                <?php endif; ?>
             </div>
         </article>
     </div>
-<?php
-$firstImageId = null;
-foreach ($media as $m) {
-    if (str_starts_with($m["mime_type"], "image/")) {
-        $firstImageId = $m["id"];
-        break;
-    }
-}
-?>
-<?php if (!empty($canEdit) && $firstImageId): ?>
-<script>
-async function identifyPlant() {
-    const resultsDiv = document.getElementById('identify-results');
-    resultsDiv.classList.remove('hidden');
-    resultsDiv.innerHTML = 'Identifying...';
-
-    try {
-        const imgResponse = await fetch('/media?id=<?= $firstImageId ?>');
-        const blob = await imgResponse.blob();
-
-        const formData = new FormData();
-        formData.append('image', blob, 'plant.jpg');
-
-        const response = await fetch('/identify', { method: 'POST', body: formData });
-        const data = await response.json();
-
-        if (data.results && data.results.length > 0) {
-            let html = '<strong>Possible matches:</strong><ul class="mt-1 list-disc pl-5">';
-            data.results.forEach(r => {
-                html += '<li>' + r.name + ' (' + (r.score * 100).toFixed(1) + '%)</li>';
-            });
-            html += '</ul>';
-            resultsDiv.innerHTML = html;
-        } else {
-            resultsDiv.innerHTML = 'Could not identify. Ensure a PlantNet API key is configured in Settings.';
-        }
-    } catch (e) {
-        resultsDiv.innerHTML = 'Identification failed: ' + e.message;
-    }
-}
-</script>
-<?php endif; ?>
 </main>
 
 <?php require base_path("views/partials/footer.php"); ?>

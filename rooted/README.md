@@ -242,8 +242,6 @@ The pattern is always: **resolve dependencies → query/mutate data → render a
 ```
 Http/controllers/
 ├── index.php               # Home page
-├── identify/
-│   └── store.php           # POST   /identify       — PlantNet identification
 ├── map/
 │   └── index.php           # GET    /map             — interactive map
 ├── media/
@@ -435,7 +433,6 @@ rooted/
 │   ├── Mailer.php              # Email sending via mail() with logging
 │   ├── MediaService.php        # File upload, storage, and retrieval
 │   ├── NotificationService.php # Email notifications for subscriptions
-│   ├── PlantNetService.php     # PlantNet API integration for plant identification
 │   ├── Response.php            # HTTP status code constants
 │   ├── Router.php              # URL routing with middleware support
 │   ├── ValidationException.php # Exception carrying validation errors and old input

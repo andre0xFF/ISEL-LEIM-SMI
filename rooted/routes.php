@@ -118,11 +118,6 @@ return function (Router $router) {
     // Map (Garden Map) — authenticated users only
     $router->get("/map", "map/index.php")->only("auth");
 
-    // PlantNet identification
-    $router
-        ->post("/identify", "identify/store.php")
-        ->only("auth", "role:moderator");
-
     // Setup wizard
     $router->get("/setup", "setup/index.php");
     $router->post("/setup", "setup/store.php");
