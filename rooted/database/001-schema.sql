@@ -21,6 +21,8 @@ CREATE TABLE IF NOT EXISTS `users`
     `two_factor_code`       VARCHAR(6)                                            DEFAULT NULL,
     `two_factor_expires_at` DATETIME                                              DEFAULT NULL,
     `email_verified`        TINYINT(1)                                   NOT NULL DEFAULT 0,
+    `latitude`              DECIMAL(9, 6)                                         DEFAULT NULL,
+    `longitude`             DECIMAL(9, 6)                                         DEFAULT NULL,
     `created_at`            TIMESTAMP                                    NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `updated_at`            TIMESTAMP                                    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 

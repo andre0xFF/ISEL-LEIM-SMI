@@ -4,12 +4,15 @@
 
 <main>
     <div class="mx-auto max-w-lg py-10 sm:px-6 lg:px-8">
-        <?php $fieldErrors = $errors ?? $_SESSION["_flash"]["errors"] ?? []; ?>
+        <?php $fieldErrors =
+            $errors ?? ($_SESSION["_flash"]["errors"] ?? []); ?>
         <?php require base_path("views/partials/errors.php"); ?>
 
         <?php if (!empty($_SESSION["_flash"]["success"])): ?>
             <div class="mb-4 rounded-md bg-green-50 p-4">
-                <p class="text-sm font-medium text-green-800"><?= htmlspecialchars($_SESSION["_flash"]["success"]) ?></p>
+                <p class="text-sm font-medium text-green-800"><?= htmlspecialchars(
+                    $_SESSION["_flash"]["success"],
+                ) ?></p>
             </div>
         <?php endif; ?>
 
@@ -20,7 +23,7 @@
             <div>
                 <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
                 <input type="email" id="email" name="email"
-                       value="<?= htmlspecialchars($user['email'] ?? '') ?>"
+                       value="<?= htmlspecialchars($user["email"] ?? "") ?>"
                        required
                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
             </div>
@@ -37,7 +40,9 @@
             <div>
                 <label for="new_password" class="block text-sm font-medium text-gray-700">New Password</label>
                 <input type="password" id="new_password" name="new_password"
-                       minlength="7" maxlength="255" pattern="<?= htmlspecialchars(Core\Validator::STRONG_PASSWORD_PATTERN) ?>"
+                       minlength="7" maxlength="255" pattern="<?= htmlspecialchars(
+                           Core\Validator::STRONG_PASSWORD_PATTERN,
+                       ) ?>"
                        title="Password must include at least one letter, one number and one special character."
                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
                 <p class="mt-1 text-xs text-gray-500">Leave blank to keep current password.</p>
@@ -49,10 +54,38 @@
                 <input type="password" id="password_confirmation" name="password_confirmation"
                        minlength="7"
                        maxlength="255"
-                       pattern="<?= htmlspecialchars(Core\Validator::STRONG_PASSWORD_PATTERN) ?>"
+                       pattern="<?= htmlspecialchars(
+                           Core\Validator::STRONG_PASSWORD_PATTERN,
+                       ) ?>"
                        title="Password must include at least one letter, one number and one special character."
                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
             </div>
+
+            <!-- Garden location (optional) -->
+            <fieldset class="border-t border-gray-200 pt-4">
+                <legend class="text-sm font-medium text-gray-700">Garden location <span class="text-gray-400">(optional)</span></legend>
+                <p class="mt-1 text-xs text-gray-500">Set the coordinates of your garden to appear on the community Garden Map. Leave both blank to stay off the map.</p>
+                <div class="mt-3 grid grid-cols-2 gap-4">
+                    <div>
+                        <label for="latitude" class="block text-sm font-medium text-gray-700">Latitude</label>
+                        <input type="number" step="any" min="-90" max="90" id="latitude" name="latitude"
+                               value="<?= htmlspecialchars(
+                                   $user["latitude"] ?? "",
+                               ) ?>"
+                               placeholder="38.7223"
+                               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                    </div>
+                    <div>
+                        <label for="longitude" class="block text-sm font-medium text-gray-700">Longitude</label>
+                        <input type="number" step="any" min="-180" max="180" id="longitude" name="longitude"
+                               value="<?= htmlspecialchars(
+                                   $user["longitude"] ?? "",
+                               ) ?>"
+                               placeholder="-9.1393"
+                               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                    </div>
+                </div>
+            </fieldset>
 
             <!-- Submit -->
             <div>

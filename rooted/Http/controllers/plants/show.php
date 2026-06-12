@@ -46,23 +46,6 @@ if ($_SESSION["user"] ?? false) {
         in_array($role, ["moderator", "admin"]);
 }
 
-// Load weather data if the plant has Latitude/Longitude meta
-$weather = null;
-$lat = null;
-$lng = null;
-foreach ($meta as $m) {
-    $key = strtolower(trim($m["key"]));
-    if ($key === "latitude") {
-        $lat = (float) $m["value"];
-    }
-    if ($key === "longitude") {
-        $lng = (float) $m["value"];
-    }
-}
-if ($lat !== null && $lng !== null) {
-    $weather = \Core\WeatherService::getWeather($lat, $lng);
-}
-
 view("plants/show.view.php", [
     "heading" => $plant["name"],
     "plant" => $plant,
@@ -70,5 +53,4 @@ view("plants/show.view.php", [
     "tags" => $tags,
     "meta" => $meta,
     "canEdit" => $canEdit,
-    "weather" => $weather,
 ]);

@@ -115,8 +115,8 @@ return function (Router $router) {
         ->post("/verify/resend", "verification/email/resend.php")
         ->only("guest");
 
-    // Map
-    $router->get("/map", "map/index.php");
+    // Map (Garden Map) — authenticated users only
+    $router->get("/map", "map/index.php")->only("auth");
 
     // PlantNet identification
     $router

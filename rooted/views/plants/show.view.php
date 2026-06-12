@@ -46,8 +46,9 @@
                                 ): ?>
                                     <img src="/media?id=<?= $item[
                                         "id"
-                                    ] ?>" alt="<?= htmlspecialchars($item["original_name"] ?? "media",
-                                    ) ?>" class="rounded-lg max-w-full">
+                                    ] ?>" alt="<?= htmlspecialchars(
+    $item["original_name"] ?? "media",
+) ?>" class="rounded-lg max-w-full">
                                 <?php elseif (
                                     str_starts_with(
                                         $item["mime_type"],
@@ -116,26 +117,6 @@
                 </div>
             <?php endif; ?>
 
-            <!-- Weather -->
-            <?php if (!empty($weather)): ?>
-                <div class="mt-6">
-                    <h3 class="text-sm font-medium text-gray-500 mb-2">Current Weather</h3>
-                    <div class="flex items-center gap-6 rounded-md border border-gray-200 bg-gray-50 px-4 py-3">
-                        <div class="text-center">
-                            <span class="text-2xl font-bold text-gray-900"><?= $weather[
-                                "temperature"
-                            ] ?>°C</span>
-                        </div>
-                        <div class="text-sm text-gray-600">
-                            <p>Humidity: <?= $weather["humidity"] ?>%</p>
-                            <p>Conditions: <?= htmlspecialchars(
-                                $weather["description"],
-                            ) ?></p>
-                        </div>
-                    </div>
-                </div>
-            <?php endif; ?>
-
             <!-- Share buttons -->
             <div class="mt-6 flex items-center gap-3">
                 <span class="text-sm font-medium text-gray-500">Share:</span>
@@ -179,7 +160,9 @@
                 <?php endif; ?>
                 <?php if ($_SESSION["user"] ?? false): ?>
                     <form method="POST" action="/my-garden">
-                        <input type="hidden" name="plant_id" value="<?= $plant["id"] ?>">
+                        <input type="hidden" name="plant_id" value="<?= $plant[
+                            "id"
+                        ] ?>">
                         <button type="submit"
                                 class="rounded-md bg-emerald-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-emerald-700">
                             Add to My Garden

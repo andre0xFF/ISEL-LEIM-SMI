@@ -35,13 +35,14 @@
                                ? "bg-gray-900 text-white"
                                : "text-gray-300" ?> hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">My Garden</a>
 
-                        <a href="/map"
-                           class="<?= urlIs("/map")
-                               ? "bg-gray-900 text-white"
-                               : "text-gray-300" ?> hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Map</a>
-
                         <?php if ($_SESSION["user"] ?? false): ?>
                             <?php $role = $_SESSION["user"]["role"]; ?>
+
+                            <!-- Auth: Garden Map -->
+                            <a href="/map"
+                               class="<?= urlIs("/map")
+                                   ? "bg-gray-900 text-white"
+                                   : "text-gray-300" ?> hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Map</a>
 
                             <!-- Moderator/Admin: Tags -->
                             <?php if (

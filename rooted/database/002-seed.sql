@@ -21,6 +21,14 @@ INSERT INTO `users` (`email`, `password`, `role`, `email_verified`) VALUES
     ('ana@rooted.local', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'user', 1),
     ('pedro@rooted.local', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'user', 0);
 
+-- Garden locations (used by the Garden Map). Only some demo users share a location.
+-- joao -> Lisboa
+UPDATE `users` SET `latitude` = 38.722300, `longitude` = -9.139300 WHERE `email` = 'joao@rooted.local';
+-- ana -> Porto
+UPDATE `users` SET `latitude` = 41.157900, `longitude` = -8.629100 WHERE `email` = 'ana@rooted.local';
+-- maria -> Coimbra
+UPDATE `users` SET `latitude` = 40.203300, `longitude` = -8.410300 WHERE `email` = 'maria@rooted.local';
+
 -- Tags  (primary = admin-created, secondary = moderator-created)
 INSERT INTO `tags` (`name`, `type`, `user_id`) VALUES
     -- Primary tags (created by the real setup admin, id=1)
@@ -156,8 +164,6 @@ INSERT INTO `plant_meta` (`plant_id`, `key`, `value`) VALUES
     (4, 'Exposição Solar',  'Sol pleno'),
     (4, 'Rega',             'Regular, sem encharcamento'),
     (4, 'Zona Climática',   'Mediterrânica'),
-    (4, 'Latitude',         '38.7223'),
-    (4, 'Longitude',        '-9.1393'),
     -- Manjericão
     (5, 'Solo',             'Fértil, bem drenado'),
     (5, 'Exposição Solar',  'Sol pleno'),
@@ -168,8 +174,6 @@ INSERT INTO `plant_meta` (`plant_id`, `key`, `value`) VALUES
     (6, 'Exposição Solar',  'Sol pleno'),
     (6, 'Rega',             'Escassa (resistente à seca)'),
     (6, 'Zona Climática',   'Mediterrânica'),
-    (6, 'Latitude',         '39.3999'),
-    (6, 'Longitude',        '-8.2245'),
     -- Monstera Deliciosa
     (7, 'Solo',             'Rico, bem drenado'),
     (7, 'Exposição Solar',  'Luz indireta'),
@@ -203,6 +207,20 @@ INSERT INTO `subscriptions` (`user_id`, `tag_id`) VALUES
     (7, 1), (7, 6),
     -- seeded moderator subscribes to: Polinizadores (to track content they care about)
     (3, 12);
+
+-- Garden plants  (which catalog plants each user grows in their personal garden)
+-- Drives the Garden Map together with the users' latitude/longitude above.
+INSERT INTO `garden_plants` (`user_id`, `plant_id`, `notes`) VALUES
+    -- joao (id=5), garden in Lisboa
+    (5, 2, 'A crescer bem no canteiro das traseiras.'),
+    (5, 5, 'No parapeito da cozinha.'),
+    (5, 8, 'Em floreira na varanda.'),
+    -- ana (id=6), garden in Porto
+    (6, 6, 'Junto ao muro, atrai abelhas.'),
+    (6, 3, 'Em vaso, com pouca rega.'),
+    -- maria (id=4), garden in Coimbra
+    (4, 1, 'Cobre a pérgula do quintal.'),
+    (4, 7, 'Interior, com luz indireta.');
 
 -- Settings  (default SMTP configuration — placeholders)
 INSERT INTO `settings` (`key`, `value`) VALUES
