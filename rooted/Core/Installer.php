@@ -183,6 +183,41 @@ class Installer
     }
 
     /**
+     * Determine whether demo data can be loaded safely.
+     *
+     * The seed assumes the real setup admin already exists as user id 1 and
+     * that no other content has been created yet. If extra users already
+     * exist, the seed's hard-coded foreign-key references can mis-link rows.
+     */
+    public static function canLoadDemoData(PDO $pdo): bool
+    {
+        if (self::demoDataExists($pdo)) {
+            return false;
+        }
+
+        $userCount = (int) $pdo
+            ->query("SELECT COUNT(*) FROM users")
+            ->fetchColumn();
+
+        $adminCount = (int) $pdo
+            ->query("SELECT COUNT(*) FROM users WHERE role = 'admin'")
+            ->fetchColumn();
+
+        $plantCount = (int) $pdo
+            ->query("SELECT COUNT(*) FROM plants")
+            ->fetchColumn();
+
+        $tagCount = (int) $pdo
+            ->query("SELECT COUNT(*) FROM tags")
+            ->fetchColumn();
+
+        return $userCount === 1 &&
+            $adminCount === 1 &&
+            $plantCount === 0 &&
+            $tagCount === 0;
+    }
+
+    /**
      * Load database/002-seed.sql into the given (already selected) database.
      *
      * Runs inside a transaction so a failure leaves the database unchanged.
