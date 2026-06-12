@@ -115,9 +115,6 @@ return function (Router $router) {
         ->post("/verify/resend", "verification/email/resend.php")
         ->only("guest");
 
-    // RSS feed
-    $router->get("/rss", "rss/feed.php");
-
     // Map
     $router->get("/map", "map/index.php");
 

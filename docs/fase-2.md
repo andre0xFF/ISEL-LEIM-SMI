@@ -83,12 +83,11 @@ Para além das funcionalidades associadas a cada perfil, o sistema inclui um con
 | --- | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | G1  | Autenticação por password           | Autenticação convencional através de email e password                                                                                                                                                               |
 | G2  | Autenticação por token (2FA)        | Autenticação em dois fatores: é enviado um token por email que o utilizador deve introduzir para confirmar a sessão                                                                                                 |
-| G3  | Feed RSS                            | Geração automática de um feed RSS com as últimas plantas adicionadas ao sistema, permitindo que utilizadores externos acompanhem as novidades através de leitores de RSS                                            |
-| G4  | Partilha em redes sociais           | Possibilidade de partilhar conteúdos de plantas em redes sociais (Facebook e Instagram) através de botões de partilha integrados na página de detalhe                                                               |
-| G5  | Visualização em mapa                | Apresentação dos conteúdos num mapa interativo com base na zona climática ou região de origem da planta, permitindo ao utilizador explorar conteúdos geograficamente (ex. "que plantas crescem bem na minha zona?") |
-| G6  | Identificação de plantas (PlantNet) | Integração com a API PlantNet para identificação automática de espécies                                                                                                                                             |
-| G7  | Informação meteorológica            | Integração com um serviço meteorológico externo para apresentar condições atuais e previsões relevantes para o cultivo, associadas à localização                                                                    |
-| G8  | Wizard de configuração              | Página de configuração inicial apresentada no primeiro arranque da aplicação num servidor limpo, orientando o administrador na criação da conta de administrador e configuração da base de dados e serviço de email |
+| G3  | Partilha em redes sociais           | Possibilidade de partilhar conteúdos de plantas em redes sociais (Facebook e Instagram) através de botões de partilha integrados na página de detalhe                                                               |
+| G4  | Visualização em mapa                | Apresentação dos conteúdos num mapa interativo com base na zona climática ou região de origem da planta, permitindo ao utilizador explorar conteúdos geograficamente (ex. "que plantas crescem bem na minha zona?") |
+| G5  | Identificação de plantas (PlantNet) | Integração com a API PlantNet para identificação automática de espécies                                                                                                                                             |
+| G6  | Informação meteorológica            | Integração com um serviço meteorológico externo para apresentar condições atuais e previsões relevantes para o cultivo, associadas à localização                                                                    |
+| G7  | Wizard de configuração              | Página de configuração inicial apresentada no primeiro arranque da aplicação num servidor limpo, orientando o administrador na criação da conta de administrador e configuração da base de dados e serviço de email |
 
 ### Resumo de Funcionalidades por Perfil
 
@@ -158,7 +157,6 @@ A aplicação PHP segue uma arquitetura inspirada no padrão MVC (Model-View-Con
 | Gestão de Etiquetas    | Criação, edição e remoção de etiquetas (principais e secundárias) para organização dos conteúdos, com controlo de permissões por perfil      |
 | Notificações           | Gestão de subscrições a etiquetas e envio de emails automáticos quando novos conteúdos são adicionados. Comunica com o servidor SMTP         |
 | Media                  | Upload e download de conteúdos multimédia para o sistema de ficheiros, tanto unitário como em lote (ficheiros ZIP com `metadata.xml`)        |
-| RSS                    | Geração de feed RSS com as últimas plantas adicionadas ao sistema                                                                            |
 | Serviços Externos      | Integração com APIs externas: PlantNet para identificação de plantas e serviço meteorológico para condições de cultivo                       |
 | Validação              | Validação de dados de entrada (strings, emails, tamanhos) com suporte para apresentação de erros nos formulários                             |
 | Base de Dados          | Abstração da ligação à base de dados MySQL via PDO, com suporte para queries parametrizadas                                                  |

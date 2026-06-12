@@ -51,10 +51,11 @@ $weather = null;
 $lat = null;
 $lng = null;
 foreach ($meta as $m) {
-    if ($m["key"] === "Latitude") {
+    $key = strtolower(trim($m["key"]));
+    if ($key === "latitude") {
         $lat = (float) $m["value"];
     }
-    if ($m["key"] === "Longitude") {
+    if ($key === "longitude") {
         $lng = (float) $m["value"];
     }
 }
